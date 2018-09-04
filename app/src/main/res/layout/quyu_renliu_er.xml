@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <com.wuhenzhizao.titlebar.widget.CommonTitleBar
+        android:id="@+id/quyu_renliu_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:statusBarMode="light"
+        app:centerText="各景区客流量详情"
+        app:centerTextColor="@color/white"
+        app:centerTextSize="18sp"
+        app:centerType="textView"
+        app:showBottomLine="false"
+        app:fillStatusBar="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:leftImageResource="@drawable/qmui_icon_topbar_back"
+        app:leftType="imageButton"
+        app:statusBarColor="@color/qingse"
+        app:titleBarColor="@color/qingse"
+        tools:ignore="MissingConstraints">
+    </com.wuhenzhizao.titlebar.widget.CommonTitleBar>
+</android.support.constraint.ConstraintLayout>
