@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:statusBarMode="light"
-        app:centerText="十二县市游客量占比"
+        app:centerText="客流量占比"
         app:centerTextColor="@color/white"
         app:centerTextSize="18sp"
         app:centerType="textView"
@@ -25,4 +25,50 @@
         tools:ignore="MissingConstraints">
     </com.wuhenzhizao.titlebar.widget.CommonTitleBar>
 
+    <ScrollView
+        android:id="@+id/mm_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/youke_zhanbi_back">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="10dp"
+                android:text="十二县市游客量占比" />
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pie_chart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/qingse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="10dp"
+                android:text="十二县市游客数量" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chart1"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_above="@+id/seekBar1" />
+        </LinearLayout>
+
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>

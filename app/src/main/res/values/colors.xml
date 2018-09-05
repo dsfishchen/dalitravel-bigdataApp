@@ -38,4 +38,6 @@
     <color name="white">#FFFFFF</color>
     <color name="primary">#E43F3F</color>
     <color name="blue">#2666ef</color>
+
+    <color name="app_color_description">@color/qmui_config_color_gray_5</color>
 </resources>

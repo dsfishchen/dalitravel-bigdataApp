@@ -28,6 +28,7 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.comedali.bigdata.R;
+import com.comedali.bigdata.activity.Quyu_renliuActivity;
 import com.comedali.bigdata.activity.Youke_zhanbiActivity;
 import com.comedali.bigdata.utils.NetworkUtil;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
@@ -133,8 +134,11 @@ public class ShouyeFragment extends Fragment {
         LatLng latLng = new LatLng(25.695060,100.164413);
         final Marker marker = tencentMap.addMarker(new MarkerOptions().
                 position(latLng).
-                title("大理").
-                snippet("DefaultMarker"));
+                title("大理古城").
+                snippet("游客人数 20150人\n 设备数量 152台"));
+        tencentMap.addMarker(new MarkerOptions()
+                .position(new LatLng(25.906058,100.099268))
+                .title("蝴蝶泉").snippet("游客人数 10150人\n 设备数量 152台"));
         //创建图标
         //marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
     }
@@ -184,6 +188,17 @@ public class ShouyeFragment extends Fragment {
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
                         tencentMap.moveCamera(cameraSigma);//移动地图
                     }
+                    if (one=="宾川县"){
+                        //设定中心点坐标
+                        CameraUpdate cameraSigma =
+                                CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                                        new LatLng(25.950019,100.382767), //新的中心点坐标
+                                        11,  //新的缩放级别
+                                        0f, //俯仰角 0~45° (垂直地图时为0)
+                                        0f)); //偏航角 0~360° (正北方为0)
+                        //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        tencentMap.moveCamera(cameraSigma);//移动地图
+                    }
                     mListPopup.dismiss();
                 }
             });
@@ -223,7 +238,7 @@ public class ShouyeFragment extends Fragment {
                         startActivity(intent);
                     }
                     if (two=="区域人流量"){
-                        Intent intent=new Intent(getActivity(), Youke_zhanbiActivity.class);
+                        Intent intent=new Intent(getActivity(), Quyu_renliuActivity.class);
                         startActivity(intent);
                     }
 

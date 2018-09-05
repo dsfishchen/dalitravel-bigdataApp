@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(new MyAdapter(getSupportFragmentManager()));
         mBottomBarLayout.setSmoothScroll(true);//左右滑动开启
         mBottomBarLayout.setViewPager(viewPager);
-        mBottomBarLayout.setOnItemSelectedListener(new BottomBarLayout.OnItemSelectedListener() {
+       /* mBottomBarLayout.setOnItemSelectedListener(new BottomBarLayout.OnItemSelectedListener() {
             @Override
             public void onItemSelected(final BottomBarItem bottomBarItem, int previousPosition, final int currentPosition) {
                 Log.i("MainActivity","position: " + currentPosition);
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
                 cancelTabLoading(bottomItem);//停止旋转动画
             }
-        });
+        });*/
 
         //mBottomBarLayout.setUnread(0,20);//设置第一个页签的未读数为20
         //mBottomBarLayout.setUnread(1,4);//设置第二个页签的未读数

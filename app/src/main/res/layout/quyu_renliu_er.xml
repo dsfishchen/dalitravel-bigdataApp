@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:statusBarMode="light"
-        app:centerText="各景区客流量详情"
+        app:centerText="区域人流量"
         app:centerTextColor="@color/white"
         app:centerTextSize="18sp"
         app:centerType="textView"
@@ -24,4 +24,16 @@
         app:titleBarColor="@color/qingse"
         tools:ignore="MissingConstraints">
     </com.wuhenzhizao.titlebar.widget.CommonTitleBar>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/mm_lineChart"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/quyu_renliu_back">
+
+    </com.github.mikephil.charting.charts.LineChart>
 </android.support.constraint.ConstraintLayout>
