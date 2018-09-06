@@ -32,12 +32,14 @@ import com.comedali.bigdata.activity.Quyu_renliuActivity;
 import com.comedali.bigdata.activity.Youke_zhanbiActivity;
 import com.comedali.bigdata.utils.NetworkUtil;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
+import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 import com.qmuiteam.qmui.widget.popup.QMUIListPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdate;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdateFactory;
 import com.tencent.tencentmap.mapsdk.maps.MapView;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
+import com.tencent.tencentmap.mapsdk.maps.TextureMapView;
 import com.tencent.tencentmap.mapsdk.maps.UiSettings;
 import com.tencent.tencentmap.mapsdk.maps.model.CameraPosition;
 import com.tencent.tencentmap.mapsdk.maps.model.HeatDataNode;
@@ -73,7 +75,7 @@ import static com.baidu.mapapi.map.HeatMap.DEFAULT_GRADIENT;
  * Created by 刘杨刚 on 2018/9/3.
  */
 public class ShouyeFragment extends Fragment {
-    private MapView mMapView;
+    private TextureMapView mMapView;
     private HeatOverlay heatOverlay;
     private TencentMap tencentMap;
     private OkHttpClient client;
@@ -113,7 +115,8 @@ public class ShouyeFragment extends Fragment {
         tencentMap = mMapView.getMap();
         UiSettings mapUiSettings = tencentMap.getUiSettings();
 
-
+        QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
+        QMUIStatusBarHelper.setStatusBarLightMode(getActivity());//状态栏字体颜色--黑色
         //设定中心点坐标
         CameraUpdate cameraSigma =
                 CameraUpdateFactory.newCameraPosition(new CameraPosition(

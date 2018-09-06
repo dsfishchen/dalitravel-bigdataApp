@@ -85,7 +85,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         // if more than 60 entries are displayed in the chart, no values will be
         // drawn
         mBarChart.setMaxVisibleValueCount(60);
-
+        mBarChart.animateY(1400);
         // scaling can now only be done on x- and y-axis separately
         mBarChart.setPinchZoom(false);
         //mBarChart.setDrawGridBackground(false);//设置不显示网格
@@ -93,6 +93,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         mBarChart.setTouchEnabled(true);//设置是否可以触摸
         mBarChart.setDragEnabled(true);//设置是否可以拖拽
         mBarChart.setNoDataText("数据获取失败");
+        mBarChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);//颜色数值
         //X轴
         //自定义设置横坐标
         //IAxisValueFormatter xValueFormatter = new ExamModelOneXValueFormatter(xListValue);
@@ -103,6 +104,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         xAxis.setTextColor(Color.RED);
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawGridLines(false);
+        xAxis.setLabelCount(7);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -138,8 +140,9 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         //左边Y轴
         YAxis leftYAxis = mBarChart.getAxisLeft();
         leftYAxis.setDrawGridLines(true);//设置从Y轴左侧发出横线
-        leftYAxis.setAxisMinimum(0f);
+        leftYAxis.setAxisMinimum(0.0f);
         leftYAxis.setEnabled(true);//设置显示左边Y坐标
+        leftYAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         //右边Y轴
         YAxis rightAxis = mBarChart.getAxisRight();
         rightAxis.setEnabled(false);//右侧不显示Y轴
@@ -154,7 +157,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         l.setFormSize(9f);
         l.setTextSize(11f);
         l.setXEntrySpace(4f);
-
+        l.setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);
 
         //自定义markView,点击显示更多信息
         MyMarkView markerView = new MyMarkView(Youke_zhanbiActivity.this,R.layout.custom_marker_view);
@@ -242,11 +245,11 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         //picChart.getLegend().setPosition(Legend.LegendPosition.RIGHT_OF_CHART_CENTER);//颜色数值
         //取消颜色数值
         Legend l = mPicChart.getLegend();
+        l.setEnabled(false);
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
         l.setDrawInside(false);
-        l.setEnabled(false);
         //结束
         mPicChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override

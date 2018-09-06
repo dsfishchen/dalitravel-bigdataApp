@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -38,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        QMUIStatusBarHelper.translucent(this);// 沉浸式状态栏
-        QMUIStatusBarHelper.setStatusBarLightMode(this);//状态栏字体颜色--黑色
+        //QMUIStatusBarHelper.translucent(this);// 沉浸式状态栏
+        //QMUIStatusBarHelper.setStatusBarLightMode(this);//状态栏字体颜色--黑色
         initView();
         initData();
         initListener();
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private void initListener() {
         //设置viewPager适配器
         viewPager.setAdapter(new MyAdapter(getSupportFragmentManager()));
-        mBottomBarLayout.setSmoothScroll(true);//左右滑动开启
+        //mBottomBarLayout.setSmoothScroll(false);//左右滑动开启
         mBottomBarLayout.setViewPager(viewPager);
        /* mBottomBarLayout.setOnItemSelectedListener(new BottomBarLayout.OnItemSelectedListener() {
             @Override

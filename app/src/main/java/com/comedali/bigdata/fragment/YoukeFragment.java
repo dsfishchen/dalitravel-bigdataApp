@@ -13,18 +13,18 @@ import android.widget.TextView;
 
 import com.comedali.bigdata.R;
 import com.github.mikephil.charting.charts.BarChart;
+import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 
 /**
  * Created by 刘杨刚 on 2018/9/3.
  */
 public class YoukeFragment extends Fragment {
-    protected BarChart mChart;
-    private SeekBar mSeekBarX, mSeekBarY;
-    private TextView tvX, tvY;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.youke_yi,container,false);
+        QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
+        QMUIStatusBarHelper.setStatusBarLightMode(getActivity());//状态栏字体颜色--黑色
         return view;
     }
 
