@@ -204,7 +204,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
 
         for (int i = 0; i < 12; i++) {//添加数据源
-            yVals.add(new BarEntry(i,(float) Math.floor(Math.random()*520 + 1)));
+            yVals.add(new BarEntry(i,(float) Math.random()*520 + 1));
         }
         BarDataSet dataSet = new BarDataSet(yVals, "十二县市游客数量条形统计图");//一组柱状图
         //dataSet.setColor(Color.LTGRAY);//设置第yi组数据颜色

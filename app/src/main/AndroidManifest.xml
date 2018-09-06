@@ -39,7 +39,7 @@
         <activity android:name=".activity.Quyu_renliuActivity">
 
         </activity>
-            <meta-data
+        <meta-data
                 android:name="TencentMapSDK"
                 android:value="B3SBZ-BE466-UKKSO-EZNHK-23FRT-V5FKT" />
     </application>
