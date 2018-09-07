@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:textColor="@color/qingse"
+            android:textColor="@color/monsoon"
             android:layout_gravity="center_horizontal"
             android:text="实时游客人数"
             android:textSize="16sp" />

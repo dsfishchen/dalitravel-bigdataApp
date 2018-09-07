@@ -16,15 +16,13 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
-import com.baidu.mapapi.SDKInitializer;
+
 import com.chaychan.library.BottomBarItem;
 import com.chaychan.library.BottomBarLayout;
-import com.comedali.bigdata.fragment.DingdanFragment;
-import com.comedali.bigdata.fragment.YoukeFragment;
-import com.comedali.bigdata.fragment.HuodongFragment;
 import com.comedali.bigdata.fragment.ShouyeFragment;
-import com.comedali.bigdata.fragment.WodeFragment;
-import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
+import com.comedali.bigdata.fragment.XiaofeiFragment;
+import com.comedali.bigdata.fragment.XingweiFragment;
+import com.comedali.bigdata.fragment.YoukeFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
 
         mFragmentList.add(new ShouyeFragment());
         mFragmentList.add(new YoukeFragment());
-        mFragmentList.add(new HuodongFragment());
-        mFragmentList.add(new DingdanFragment());
-        mFragmentList.add(new WodeFragment());
+        mFragmentList.add(new XiaofeiFragment());
+        mFragmentList.add(new XingweiFragment());
+        mFragmentList.add(new XiaofeiFragment());
 
     }
 

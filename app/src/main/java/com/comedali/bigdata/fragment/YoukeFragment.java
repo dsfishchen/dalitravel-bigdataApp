@@ -8,11 +8,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.comedali.bigdata.R;
-import com.github.mikephil.charting.charts.BarChart;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 
 /**

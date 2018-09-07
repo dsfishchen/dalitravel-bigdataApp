@@ -14,7 +14,7 @@ import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 /**
  * Created by 刘杨刚 on 2018/9/3.
  */
-public class WodeFragment extends Fragment {
+public class LvyouFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
