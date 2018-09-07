@@ -18,7 +18,7 @@ public class XiaofeiFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.youke_yi,container,false);
+        View view=inflater.inflate(R.layout.xiaofei_yi,container,false);
         QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
         QMUIStatusBarHelper.setStatusBarLightMode(getActivity());//状态栏字体颜色--黑色
         return view;
