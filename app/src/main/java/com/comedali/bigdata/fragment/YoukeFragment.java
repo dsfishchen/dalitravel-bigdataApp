@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -43,6 +44,8 @@ public class YoukeFragment extends Fragment {
     private TabLayout mTabLayout;
     private YoukelaiyuanAdapter adapter;
     private List<YoukelaiyuanEntity> youkedatas;
+    private LinearLayout youke_linearlayout;
+    private LinearLayout youke2_linearLayout;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -52,20 +55,26 @@ public class YoukeFragment extends Fragment {
         mTabLayout=view.findViewById(R.id.youke_SlidingTabLayout);
         youke_recyclerView=view.findViewById(R.id.youke_recyclerView);
         mPicChart = view.findViewById(R.id.age_chart);
+        youke_linearlayout=view.findViewById(R.id.youke_linearlayout);
+        youke_linearlayout.setVisibility(View.GONE);//隐藏数据
+        youke2_linearLayout=view.findViewById(R.id.youke2_linearLayout);
+        youke2_linearLayout.setVisibility(View.GONE);
         mTabLayout.addTab(mTabLayout.newTab().setText("年龄结构"));
         mTabLayout.addTab(mTabLayout.newTab().setText("性别比例"));
         mTabLayout.addTab(mTabLayout.newTab().setText("游客来源"));
         initviewmPicChart();
 
         initData();
-        Log.d("youkedatas", String.valueOf(youkedatas));
+        //Log.d("youkedatas", String.valueOf(youkedatas));
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         youke_recyclerView.setLayoutManager(layoutManager);
         adapter = new YoukelaiyuanAdapter(R.layout.youkelaiyuan_er_item, youkedatas);
+        adapter.openLoadAnimation();//动画 默认提供5种方法（渐显、缩放、从下到上，从左到右、从右到左）
+        adapter.isFirstOnly(false);//重复执行可设置
         //给RecyclerView设置适配器
         youke_recyclerView.setAdapter(adapter);
-        youke_recyclerView.setVisibility(View.GONE);
+        youke_recyclerView.setVisibility(View.GONE);//隐藏控件
         //添加Android自带的分割线
         youke_recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
         adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -82,16 +91,22 @@ public class YoukeFragment extends Fragment {
                 if (name=="年龄结构"){
                     mPicChart.setVisibility(View.VISIBLE);
                     youke_recyclerView.setVisibility(View.GONE);
+                    youke_linearlayout.setVisibility(View.GONE);
+                    youke2_linearLayout.setVisibility(View.GONE);
                     Log.d("mm", name);
                 }
                 if (name=="性别比例"){
                     mPicChart.setVisibility(View.GONE);
                     youke_recyclerView.setVisibility(View.GONE);
+                    youke_linearlayout.setVisibility(View.GONE);
+                    youke2_linearLayout.setVisibility(View.VISIBLE);
                     Log.d("mm", name);
                 }
                 if (name=="游客来源"){
                     mPicChart.setVisibility(View.GONE);
                     youke_recyclerView.setVisibility(View.VISIBLE);
+                    youke_linearlayout.setVisibility(View.VISIBLE);
+                    youke2_linearLayout.setVisibility(View.GONE);
                     Log.d("mm", name);
                 }
             }
@@ -112,9 +127,9 @@ public class YoukeFragment extends Fragment {
     private void initData() {
         youkedatas=new ArrayList<>();
         YoukelaiyuanEntity model;
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 100; i++) {
             model=new YoukelaiyuanEntity();
-            model.setId("0"+i);
+            model.setId(i+1+"");
             model.setProvince("云南"+i);
             model.setBaifenbi("17.01%");
             youkedatas.add(model);
@@ -173,7 +188,7 @@ public class YoukeFragment extends Fragment {
         ArrayList<Integer> colors = new ArrayList<Integer>();
         colors.add(getResources().getColor(R.color.app_color_theme_8));
         colors.add(getResources().getColor(R.color.app_color_theme_7));
-        colors.add(getResources().getColor(R.color.app_color_theme_6));
+        colors.add(getResources().getColor(R.color.app_color_theme_9));
         colors.add(getResources().getColor(R.color.app_color_theme_5));
         colors.add(getResources().getColor(R.color.app_color_theme_4));
         colors.add(getResources().getColor(R.color.app_color_theme_3));

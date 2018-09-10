@@ -128,7 +128,7 @@
         android:layout_height="28dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="39dp"
-        android:background="#ffffff"
+        android:background="@drawable/button_yuanxian"
         android:drawableRight="@mipmap/drop_down_unselected_icon"
         android:text="大理市"
         app:layout_constraintStart_toEndOf="@+id/shouye_tianqi"

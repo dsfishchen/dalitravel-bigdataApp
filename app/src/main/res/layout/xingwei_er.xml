@@ -1,6 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <View
+        android:id="@+id/view6"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:background="@color/qingse"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/xingwei_SlidingTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/qingse"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        app:tabTextColor="#cec9c9"
+        app:tabSelectedTextColor="@color/white"
+        app:tabIndicatorColor="@color/white"
+        app:tabIndicatorHeight="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view6" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/xingwei_SlidingTabLayout">
+        <!--轨迹-->
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/xingwei_ConstraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.tencent.tencentmap.mapsdk.maps.TextureMapView
+                android:id="@+id/xingwei_map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </com.tencent.tencentmap.mapsdk.maps.TextureMapView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="10dp"
+                        android:padding="10dp"
+                        android:text="出发点：" />
+
+                    <Button
+                        android:id="@+id/choose_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/button_yuanxian"
+                        android:drawableRight="@mipmap/drop_down_unselected_icon"
+                        android:text="机场" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
+        <!--出行方式-->
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/chuxing_chart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+        <!--停留时间-->
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/tingliuTime_chart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+        <!--偏好分析-->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/pianhao_linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_gravity="center"
+                    android:textSize="16sp"
+                    android:text="游客兴趣前五名"/>
+                <com.github.mikephil.charting.charts.RadarChart
+                    android:id="@+id/xingque_RadarChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp">
+                </com.github.mikephil.charting.charts.RadarChart>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="10dp"
+                    android:textSize="16sp"
+                    android:text="酒店热度前五名"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="排名"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="酒店"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="评分"/>
+                </LinearLayout>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/jiudian_recycleView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

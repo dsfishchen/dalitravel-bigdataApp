@@ -10,15 +10,18 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 import com.chaychan.library.BottomBarItem;
 import com.chaychan.library.BottomBarLayout;
+import com.comedali.bigdata.fragment.LvyouFragment;
 import com.comedali.bigdata.fragment.ShouyeFragment;
 import com.comedali.bigdata.fragment.XiaofeiFragment;
 import com.comedali.bigdata.fragment.XingweiFragment;
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Fragment> mFragmentList = new ArrayList<>();
     private RotateAnimation mRotateAnimation;
     private Handler mHandler = new Handler();
-
+    private long exitTime = 0;// 用来计算返回键的点击间隔时间
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,9 +57,9 @@ public class MainActivity extends AppCompatActivity {
 
         mFragmentList.add(new ShouyeFragment());
         mFragmentList.add(new YoukeFragment());
-        mFragmentList.add(new XiaofeiFragment());
         mFragmentList.add(new XingweiFragment());
         mFragmentList.add(new XiaofeiFragment());
+        mFragmentList.add(new LvyouFragment());
 
     }
 
@@ -141,5 +144,22 @@ public class MainActivity extends AppCompatActivity {
         public int getCount() {   //返回需要展示的fangment数量
             return mFragmentList.size();
         }
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK
+                         && event.getAction() == KeyEvent.ACTION_DOWN) {
+                         if ((System.currentTimeMillis() - exitTime) > 2000) {
+                                 //弹出提示，可以有多种方式
+                                 Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                                 exitTime = System.currentTimeMillis();
+                             } else {
+                                 finish();
+                             }
+                         return true;
+                     }
+        return super.onKeyDown(keyCode, event);
     }
 }

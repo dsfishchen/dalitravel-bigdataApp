@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +19,12 @@ import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.activity.Quyu_renliuActivity;
 import com.comedali.bigdata.activity.Youke_zhanbiActivity;
+import com.comedali.bigdata.adapter.YoukelaiyuanAdapter;
+import com.comedali.bigdata.entity.YoukelaiyuanEntity;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.widget.popup.QMUIListPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
@@ -47,12 +53,16 @@ public class ShishijiankongFragment extends Fragment {
     private QMUIListPopup mListPopup;
     private String one;
     private String two;
+    private YoukelaiyuanAdapter adapter;
+    private List<YoukelaiyuanEntity> youkedatas;
+    private RecyclerView shishi_recyclerView;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.shishi_jiankong_er,container,false);
         quyu_qiehuan=view.findViewById(R.id.quyu_qiehuan);
         mMapView = view.findViewById(R.id.shishi_map);
+        shishi_recyclerView=view.findViewById(R.id.shishi_recyclerView);
         tencentMap = mMapView.getMap();
         //设定中心点坐标
         CameraUpdate cameraSigma =
@@ -74,9 +84,39 @@ public class ShishijiankongFragment extends Fragment {
                 mListPopup.show(view);
             }
         });
+
+
+        initData();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        shishi_recyclerView.setLayoutManager(layoutManager);
+        adapter = new YoukelaiyuanAdapter(R.layout.youkelaiyuan_er_item, youkedatas);
+        adapter.openLoadAnimation();//动画 默认提供5种方法（渐显、缩放、从下到上，从左到右、从右到左）
+        adapter.isFirstOnly(false);//重复执行可设置
+        //给RecyclerView设置适配器
+        shishi_recyclerView.setAdapter(adapter);
+        //添加Android自带的分割线
+        shishi_recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
+        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                Toast.makeText(getActivity(),"你点击了"+position,Toast.LENGTH_SHORT).show();
+            }
+        });
         return view;
     }
+    private void initData() {
+        youkedatas=new ArrayList<>();
+        YoukelaiyuanEntity model;
+        for (int i = 0; i < 100; i++) {
+            model=new YoukelaiyuanEntity();
+            model.setId("古城南门"+i);
+            model.setProvince(i+"");
+            model.setBaifenbi(i*10+"");
+            youkedatas.add(model);
+        }
 
+    }
     private void initoneListPopupIfNeed() {
         if (mListPopup == null) {
 

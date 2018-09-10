@@ -108,8 +108,8 @@ public class ShouyeFragment extends Fragment {
         //设定中心点坐标
         CameraUpdate cameraSigma =
                 CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                        new LatLng(25.74361,100.21285), //新的中心点坐标
-                        11,  //新的缩放级别
+                        new LatLng(25.781344,100.207672), //新的中心点坐标
+                        10.8f,  //新的缩放级别
                         0f, //俯仰角 0~45° (垂直地图时为0)
                         0f)); //偏航角 0~360° (正北方为0)
         //tencentMap.animateCamera(cameraSigma);//改变地图状态
@@ -161,8 +161,8 @@ public class ShouyeFragment extends Fragment {
                     if (one=="大理市"){
                         CameraUpdate cameraSigma =
                                 CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                                        new LatLng(25.74361,100.21285), //新的中心点坐标
-                                        11,  //新的缩放级别
+                                        new LatLng(25.781344,100.207672), //新的中心点坐标
+                                        10.8f,  //新的缩放级别
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
