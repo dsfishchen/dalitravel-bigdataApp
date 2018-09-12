@@ -35,77 +35,82 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:textColor="@color/monsoon"
+            android:textColor="#3469af"
             android:layout_gravity="center_horizontal"
             android:text="实时游客人数"
-            android:textSize="16sp" />
+            android:textSize="17sp" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="8dp"
-                android:text="2"
-                android:layout_margin="10dp"
-                android:textColor="@color/white"
-                android:background="@color/qingse"
-                android:textSize="16sp" />
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="8dp"
-                android:text="1"
 
-                android:textColor="@color/white"
-                android:background="@color/qingse"
-                android:textSize="16sp" />
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/renshu_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:padding="8dp"
-                android:text="3"
                 android:layout_margin="10dp"
-                android:textColor="@color/white"
                 android:background="@color/qingse"
+                android:padding="8dp"
+                android:text="0"
+                android:textColor="@color/white"
                 android:textSize="16sp" />
+
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/renshu_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:padding="8dp"
-                android:text="1"
-                android:textColor="@color/white"
                 android:background="@color/qingse"
+                android:padding="8dp"
+                android:text="0"
+                android:textColor="@color/white"
                 android:textSize="16sp" />
+
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/renshu_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:padding="8dp"
                 android:layout_margin="10dp"
-                android:text="5"
-                android:textColor="@color/white"
                 android:background="@color/qingse"
+                android:padding="8dp"
+                android:text="0"
+                android:textColor="@color/white"
                 android:textSize="16sp" />
+
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/renshu_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:padding="8dp"
-                android:text="1"
-                android:textColor="@color/white"
                 android:background="@color/qingse"
+                android:padding="8dp"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/renshu_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:background="@color/qingse"
+                android:padding="8dp"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/renshu_6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/qingse"
+                android:padding="8dp"
+                android:text="0"
+                android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>
 
@@ -118,6 +123,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="42dp"
         android:text="天气"
+        android:textColor="#3469af"
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

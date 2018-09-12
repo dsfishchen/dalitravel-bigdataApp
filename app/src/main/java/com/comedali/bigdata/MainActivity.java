@@ -26,12 +26,14 @@ import com.comedali.bigdata.fragment.ShouyeFragment;
 import com.comedali.bigdata.fragment.XiaofeiFragment;
 import com.comedali.bigdata.fragment.XingweiFragment;
 import com.comedali.bigdata.fragment.YoukeFragment;
+import com.comedali.bigdata.utils.ViewPagerSlide;
+import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private ViewPager viewPager;
+    private ViewPagerSlide viewPager;
     private BottomBarLayout mBottomBarLayout;
     private List<Fragment> mFragmentList = new ArrayList<>();
     private RotateAnimation mRotateAnimation;
@@ -41,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //QMUIStatusBarHelper.translucent(this);// 沉浸式状态栏
-        //QMUIStatusBarHelper.setStatusBarLightMode(this);//状态栏字体颜色--黑色
+        QMUIStatusBarHelper.translucent(this);// 沉浸式状态栏
+        QMUIStatusBarHelper.setStatusBarLightMode(this);//状态栏字体颜色--黑色
         initView();
         initData();
         initListener();
@@ -66,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
     private void initListener() {
         //设置viewPager适配器
         viewPager.setAdapter(new MyAdapter(getSupportFragmentManager()));
-        //mBottomBarLayout.setSmoothScroll(false);//左右滑动开启
+        viewPager.setSlide(false);//左右滑动是否开启
+        //mBottomBarLayout.setSmoothScroll(true);//左右滑动开启
         mBottomBarLayout.setViewPager(viewPager);
        /* mBottomBarLayout.setOnItemSelectedListener(new BottomBarLayout.OnItemSelectedListener() {
             @Override
@@ -114,10 +117,10 @@ public class MainActivity extends AppCompatActivity {
         });*/
 
         //mBottomBarLayout.setUnread(0,20);//设置第一个页签的未读数为20
-        //mBottomBarLayout.setUnread(1,4);//设置第二个页签的未读数
+        //mBottomBarLayout.setUnread(1,l4);//设置第二个页签的未读数
         //mBottomBarLayout.showNotify(2);//设置第三个页签显示提示的小红点
         //mBottomBarLayout.setMsg(3,"NEW");//设置第四个页签显示NEW提示文字
-        //mBottomBarLayout.setMsg(4,"NEW");
+        //mBottomBarLayout.setMsg(l4,"NEW");
     }
 
     /**停止首页页签的旋转动画*/
@@ -153,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                          && event.getAction() == KeyEvent.ACTION_DOWN) {
                          if ((System.currentTimeMillis() - exitTime) > 2000) {
                                  //弹出提示，可以有多种方式
-                                 Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                                 Toast.makeText(getApplicationContext(), "再按一次退出大数据应用", Toast.LENGTH_SHORT).show();
                                  exitTime = System.currentTimeMillis();
                              } else {
                                  finish();

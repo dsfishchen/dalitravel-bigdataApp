@@ -1,6 +1,7 @@
 package com.comedali.bigdata.fragment;
 
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +21,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.adapter.YoukelaiyuanAdapter;
 import com.comedali.bigdata.entity.YoukelaiyuanEntity;
+import com.comedali.bigdata.utils.ZTLanUtils;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -93,21 +95,21 @@ public class YoukeFragment extends Fragment {
                     youke_recyclerView.setVisibility(View.GONE);
                     youke_linearlayout.setVisibility(View.GONE);
                     youke2_linearLayout.setVisibility(View.GONE);
-                    Log.d("mm", name);
+                    mPicChart.animateY(1400);//设置Y轴动画
                 }
                 if (name=="性别比例"){
                     mPicChart.setVisibility(View.GONE);
                     youke_recyclerView.setVisibility(View.GONE);
                     youke_linearlayout.setVisibility(View.GONE);
                     youke2_linearLayout.setVisibility(View.VISIBLE);
-                    Log.d("mm", name);
+
                 }
                 if (name=="游客来源"){
                     mPicChart.setVisibility(View.GONE);
                     youke_recyclerView.setVisibility(View.VISIBLE);
                     youke_linearlayout.setVisibility(View.VISIBLE);
                     youke2_linearLayout.setVisibility(View.GONE);
-                    Log.d("mm", name);
+
                 }
             }
 

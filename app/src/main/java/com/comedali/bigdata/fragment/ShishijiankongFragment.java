@@ -11,12 +11,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -103,6 +105,7 @@ public class ShishijiankongFragment extends Fragment {
                 Toast.makeText(getActivity(),"你点击了"+position,Toast.LENGTH_SHORT).show();
             }
         });
+
         return view;
     }
     private void initData() {

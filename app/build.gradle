@@ -39,15 +39,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation files('libs/BaiduLBS_Android.jar')//百度地图api
     implementation files('libs/tencent_map_sdk_4.1.2.0.6e885d5.jar')//腾讯地图api
     implementation 'com.qmuiteam:qmui:1.1.3' //qmui框架
     implementation 'com.github.chaychan:BottomBarLayout:1.1.2' //底部导航栏
     implementation 'com.google.code.gson:gson:2.8.5'//谷歌json
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'/*BaseRecyclerViewAdapterHelper框架*/
     implementation 'com.squareup.okhttp3:okhttp:3.11.0' //okhttp
-    implementation 'com.github.bumptech.glide:glide:4.7.1'//glide
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'//图表
     implementation 'com.wuhenzhizao:titlebar:1.1.1'//透明标题栏
     implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar' //头部Frament...

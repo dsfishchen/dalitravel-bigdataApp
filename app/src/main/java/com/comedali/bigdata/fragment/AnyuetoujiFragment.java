@@ -19,6 +19,7 @@ import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.TimePickerView;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.utils.MyMarkView;
+import com.comedali.bigdata.utils.YueMarkView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
@@ -228,7 +229,7 @@ public class AnyuetoujiFragment extends Fragment {
         // enable scaling and dragging
         mChart.setDragEnabled(true);
         mChart.setScaleEnabled(true);
-        mChart.animateX(2400); //垂直轴动画 从下到上
+        mChart.animateY(2000); //垂直轴动画 从下到上
         // if disabled, scaling can be done on x- and y-axis separately
         mChart.setPinchZoom(true);
         mChart.setHighlightPerDragEnabled(true);
@@ -240,7 +241,7 @@ public class AnyuetoujiFragment extends Fragment {
         // create a custom MarkerView (extend MarkerView) and specify the layout
         // to use for it
         //自定义markView,点击显示更多信息
-        MyMarkView markerView = new MyMarkView(getActivity(),R.layout.custom_marker_view);
+        YueMarkView markerView = new YueMarkView(getActivity(),R.layout.custom_marker_view);
         markerView.setChartView(mChart);
         mChart.setMarker(markerView);
 

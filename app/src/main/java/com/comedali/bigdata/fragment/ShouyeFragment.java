@@ -4,6 +4,7 @@ package com.comedali.bigdata.fragment;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -74,6 +75,12 @@ public class ShouyeFragment extends Fragment {
     private QMUIListPopup mListPopup1;
     private String one;
     private String two;
+    private TextView renshu1;
+    private TextView renshu2;
+    private TextView renshu3;
+    private TextView renshu4;
+    private TextView renshu5;
+    private TextView renshu6;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -101,7 +108,13 @@ public class ShouyeFragment extends Fragment {
             }
         });
         tencentMap = mMapView.getMap();
-        UiSettings mapUiSettings = tencentMap.getUiSettings();
+
+        renshu1=view.findViewById(R.id.renshu_1);
+        renshu2=view.findViewById(R.id.renshu_2);
+        renshu3=view.findViewById(R.id.renshu_3);
+        renshu4=view.findViewById(R.id.renshu_4);
+        renshu5=view.findViewById(R.id.renshu_5);
+        renshu6=view.findViewById(R.id.renshu_6);
 
         QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
         QMUIStatusBarHelper.setStatusBarLightMode(getActivity());//状态栏字体颜色--黑色
@@ -117,7 +130,159 @@ public class ShouyeFragment extends Fragment {
         initHeatMapOverlay();
         initdata();
         initmm();
+        initrenshu();
         return view;
+    }
+
+
+    /**
+     * 有网时候的缓存
+     */
+    final Interceptor NetCacheInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            Response response = chain.proceed(request);
+            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            return response.newBuilder()
+                    .header("Cache-Control", "public, max-age="+onlineCacheTime)
+                    .removeHeader("Pragma")
+                    .build();
+        }
+    };
+    /**
+     * 没有网时候的缓存
+     */
+    final Interceptor OfflineCacheInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            if (!NetworkUtil.checkNet(getActivity())) {
+                int offlineCacheTime = 60*60*24*7;//离线的时候的缓存的过期时间
+                request = request.newBuilder()
+                        .header("Cache-Control", "public, only-if-cached, max-stale=" + offlineCacheTime)
+                        .build();
+            }
+            return chain.proceed(request);
+        }
+    };
+    private void initrenshu() {
+        //setup cache
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/flowmeter/num?city=all";
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        //新建一个线程，用于得到服务器响应的参数
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("数据请求", "失败");
+                        client.dispatcher().cancelAll();
+                        client.connectionPool().evictAll();
+
+
+                    }
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+
+                        try {
+                            String str = response.body().string();
+                            Log.d("数据请求", "成功"+str);
+                            JSONObject jsonData = new JSONObject(str);
+                            String resultStr = jsonData.getString("success");
+                            if (resultStr=="true"){
+                                final String result = jsonData.getString("result");
+                                Log.d("result", result);
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String renshu=result;
+                                        int m=Integer.parseInt(renshu);
+
+                                        if (renshu.length()==6){
+                                            renshu1.setText(renshu.charAt(0)+"");
+                                            renshu2.setText(renshu.charAt(1)+"");
+                                            renshu3.setText(renshu.charAt(2)+"");
+                                            renshu4.setText(renshu.charAt(3)+"");
+                                            renshu5.setText(renshu.charAt(4)+"");
+                                            renshu6.setText(renshu.charAt(5)+"");
+                                        }
+                                        if (renshu.length()==5){
+                                            renshu1.setText("0");
+                                            renshu2.setText(renshu.charAt(0)+"");
+                                            renshu3.setText(renshu.charAt(1)+"");
+                                            renshu4.setText(renshu.charAt(2)+"");
+                                            renshu5.setText(renshu.charAt(3)+"");
+                                            renshu6.setText(renshu.charAt(4)+"");
+                                        }
+                                        if (renshu.length()==4){
+                                            renshu1.setText("0");
+                                            renshu2.setText("0");
+                                            renshu3.setText(renshu.charAt(0)+"");
+                                            renshu4.setText(renshu.charAt(1)+"");
+                                            renshu5.setText(renshu.charAt(2)+"");
+                                            renshu6.setText(renshu.charAt(3)+"");
+                                        }
+                                        if (renshu.length()==3){
+                                            renshu1.setText("0");
+                                            renshu2.setText("0");
+                                            renshu3.setText("0");
+                                            renshu4.setText(renshu.charAt(0)+"");
+                                            renshu5.setText(renshu.charAt(1)+"");
+                                            renshu6.setText(renshu.charAt(2)+"");
+                                        }
+                                        if (renshu.length()==2){
+                                            renshu1.setText("0");
+                                            renshu2.setText("0");
+                                            renshu3.setText("0");
+                                            renshu4.setText("0");
+                                            renshu5.setText(renshu.charAt(0)+"");
+                                            renshu6.setText(renshu.charAt(1)+"");
+                                        }
+                                        if (renshu.length()==1){
+                                            renshu1.setText("0");
+                                            renshu2.setText("0");
+                                            renshu3.setText("0");
+                                            renshu4.setText("0");
+                                            renshu5.setText("0");
+                                            renshu6.setText(renshu.charAt(0)+"");
+                                        }
+                                        if (renshu.length()==0){
+                                            renshu1.setText("0");
+                                            renshu2.setText("0");
+                                            renshu3.setText("0");
+                                            renshu4.setText("0");
+                                            renshu5.setText("0");
+                                            renshu6.setText("0");
+                                        }
+                                    }
+                                });
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 
     private void initdata() {
@@ -139,12 +304,17 @@ public class ShouyeFragment extends Fragment {
 
             String[] listItems = new String[]{
                     "大理市",
+                    "洱源县",
                     "宾川县",
                     "永平县",
                     "南涧县",
                     "巍山县",
                     "鹤庆县",
-                    "洱源县"
+                    "云龙县",
+                    "剑川县",
+                    "祥云县",
+                    "漾濞县",
+                    "弥渡县"
             };
             List<String> data = new ArrayList<>();
 
@@ -173,7 +343,7 @@ public class ShouyeFragment extends Fragment {
                         CameraUpdate cameraSigma =
                                 CameraUpdateFactory.newCameraPosition(new CameraPosition(
                                         new LatLng(26.110052,99.949322), //新的中心点坐标
-                                        11,  //新的缩放级别
+                                        10.8f,  //新的缩放级别
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
@@ -184,7 +354,18 @@ public class ShouyeFragment extends Fragment {
                         CameraUpdate cameraSigma =
                                 CameraUpdateFactory.newCameraPosition(new CameraPosition(
                                         new LatLng(25.950019,100.382767), //新的中心点坐标
-                                        11,  //新的缩放级别
+                                        10.8f,  //新的缩放级别
+                                        0f, //俯仰角 0~45° (垂直地图时为0)
+                                        0f)); //偏航角 0~360° (正北方为0)
+                        //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        tencentMap.moveCamera(cameraSigma);//移动地图
+                    }
+                    if (one=="永平县"){
+                        //设定中心点坐标
+                        CameraUpdate cameraSigma =
+                                CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                                        new LatLng(25.460867,99.528322), //新的中心点坐标
+                                        10.8f,  //新的缩放级别
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
@@ -244,37 +425,6 @@ public class ShouyeFragment extends Fragment {
         }
     }
     private void initmm() {
-        /**
-         * 有网时候的缓存
-         */
-        final Interceptor NetCacheInterceptor = new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request request = chain.request();
-                Response response = chain.proceed(request);
-                int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
-                return response.newBuilder()
-                        .header("Cache-Control", "public, max-age="+onlineCacheTime)
-                        .removeHeader("Pragma")
-                        .build();
-            }
-        };
-        /**
-         * 没有网时候的缓存
-         */
-        final Interceptor OfflineCacheInterceptor = new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request request = chain.request();
-                if (!NetworkUtil.checkNet(getActivity())) {
-                    int offlineCacheTime = 60*60*24*7;//离线的时候的缓存的过期时间
-                    request = request.newBuilder()
-                            .header("Cache-Control", "public, only-if-cached, max-stale=" + offlineCacheTime)
-                            .build();
-                }
-                return chain.proceed(request);
-            }
-        };
         //setup cache
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
@@ -321,7 +471,8 @@ public class ShouyeFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     shouye_tianqi.setText(text+" "+temperature+"°");
-                                    Log.d("text", text);
+
+
                                 }
                             });
                         } catch (JSONException e) {
@@ -344,7 +495,6 @@ public class ShouyeFragment extends Fragment {
         nodes.add(new HeatDataNode(new LatLng(25.866020,100.156174), 176));//海舌
         nodes.add(new HeatDataNode(new LatLng(25.902014,100.190624), 486));//双廊
         nodes.add(new HeatDataNode(new LatLng(25.807522,100.222805), 166));//挖色
-
         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
             @Override
             public int colorForValue(double arg0) {
@@ -356,7 +506,7 @@ public class ShouyeFragment extends Fragment {
                 arg0 = Math.sqrt(arg0);
                 float a = 20000;
                 red = 255;
-                green = 119;
+                green = 19;
                 blue = 3;
                 if (arg0 > 0.7) {
                     green = 78;
@@ -379,7 +529,7 @@ public class ShouyeFragment extends Fragment {
         };
         HeatOverlayOptions heatOverlayOptions = new HeatOverlayOptions();
         heatOverlayOptions.nodes(nodes)
-                .radius(23)// 半径，单位是像素，这个数值越大运算量越大，默认值为18，建议设置在18-30之间)
+                .radius(30)// 半径，单位是像素，这个数值越大运算量越大，默认值为18，建议设置在18-30之间)
                 //.colorMapper(new ColorMapper())
                 .colorMapper(mm)
                 .onHeatMapReadyListener(new HeatOverlayOptions.OnHeatMapReadyListener() {

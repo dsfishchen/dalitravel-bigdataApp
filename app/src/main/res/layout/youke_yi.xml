@@ -22,7 +22,7 @@
         android:background="@color/qingse"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        app:tabTextColor="#cec9c9"
+        app:tabTextColor="#AAffffff"
         app:tabSelectedTextColor="@color/white"
         app:tabIndicatorColor="@color/white"
         app:tabIndicatorHeight="4dp"
@@ -33,11 +33,11 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/youke_SlidingTabLayout">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -47,36 +47,53 @@
                 android:id="@+id/age_chart"
                 android:layout_width="match_parent"
                 android:layout_height="300dp" />
+
             <LinearLayout
                 android:id="@+id/youke_linearlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:text="排名"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="省份"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="百分比"/>
-            </LinearLayout>
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/youke_recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:orientation="vertical">
 
-            </android.support.v7.widget.RecyclerView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="排名" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="省份" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="百分比" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/qingse" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/youke_recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
 
 
             <LinearLayout
@@ -84,94 +101,102 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:textSize="16sp"
                     android:padding="10dp"
-                    android:text="进入大理男女比例"/>
+                    android:text="进入大理男女比例"
+                    android:textSize="16sp" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:src="@mipmap/nan" />
 
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:src="@mipmap/nv" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:text="41.25%" />
 
                     <TextView
                         android:layout_width="0dp"
-                        android:gravity="center"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:text="58.75%" />
                 </LinearLayout>
 
 
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:textSize="16sp"
                     android:layout_marginTop="30dp"
                     android:padding="10dp"
-                    android:text="搜索大理男女比例"/>
+                    android:text="搜索大理男女比例"
+                    android:textSize="16sp" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:src="@mipmap/nan" />
 
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:src="@mipmap/nv" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:text="41.25%" />
 
                     <TextView
                         android:layout_width="0dp"
-                        android:gravity="center"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:text="58.75%" />
                 </LinearLayout>
 

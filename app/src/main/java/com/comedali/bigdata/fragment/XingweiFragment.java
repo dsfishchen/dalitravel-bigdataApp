@@ -1,5 +1,6 @@
 package com.comedali.bigdata.fragment;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -62,6 +64,8 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.popup.QMUIListPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdate;
@@ -91,25 +95,31 @@ public class XingweiFragment extends Fragment {
     private TextureMapView mMapView;
     private TencentMap tencentMap;
     private BarChart mBarChart;
-    private LinearLayout pianhao_linearLayout;
-    private RadarChart mChart;//雷达图
+    private ConstraintLayout pianhao_ConstraintLayout;
+    private RadarChart mRadarChart;//雷达图
     private RecyclerView jiudian_recycleView;
     private YoukelaiyuanAdapter adapter;
-    private List<YoukelaiyuanEntity> youkedatas;
-    private List<LatLng> latLngs = new ArrayList<LatLng>();
+    private List<YoukelaiyuanEntity> youkedatas= new ArrayList<>();
+    private List<LatLng> latLngs;
     private Polyline polyline;
+    private Button pianhao_choose;
+    private TextView top5_title;
+    private TextView top_name;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.xingwei_er,container,false);
         QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
         QMUIStatusBarHelper.setStatusBarLightMode(getActivity());//状态栏字体颜色--黑色
+        top_name=view.findViewById(R.id.top_name);
+        top5_title=view.findViewById(R.id.top5_title);
+        pianhao_choose=view.findViewById(R.id.pianhao_choose);
         jiudian_recycleView=view.findViewById(R.id.jiudian_recycleView);
-        initData();
-        //Log.d("youkedatas", String.valueOf(youkedatas));
+        initJiudianData();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         jiudian_recycleView.setLayoutManager(layoutManager);
+
         adapter = new YoukelaiyuanAdapter(R.layout.youkelaiyuan_er_item, youkedatas);
         adapter.openLoadAnimation();//动画 默认提供5种方法（渐显、缩放、从下到上，从左到右、从右到左）
         adapter.isFirstOnly(false);//重复执行可设置
@@ -124,14 +134,106 @@ public class XingweiFragment extends Fragment {
             }
         });
 
+        //偏好选择
+        pianhao_choose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String[] items = new String[]{"客栈", "美食", "景区"};
+                int checkedIndex = 0;
+                String mm=pianhao_choose.getText().toString();
+                if (mm=="客栈"){
+                    checkedIndex = 0;
+                }
+                if (mm=="美食"){
+                    checkedIndex = 1;
+                }
+                if (mm=="景区"){
+                    checkedIndex = 2;
+                }
+                final QMUIDialog.CheckableDialogBuilder builder= new QMUIDialog.CheckableDialogBuilder(getActivity())
+                        .setTitle("请选择偏好分析")
+                        .setCheckedIndex(checkedIndex)
+                        .addItems(items, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //Toast.makeText(getActivity(), "你选择了 " + items[which], Toast.LENGTH_SHORT).show();
+                                //dialog.dismiss();
 
+                            }
+                        });
+                builder.addAction("取消", new QMUIDialogAction.ActionListener() {
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.addAction("提交", new QMUIDialogAction.ActionListener() {
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        //Toast.makeText(getActivity(), builder.getCheckedIndex()+"", Toast.LENGTH_SHORT).show();
+                        int index1=builder.getCheckedIndex();
+                        pianhao_choose.setText(items[index1]);
+
+                        if (index1==0){
+                            youkedatas.clear();
+                            //youkedatas=new ArrayList<>();
+                            YoukelaiyuanEntity model;
+                            for (int i = 0; i < 5; i++) {
+                                model=new YoukelaiyuanEntity();
+                                model.setId(i+1+"");
+                                model.setProvince("客栈"+i);
+                                model.setBaifenbi("l4.l4");
+                                youkedatas.add(model);
+                            }
+                            top5_title.setText(items[index1]+"热度前五名");
+                            top_name.setText(items[index1]+"");
+                            adapter.notifyDataSetChanged();
+                        }
+                        if (index1==1){
+                            youkedatas.clear();
+                            //youkedatas=new ArrayList<>();
+                            YoukelaiyuanEntity model;
+                            for (int i = 0; i < 5; i++) {
+                                model=new YoukelaiyuanEntity();
+                                model.setId(i+1+"");
+                                model.setProvince("美食"+i);
+                                model.setBaifenbi("l4.l4");
+                                youkedatas.add(model);
+                            }
+                            top5_title.setText(items[index1]+"热度前五名");
+                            top_name.setText(items[index1]+"");
+                            adapter.notifyDataSetChanged();
+                        }
+                        if (index1==2){
+                            youkedatas.clear();
+                            //youkedatas=new ArrayList<>();
+                            YoukelaiyuanEntity model;
+                            for (int i = 0; i < 5; i++) {
+                                model=new YoukelaiyuanEntity();
+                                model.setId(i+1+"");
+                                model.setProvince("景点"+i);
+                                model.setBaifenbi("l4.l4");
+                                youkedatas.add(model);
+                            }
+                            top5_title.setText(items[index1]+"热度前五名");
+                            top_name.setText(items[index1]+"");
+                            adapter.notifyDataSetChanged();
+                        }
+
+
+                        dialog.dismiss();
+                    }
+                });
+                builder.create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show();
+            }
+        });
 
         //雷达图
-        mChart = view.findViewById(R.id.xingque_RadarChart);
+        mRadarChart = view.findViewById(R.id.xingque_RadarChart);
         initviewmRadarChart();
 
-        pianhao_linearLayout=view.findViewById(R.id.pianhao_linearLayout);
-        pianhao_linearLayout.setVisibility(View.GONE);
+        pianhao_ConstraintLayout=view.findViewById(R.id.pianhao_ConstraintLayout);
+        pianhao_ConstraintLayout.setVisibility(View.GONE);
         mBarChart = view.findViewById(R.id.tingliuTime_chart);
         mBarChart.setVisibility(View.GONE);
         initviewmBarChart();
@@ -147,18 +249,17 @@ public class XingweiFragment extends Fragment {
         //tencentMap.animateCamera(cameraSigma);//改变地图状态
         tencentMap.moveCamera(cameraSigma);//移动地图
 
-        //latLngs = new ArrayList<LatLng>();
-        latLngs.add(new LatLng(25.646788,100.322685));
-        latLngs.add(new LatLng(25.583866,100.230932));
-        latLngs.add(new LatLng(25.609217,100.221362));
-        latLngs.add(new LatLng(25.637812,100.206041));
-        latLngs.add(new LatLng(25.704727,100.168877));
-        latLngs.add(new LatLng(25.758465,100.139694));
-        latLngs.add(new LatLng(25.845784,100.133343));
-        polyline=tencentMap.addPolyline(new PolylineOptions().
-                addAll(latLngs).color(0xff00ff00). width(5f));
 
-
+            latLngs = new ArrayList<LatLng>();
+            latLngs.add(new LatLng(25.646788,100.322685));
+            latLngs.add(new LatLng(25.583866,100.230932));
+            latLngs.add(new LatLng(25.609217,100.221362));
+            latLngs.add(new LatLng(25.637812,100.206041));
+            latLngs.add(new LatLng(25.704727,100.168877));
+            latLngs.add(new LatLng(25.758465,100.139694));
+            latLngs.add(new LatLng(25.845784,100.133343));
+            polyline=tencentMap.addPolyline(new PolylineOptions().
+                    addAll(latLngs).color(0xff00ff00). width(5f));
 
 
         choose_button=view.findViewById(R.id.choose_button);
@@ -189,25 +290,28 @@ public class XingweiFragment extends Fragment {
                     mPicChart.setVisibility(View.GONE);
                     xingwei_ConstraintLayout.setVisibility(View.VISIBLE);
                     mBarChart.setVisibility(View.GONE);
-                    pianhao_linearLayout.setVisibility(View.GONE);
+                    pianhao_ConstraintLayout.setVisibility(View.GONE);
                 }
                 if (name=="出行方式"){
                     mPicChart.setVisibility(View.VISIBLE);
                     xingwei_ConstraintLayout.setVisibility(View.GONE);
                     mBarChart.setVisibility(View.GONE);
-                    pianhao_linearLayout.setVisibility(View.GONE);
+                    pianhao_ConstraintLayout.setVisibility(View.GONE);
+                    mPicChart.animateY(1400);//设置Y轴动画
                 }
                 if (name=="停留时间"){
                     mPicChart.setVisibility(View.GONE);
                     xingwei_ConstraintLayout.setVisibility(View.GONE);
                     mBarChart.setVisibility(View.VISIBLE);
-                    pianhao_linearLayout.setVisibility(View.GONE);
+                    pianhao_ConstraintLayout.setVisibility(View.GONE);
+                    mBarChart.animateY(1400);
                 }
                 if (name=="偏好分析"){
                     mPicChart.setVisibility(View.GONE);
                     xingwei_ConstraintLayout.setVisibility(View.GONE);
                     mBarChart.setVisibility(View.GONE);
-                    pianhao_linearLayout.setVisibility(View.VISIBLE);
+                    pianhao_ConstraintLayout.setVisibility(View.VISIBLE);
+                    mRadarChart.animateXY(1400,1400);//雷达图动画
                 }
             }
 
@@ -224,38 +328,40 @@ public class XingweiFragment extends Fragment {
         });
         return view;
     }
-    private void initData() {
-        youkedatas=new ArrayList<>();
+    private void initJiudianData() {
+        //youkedatas=new ArrayList<>();
         YoukelaiyuanEntity model;
         for (int i = 0; i < 5; i++) {
             model=new YoukelaiyuanEntity();
             model.setId(i+1+"");
-            model.setProvince("酒店"+i);
-            model.setBaifenbi("4.4");
+            model.setProvince("客栈"+i);
+            model.setBaifenbi("l4.l4");
             youkedatas.add(model);
         }
 
     }
 
+
     private void initviewmRadarChart() {
         setDatamRadarChart();
-        mChart.setBackgroundColor(Color.rgb(60, 65, 82));
+        mRadarChart.setBackgroundColor(Color.rgb(60, 65, 82));
 
-        mChart.getDescription().setEnabled(false);
-        mChart.setBackgroundColor(Color.WHITE);
-        mChart.setWebLineWidth(1f);
-        mChart.setWebColor(Color.LTGRAY);
-        mChart.setWebLineWidthInner(1f);
-        mChart.setWebColorInner(Color.LTGRAY);
-        mChart.setWebAlpha(100);
-        mChart.setNoDataText("获取数据失败");
+        mRadarChart.getDescription().setEnabled(false);
+        mRadarChart.setBackgroundColor(Color.WHITE);
+        mRadarChart.setWebLineWidth(1f);
+        mRadarChart.setWebColor(Color.LTGRAY);
+        mRadarChart.setWebLineWidthInner(1f);
+        mRadarChart.setWebColorInner(Color.LTGRAY);
+        mRadarChart.setWebAlpha(100);
+        mRadarChart.setNoDataText("获取数据失败");
+        //mRadarChart.animateXY(2400,2400);
         //mChart.animateXY(1400, 1400, Easing.EaseInOutQuad);
 
         MarkerView mv = new RadarMarkerView(getActivity(), R.layout.radar_markerview);
-        mv.setChartView(mChart); // For bounds control
-        mChart.setMarker(mv); // Set the marker to the chart
+        mv.setChartView(mRadarChart); // For bounds control
+        mRadarChart.setMarker(mv); // Set the marker to the chart
 
-        XAxis xAxis = mChart.getXAxis();
+        XAxis xAxis = mRadarChart.getXAxis();
         xAxis.setTextSize(9f);
         xAxis.setYOffset(0f);
         xAxis.setXOffset(0f);
@@ -270,14 +376,14 @@ public class XingweiFragment extends Fragment {
         });
         xAxis.setTextColor(Color.GRAY);
 
-        YAxis yAxis = mChart.getYAxis();
+        YAxis yAxis = mRadarChart.getYAxis();
         yAxis.setLabelCount(5, false);
         yAxis.setTextSize(9f);
         yAxis.setAxisMinimum(0f);
         yAxis.setAxisMaximum(80f);
         yAxis.setDrawLabels(false);
 
-        Legend l = mChart.getLegend();
+        Legend l = mRadarChart.getLegend();
         l.setEnabled(false);//是否显示
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
@@ -330,8 +436,8 @@ public class XingweiFragment extends Fragment {
         data.setDrawValues(false);//显示数值
         data.setValueTextColor(Color.GRAY);
 
-        mChart.setData(data);
-        mChart.invalidate();
+        mRadarChart.setData(data);
+        mRadarChart.invalidate();
     }
 
     private void initoneListPopupIfNeed() {
@@ -357,7 +463,7 @@ public class XingweiFragment extends Fragment {
                     if (one=="机场"){
                         latLngs.clear();
                         polyline.remove();
-                        //latLngs = new ArrayList<LatLng>();
+                        latLngs = new ArrayList<LatLng>();
                         latLngs.add(new LatLng(25.646788,100.322685));
                         latLngs.add(new LatLng(25.583866,100.230932));
                         latLngs.add(new LatLng(25.609217,100.221362));
@@ -371,7 +477,7 @@ public class XingweiFragment extends Fragment {
                     if (one=="火车站"){
                         latLngs.clear();
                         polyline.remove();
-                        //latLngs = new ArrayList<LatLng>();
+                        latLngs = new ArrayList<LatLng>();
                         latLngs.add(new LatLng(25.589440,100.251274));
                         latLngs.add(new LatLng(25.583866,100.230932));
                         latLngs.add(new LatLng(25.609217,100.221362));
@@ -385,7 +491,7 @@ public class XingweiFragment extends Fragment {
                     if (one=="高速路口"){
                         latLngs.clear();
                         polyline.remove();
-                        //latLngs = new ArrayList<LatLng>();
+                        latLngs = new ArrayList<LatLng>();
                         latLngs.add(new LatLng(25.591762,100.253248));
                         latLngs.add(new LatLng(25.583866,100.230932));
                         latLngs.add(new LatLng(25.609217,100.221362));
@@ -429,7 +535,7 @@ public class XingweiFragment extends Fragment {
         //picChart.setTransparentCircleColor(R.color.qingse);//设置环形图与中间空心圆之间的环形的颜色
         mPicChart.setHighlightPerTapEnabled(true);//设置点击Item高亮是否可用
         //mPicChart.setExtraOffsets(5, 0, 5, 5);
-        mPicChart.animateY(1400);//设置Y轴动画
+        //mPicChart.animateY(1400);//设置Y轴动画
         //picChart.getLegend().setPosition(Legend.LegendPosition.RIGHT_OF_CHART_CENTER);//颜色数值
         //取消颜色数值
         Legend l = mPicChart.getLegend();
@@ -505,7 +611,7 @@ public class XingweiFragment extends Fragment {
         // if more than 60 entries are displayed in the chart, no values will be
         // drawn
         mBarChart.setMaxVisibleValueCount(60);
-        mBarChart.animateY(1400);
+       //mBarChart.animateY(1400);
         // scaling can now only be done on x- and y-axis separately
         mBarChart.setPinchZoom(false);
         //mBarChart.setDrawGridBackground(false);//设置不显示网格
@@ -574,8 +680,8 @@ public class XingweiFragment extends Fragment {
         mBarChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                Log.d("mm", String.valueOf(e.getX()));
-                Log.d("ww", String.valueOf(e.getY()));
+                //Log.d("mm", String.valueOf(e.getX()));
+                //Log.d("ww", String.valueOf(e.getY()));
             }
 
             @Override
