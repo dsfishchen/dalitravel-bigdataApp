@@ -117,7 +117,7 @@ public class ShouyeFragment extends Fragment {
         renshu6=view.findViewById(R.id.renshu_6);
 
         QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
-        QMUIStatusBarHelper.setStatusBarLightMode(getActivity());//状态栏字体颜色--黑色
+        QMUIStatusBarHelper.setStatusBarDarkMode(getActivity());//状态栏字体颜色--黑色
         //设定中心点坐标
         CameraUpdate cameraSigma =
                 CameraUpdateFactory.newCameraPosition(new CameraPosition(

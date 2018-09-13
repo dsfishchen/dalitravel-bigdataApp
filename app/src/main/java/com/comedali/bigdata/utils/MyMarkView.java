@@ -57,7 +57,7 @@ public class MyMarkView extends MarkerView {
         }else if(m==11){
             name="弥渡县";
         }
-        tv_content.setText(name+"  人数:"+renshu);
+        tv_content.setText(name+"  人数:"+renshu+"人");
         super.refreshContent(e, highlight);
     }
 

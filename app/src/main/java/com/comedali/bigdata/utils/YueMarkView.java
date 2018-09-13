@@ -95,7 +95,7 @@ public class YueMarkView extends MarkerView {
         }else if (m == 31) {
             name = "31日";
         }
-        tv_content.setText(name + "  人数:" + renshu);
+        tv_content.setText(name + "  人数:" + renshu+"人");
         super.refreshContent(e, highlight);
     }
 

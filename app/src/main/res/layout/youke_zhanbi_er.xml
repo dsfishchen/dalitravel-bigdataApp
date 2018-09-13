@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/qingse">
     <com.wuhenzhizao.titlebar.widget.CommonTitleBar
         android:id="@+id/youke_zhanbi_back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:statusBarMode="light"
         app:centerText="客流量占比"
+        app:statusBarMode="light"
         app:centerTextColor="@color/white"
         app:centerTextSize="18sp"
         app:centerType="textView"
@@ -44,6 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:padding="10dp"
+                android:textColor="@color/white"
                 android:text="十二县市游客量占比" />
 
             <com.github.mikephil.charting.charts.PieChart
@@ -61,6 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:padding="10dp"
+                android:textColor="@color/white"
                 android:text="十二县市游客数量" />
 
             <com.github.mikephil.charting.charts.BarChart

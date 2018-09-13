@@ -35,84 +35,98 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:textColor="#3469af"
+            android:textColor="@color/qingse"
             android:layout_gravity="center_horizontal"
             android:text="实时游客人数"
             android:textSize="17sp" />
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/renshu_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="10dp"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/qingse"
-                android:padding="8dp"
+                android:gravity="center"
                 android:text="0"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="28sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/renshu_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/qingse"
-                android:padding="8dp"
+                android:gravity="center"
                 android:text="0"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="28sp"
+                app:layout_constraintStart_toEndOf="@+id/renshu_1"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/renshu_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="10dp"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/qingse"
-                android:padding="8dp"
+                android:gravity="center"
                 android:text="0"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="28sp"
+                app:layout_constraintStart_toEndOf="@+id/renshu_2"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/renshu_4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/qingse"
-                android:padding="8dp"
+                android:gravity="center"
                 android:text="0"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="28sp"
+                app:layout_constraintStart_toEndOf="@+id/renshu_3"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/renshu_5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="10dp"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/qingse"
-                android:padding="8dp"
+                android:gravity="center"
                 android:text="0"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="28sp"
+                app:layout_constraintStart_toEndOf="@+id/renshu_4"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/renshu_6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/qingse"
-                android:padding="8dp"
+                android:gravity="center"
                 android:text="0"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
-        </LinearLayout>
+                android:textSize="28sp"
+                app:layout_constraintStart_toEndOf="@+id/renshu_5"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
 
@@ -137,6 +151,7 @@
         android:background="@drawable/button_yuanxian"
         android:drawableRight="@mipmap/drop_down_unselected_icon"
         android:text="大理市"
+        android:textColor="#3469af"
         app:layout_constraintStart_toEndOf="@+id/shouye_tianqi"
         app:layout_constraintTop_toTopOf="parent" />
 

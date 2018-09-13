@@ -1,6 +1,7 @@
 package com.comedali.bigdata.fragment;
 
 
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -53,7 +54,7 @@ public class YoukeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.youke_yi,container,false);
         QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
-        QMUIStatusBarHelper.setStatusBarLightMode(getActivity());//状态栏字体颜色--黑色
+        QMUIStatusBarHelper.setStatusBarDarkMode(getActivity());//状态栏字体颜色--白色
         mTabLayout=view.findViewById(R.id.youke_SlidingTabLayout);
         youke_recyclerView=view.findViewById(R.id.youke_recyclerView);
         mPicChart = view.findViewById(R.id.age_chart);
@@ -164,6 +165,7 @@ public class YoukeFragment extends Fragment {
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
         l.setFormSize(10);//设置图例的大小
+        l.setTextColor(Color.rgb(255,255,255));
         l.setDrawInside(false);
         //结束
         mPicChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -200,7 +202,7 @@ public class YoukeFragment extends Fragment {
         pieData.setDrawValues(true);
         pieData.setValueFormatter(new PercentFormatter());//转化百分比
         pieData.setValueTextSize(12f);
-
+        pieData.setValueTextColor(Color.DKGRAY);
         //dataSet.setValueLinePart1OffsetPercentage(80.f);
         //dataSet.setValueLinePart1Length(0.1f);//设置连接线的长度
        // dataSet.setValueLinePart2Length(0.6f);

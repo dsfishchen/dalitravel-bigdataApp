@@ -59,6 +59,7 @@ public class AnyuetoujiFragment extends Fragment {
     private String year;
     private String month;
     private String day;
+    private Date now = new Date();
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -77,7 +78,7 @@ public class AnyuetoujiFragment extends Fragment {
             }
         });
 
-        //获取当前时间
+        //获取当前时间和设置时间
         Date date = new Date(System.currentTimeMillis());
         time_choose.setText(getTime(date));
 
@@ -124,10 +125,9 @@ public class AnyuetoujiFragment extends Fragment {
         anri_chaxun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChart.invalidate();
                 String quyu=quyu_choose.getText().toString();
                 String time=time_choose.getText().toString();
-                String newmonth = null;
+                /*String newmonth = null;
                 String newday=null;
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
@@ -140,9 +140,11 @@ public class AnyuetoujiFragment extends Fragment {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                String times=year+"年"+newmonth+"月";
+                String times=year+"年"+newmonth+"月";*/
                 //Log.d("time", quyu+time);
-                initdata2(30,quyu,times);
+                mChart.invalidate();
+                mChart.animateX(1400);
+                initdata2(30,quyu,time);
             }
         });
         initview();
@@ -216,8 +218,10 @@ public class AnyuetoujiFragment extends Fragment {
         }
     }
     private void initview() {
-        int time=30;
-        initdata2(time,"大理古城","2018年9月");
+
+        String quyu_1=quyu_choose.getText().toString();
+        String time_1=time_choose.getText().toString();
+        initdata2(30,quyu_1,time_1);
         mChart.setDrawGridBackground(false);
 
         // no description text
@@ -251,6 +255,7 @@ public class AnyuetoujiFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。
+        xAxis.setTextColor(Color.rgb(255,255,255));
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -268,10 +273,15 @@ public class AnyuetoujiFragment extends Fragment {
         //leftAxis.setInverted(true);//Y轴倒序
         xAxis.setAvoidFirstLastClipping(true);
         leftAxis.setGranularityEnabled(true);
+        leftAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+        leftAxis.setTextColor(Color.rgb(255,255,255));
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
+
+        Legend l = mChart.getLegend();
+        l.setTextColor(Color.rgb(255,255,255));
 
         //设置限制线 12代表某个该轴某个值，也就是要画到该轴某个值上
         LimitLine limitLine = new LimitLine(2000);
@@ -301,16 +311,33 @@ public class AnyuetoujiFragment extends Fragment {
         // sort by x-value
         Collections.sort(entries, new EntryXComparator());
         // create a dataset and give it a type
-        LineDataSet set1 = new LineDataSet(entries, time+quyu+"客流量月统计 单位：人");
+        //时间转换设置
+        String newmonth = null;
+        String newday=null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            Date date = sdf.parse(time);
+            year=getYear(date);
+            month=getMonth(date);
+            newmonth = month.replaceAll("^(0+)", "");
+            day=getDay(date);
+            newday = day.replaceAll("^(0+)", "");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String times=year+"年"+newmonth+"月";
+
+        LineDataSet set1 = new LineDataSet(entries, times+quyu+"客流量月统计 单位：人");
         set1.setLineWidth(1.5f);
         set1.setCircleRadius(4f);
         set1.setValueTextSize(12);
         set1.setDrawCircleHole(false);//设置是否在数据点中间显示一个孔
+        set1.setValueTextColor(Color.rgb(255,255,255));
         set1.setValueFormatter(new IValueFormatter() {
             @Override
             public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
                 int mm=(int)entry.getY();
-                return String.valueOf(mm);
+                return String.valueOf(mm)+"人";
             }
         });
         // create a data object with the datasets

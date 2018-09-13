@@ -110,7 +110,7 @@ public class XingweiFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.xingwei_er,container,false);
         QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
-        QMUIStatusBarHelper.setStatusBarLightMode(getActivity());//状态栏字体颜色--黑色
+        QMUIStatusBarHelper.setStatusBarDarkMode(getActivity());//状态栏字体颜色--白色
         top_name=view.findViewById(R.id.top_name);
         top5_title=view.findViewById(R.id.top5_title);
         pianhao_choose=view.findViewById(R.id.pianhao_choose);
@@ -224,6 +224,7 @@ public class XingweiFragment extends Fragment {
                         dialog.dismiss();
                     }
                 });
+
                 builder.create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show();
             }
         });
@@ -330,13 +331,26 @@ public class XingweiFragment extends Fragment {
     }
     private void initJiudianData() {
         //youkedatas=new ArrayList<>();
-        YoukelaiyuanEntity model;
-        for (int i = 0; i < 5; i++) {
-            model=new YoukelaiyuanEntity();
-            model.setId(i+1+"");
-            model.setProvince("客栈"+i);
-            model.setBaifenbi("l4.l4");
-            youkedatas.add(model);
+
+        if (youkedatas.isEmpty()){
+            youkedatas.clear();
+            YoukelaiyuanEntity model;
+            for (int i = 0; i < 5; i++) {
+                model=new YoukelaiyuanEntity();
+                model.setId(i+1+"");
+                model.setProvince("客栈"+i);
+                model.setBaifenbi("l4.l4");
+                youkedatas.add(model);
+            }
+        }else {
+            YoukelaiyuanEntity model;
+            for (int i = 0; i < 5; i++) {
+                model=new YoukelaiyuanEntity();
+                model.setId(i+1+"");
+                model.setProvince("客栈"+i);
+                model.setBaifenbi("l4.l4");
+                youkedatas.add(model);
+            }
         }
 
     }
@@ -347,7 +361,7 @@ public class XingweiFragment extends Fragment {
         mRadarChart.setBackgroundColor(Color.rgb(60, 65, 82));
 
         mRadarChart.getDescription().setEnabled(false);
-        mRadarChart.setBackgroundColor(Color.WHITE);
+        mRadarChart.setBackgroundColor(Color.rgb(43,189,243));
         mRadarChart.setWebLineWidth(1f);
         mRadarChart.setWebColor(Color.LTGRAY);
         mRadarChart.setWebLineWidthInner(1f);
@@ -374,7 +388,7 @@ public class XingweiFragment extends Fragment {
                 return mActivities[(int) value % mActivities.length];
             }
         });
-        xAxis.setTextColor(Color.GRAY);
+        xAxis.setTextColor(Color.WHITE);
 
         YAxis yAxis = mRadarChart.getYAxis();
         yAxis.setLabelCount(5, false);
@@ -391,7 +405,7 @@ public class XingweiFragment extends Fragment {
         l.setDrawInside(false);
         l.setXEntrySpace(7f);
         l.setYEntrySpace(5f);
-        l.setTextColor(Color.GRAY);
+        l.setTextColor(Color.WHITE);
     }
 
     private void setDatamRadarChart() {
@@ -410,8 +424,8 @@ public class XingweiFragment extends Fragment {
         }
 
         RadarDataSet set1 = new RadarDataSet(entries1, "兴趣前五名");
-        set1.setColor(Color.rgb(121, 162, 175));
-        set1.setFillColor(Color.rgb(121, 162, 175));
+        set1.setColor(Color.rgb(255, 255, 255));
+        set1.setFillColor(Color.rgb(255, 255, 250));
         set1.setDrawFilled(true);
         set1.setFillAlpha(180);
         set1.setLineWidth(2f);
@@ -545,6 +559,7 @@ public class XingweiFragment extends Fragment {
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
         l.setFormSize(10);//设置图例的大小
         l.setDrawInside(false);
+        l.setTextColor(Color.WHITE);
 
         //结束
         mPicChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -582,7 +597,7 @@ public class XingweiFragment extends Fragment {
         pieData.setDrawValues(true);
         pieData.setValueFormatter(new PercentFormatter());//转化百分比
         pieData.setValueTextSize(12f);
-
+        pieData.setValueTextColor(Color.DKGRAY);
         //dataSet.setValueLinePart1OffsetPercentage(80.f);
         //dataSet.setValueLinePart1Length(0.1f);//设置连接线的长度
         // dataSet.setValueLinePart2Length(0.6f);
@@ -631,6 +646,7 @@ public class XingweiFragment extends Fragment {
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawGridLines(false);
         xAxis.setLabelCount(7);
+        xAxis.setTextColor(Color.WHITE);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -655,6 +671,7 @@ public class XingweiFragment extends Fragment {
         leftYAxis.setAxisMinimum(0.0f);
         leftYAxis.setEnabled(true);//设置显示左边Y坐标
         leftYAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftYAxis.setTextColor(Color.WHITE);
         //右边Y轴
         YAxis rightAxis = mBarChart.getAxisRight();
         rightAxis.setEnabled(false);//右侧不显示Y轴
@@ -670,7 +687,7 @@ public class XingweiFragment extends Fragment {
         l.setTextSize(11f);
         l.setXEntrySpace(4f);
         l.setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);
-
+        l.setTextColor(Color.WHITE);
         //自定义markView,点击显示更多信息
         /*MyMarkView markerView = new MyMarkView(getActivity(),R.layout.custom_marker_view);
         markerView.setChartView(mBarChart);
@@ -698,7 +715,9 @@ public class XingweiFragment extends Fragment {
         List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
 
         for (int i = 0; i < 5; i++) {//添加数据源
-            yVals.add(new BarEntry(i,(float) Math.random()*520 + 1));
+            //yVals.add(new BarEntry(i,(float) Math.random()*520 + 1));
+            int yVal = (int) (Math.random()*520 + 1);
+            yVals.add(new BarEntry(i,yVal));
         }
         BarDataSet dataSet = new BarDataSet(yVals, "停留时间条形统计图");//一组柱状图
         //dataSet.setColor(Color.LTGRAY);//设置第yi组数据颜色
@@ -711,6 +730,7 @@ public class XingweiFragment extends Fragment {
                 return mm+"分钟";
             }
         });
+        dataSet.setValueTextColor(Color.WHITE);
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         dataSets.add(dataSet);
         BarData data = new BarData(dataSets);

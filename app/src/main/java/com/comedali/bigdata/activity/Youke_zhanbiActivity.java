@@ -72,7 +72,8 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
     条形图
      */
     private void initviewmBarChart() {
-        setDatamBarChart();
+        List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
+        setDatamBarChart(yVals);
         //修改图表的描述信息
         //mBarChart.setDescription("Android Java 薪资分析");
         //设置动画
@@ -101,7 +102,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。
         xAxis.setTextSize(10f);
-        xAxis.setTextColor(Color.RED);
+        xAxis.setTextColor(Color.rgb(255,255,255));
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawGridLines(false);
         xAxis.setLabelCount(7);
@@ -141,7 +142,9 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         YAxis leftYAxis = mBarChart.getAxisLeft();
         leftYAxis.setDrawGridLines(true);//设置从Y轴左侧发出横线
         leftYAxis.setAxisMinimum(0.0f);
+        leftYAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。
         leftYAxis.setEnabled(true);//设置显示左边Y坐标
+        leftYAxis.setTextColor(Color.rgb(255,255,255));
         leftYAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         //右边Y轴
         YAxis rightAxis = mBarChart.getAxisRight();
@@ -156,6 +159,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         l.setForm(Legend.LegendForm.SQUARE);
         l.setFormSize(9f);
         l.setTextSize(11f);
+        l.setTextColor(Color.rgb(255,255,255));
         l.setXEntrySpace(4f);
         l.setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);
 
@@ -198,18 +202,21 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
 
     }
 
-    private void setDatamBarChart() {
+    private void setDatamBarChart(List<BarEntry> mm) {
 
         //每一个柱状图的数据
         List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
 
         for (int i = 0; i < 12; i++) {//添加数据源
-            yVals.add(new BarEntry(i,(float) Math.random()*520 + 1));
+            //yVals.add(new BarEntry(i,(float) Math.random()*520 + 1));
+            int yVal = (int) (Math.random()*520 + 1);
+            yVals.add(new BarEntry(i,yVal));
         }
         BarDataSet dataSet = new BarDataSet(yVals, "十二县市游客数量条形统计图");//一组柱状图
         //dataSet.setColor(Color.LTGRAY);//设置第yi组数据颜色
         dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
         dataSet.setValueTextSize(12);//修改一组柱状图的文字大小
+        dataSet.setValueTextColor(Color.rgb(255,255,255));
         dataSet.setValueFormatter(new IValueFormatter() {
             @Override
             public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
@@ -299,10 +306,12 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         pieData.setDrawValues(true);
         pieData.setValueFormatter(new PercentFormatter());//转化百分比
         pieData.setValueTextSize(12f);
+        pieData.setValueTextColor(Color.rgb(255,255,255));
 
         dataSet.setValueLinePart1OffsetPercentage(80.f);
         dataSet.setValueLinePart1Length(0.3f);//设置连接线的长度
         dataSet.setValueLinePart2Length(0.6f);
+        dataSet.setValueLineColor(Color.rgb(255,255,255));
         //dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
         dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
 

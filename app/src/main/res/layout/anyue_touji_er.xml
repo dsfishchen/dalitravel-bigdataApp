@@ -12,7 +12,7 @@
         android:layout_marginTop="8dp"
         android:text="选择查询条件"
         android:textSize="18sp"
-        android:textColor="@color/qingse"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,7 +24,8 @@
         android:layout_marginTop="8dp"
         android:background="#00000000"
         android:drawableRight="@mipmap/drop_down_unselected_icon"
-        android:text="2018-09"
+        android:text="2018-10"
+        android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@+id/quyu_choose2"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
@@ -35,8 +36,9 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#00000000"
-        android:drawableLeft="@mipmap/ic_place"
+        android:drawableLeft="@mipmap/ic_location_on"
         android:text="大理古城"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
@@ -49,6 +51,7 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/btn_bg_yuan"
         android:text="查询"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/time_choose2"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />

@@ -80,7 +80,7 @@ public class RiMarkView extends MarkerView {
         }else if(m==24){
             name="24时";
         }
-        tv_content.setText(name+"  人数:"+renshu);
+        tv_content.setText(name+"  人数:"+renshu+"人");
         super.refreshContent(e, highlight);
     }
 

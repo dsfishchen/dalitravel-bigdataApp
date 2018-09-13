@@ -57,7 +57,7 @@ public class NianMarkView extends MarkerView {
         } else if (m == 12) {
             name = "12月";
         }
-        tv_content.setText(name + "  人数:" + renshu);
+        tv_content.setText(name + "  人数:" + renshu+"年");
         super.refreshContent(e, highlight);
     }
 

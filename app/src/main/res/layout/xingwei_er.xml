@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/qingse">
 
     <View
         android:id="@+id/view6"
@@ -102,6 +103,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:text="游客兴趣前五名"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -124,9 +126,10 @@
                     android:layout_height="25dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/button_yuanxian"
+                    android:background="@drawable/button_yuan_white"
                     android:text="客栈"
-                    android:drawableRight="@mipmap/ic_expand_more"
+                    android:textColor="@color/white"
+                    android:drawableRight="@mipmap/ic_keyboard_arrow_down"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/xingque_RadarChart" />
 
@@ -140,6 +143,7 @@
                     android:layout_marginTop="8dp"
                     android:padding="10dp"
                     android:text="客栈热度前五名"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -161,6 +165,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
+                        android:textColor="@color/white"
+                        android:drawableRight="@mipmap/ic_keyboard_arrow_down"
                         android:text="排名" />
 
                     <TextView
@@ -169,6 +175,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
+                        android:textColor="@color/white"
+                        android:drawableRight="@mipmap/ic_keyboard_arrow_down"
                         android:text="客栈" />
 
                     <TextView
@@ -176,17 +184,25 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
+                        android:textColor="@color/white"
+                        android:drawableRight="@mipmap/ic_keyboard_arrow_down"
                         android:text="评分" />
                 </LinearLayout>
-
+                <View
+                    android:id="@+id/many_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout2"/>
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/jiudian_recycleView"
                     android:layout_width="match_parent"
                     android:layout_height="190dp"
-                    android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+                    app:layout_constraintTop_toBottomOf="@+id/many_view">
                 </android.support.v7.widget.RecyclerView>
             </android.support.constraint.ConstraintLayout>
         </ScrollView>
