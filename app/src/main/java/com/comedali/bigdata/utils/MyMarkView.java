@@ -33,29 +33,29 @@ public class MyMarkView extends MarkerView {
         int renshu=(int)e.getY();
         String name=null;
         if (m==0){
-            name="大理市";
-        }else if(m==1){
-            name="洱源县";
-        }else if(m==2){
-            name="云龙县";
-        }else if(m==3){
             name="宾川县";
-        }else if(m==4){
-            name="南涧县";
-        }else if(m==5){
-            name="剑川县";
-        }else if(m==6){
-            name="永平县";
-        }else if(m==7){
+        }else if(m==1){
+            name="大理市";
+        }else if(m==2){
+            name="洱源县";
+        }else if(m==3){
             name="鹤庆县";
+        }else if(m==4){
+            name="剑川县";
+        }else if(m==5){
+            name="弥渡县";
+        }else if(m==6){
+            name="南涧彝族自治县";
+        }else if(m==7){
+            name="巍山彝族回族自治";
         }else if(m==8){
             name="祥云县";
         }else if(m==9){
             name="漾濞县";
         }else if(m==10){
-            name="巍山县";
+            name="漾濞彝族自治县";
         }else if(m==11){
-            name="弥渡县";
+            name="云龙县";
         }
         tv_content.setText(name+"  人数:"+renshu+"人");
         super.refreshContent(e, highlight);

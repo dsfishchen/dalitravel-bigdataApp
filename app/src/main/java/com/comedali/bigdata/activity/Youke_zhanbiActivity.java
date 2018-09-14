@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.utils.MyMarkView;
+import com.comedali.bigdata.utils.NetworkUtil;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -35,10 +36,28 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.tencent.tencentmap.mapsdk.maps.model.HeatDataNode;
+import com.tencent.tencentmap.mapsdk.maps.model.HeatOverlayOptions;
+import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.wuhenzhizao.titlebar.widget.CommonTitleBar;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Cache;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by 刘杨刚 on 2018/9/l4.
@@ -48,6 +67,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
     private PieChart mPicChart;
     private BarChart mBarChart;
     private ScrollView scrollView;
+    private OkHttpClient client;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,15 +85,113 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         mPicChart = findViewById(R.id.pie_chart);
         mBarChart = findViewById(R.id.chart1);
         scrollView=findViewById(R.id.mm_scrollView);
+        initdata();
         initviewmPicChart();
         initviewmBarChart();
     }
+    /**
+     * 有网时候的缓存
+     */
+    final Interceptor NetCacheInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            Response response = chain.proceed(request);
+            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            return response.newBuilder()
+                    .header("Cache-Control", "public, max-age="+onlineCacheTime)
+                    .removeHeader("Pragma")
+                    .build();
+        }
+    };
+    /**
+     * 没有网时候的缓存
+     */
+    final Interceptor OfflineCacheInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            if (!NetworkUtil.checkNet(Youke_zhanbiActivity.this)) {
+                int offlineCacheTime = 60*60*24*7;//离线的时候的缓存的过期时间
+                request = request.newBuilder()
+                        .header("Cache-Control", "public, only-if-cached, max-stale=" + offlineCacheTime)
+                        .build();
+            }
+            return chain.proceed(request);
+        }
+    };
+    private void initdata() {
+        File httpCacheDirectory = new File(this.getExternalCacheDir(), "okhttpCache1");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/flowmeter/scale";
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("数据请求", "失败");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                JSONArray result1 = new JSONArray(result);
+                                final List<PieEntry> strings = new ArrayList<>();
+                                final List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
+                                for (int i=0;i<result1.length();i++){
+                                    JSONObject jsonObject=result1.getJSONObject(i);
+                                    String area_name=jsonObject.getString("area_name");
+                                    String scale=jsonObject.getString("scale");
+                                    int nums=jsonObject.getInt("nums");
+                                    strings.add(new PieEntry(nums,area_name));//饼图数据添加
+                                    yVals.add(new BarEntry(i,nums));//柱状图数据添加
+                                }
+                                //setDatamPicChart(strings);
+                                //setDatamBarChart(yVals);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        setDatamBarChart(yVals);
+                                        setDatamPicChart(strings);
+                                        mPicChart.animateY(1400);//设置Y轴动画
+                                        mBarChart.animateY(1400);
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }).start();
+    }
+
     /*
     条形图
      */
     private void initviewmBarChart() {
-        List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
-        setDatamBarChart(yVals);
+        //setDatamBarChart(yVals);
         //修改图表的描述信息
         //mBarChart.setDescription("Android Java 薪资分析");
         //设置动画
@@ -93,7 +211,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         mBarChart.setScaleEnabled(true);//设置是否可以缩放
         mBarChart.setTouchEnabled(true);//设置是否可以触摸
         mBarChart.setDragEnabled(true);//设置是否可以拖拽
-        mBarChart.setNoDataText("数据获取失败");
+        mBarChart.setNoDataText("正在获取数据...");
         mBarChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);//颜色数值
         //X轴
         //自定义设置横坐标
@@ -111,29 +229,29 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
             public String getFormattedValue(float value, AxisBase axis) {
                 int m=(int)value;
                 if (m==0){
-                    return "大理市";
-                }else if (m==1){
-                    return "洱源县";
-                }else if (m==2){
-                    return "云龙县";
-                }else if (m==3){
                     return "宾川县";
-                }else if (m==4){
-                    return "南涧县";
-                }else if (m==5){
-                    return "剑川县";
-                }else if (m==6){
-                    return "永平县";
-                }else if (m==7){
+                }else if (m==1){
+                    return "大理市";
+                }else if (m==2){
+                    return "洱源县";
+                }else if (m==3){
                     return "鹤庆县";
+                }else if (m==4){
+                    return "剑川县";
+                }else if (m==5){
+                    return "弥渡县";
+                }else if (m==6){
+                    return "南涧彝族自治县";
+                }else if (m==7){
+                    return "巍山彝族回族自治";
                 }else if (m==8){
                     return "祥云县";
                 }else if (m==9){
-                    return "漾濞县";
+                    return "漾濞彝族自治县";
                 }else if (m==10){
-                    return "巍山县";
+                    return "永平县";
                 }else if (m==11){
-                    return "弥渡县";
+                    return "云龙县";
                 }
                 return "";
             }
@@ -146,6 +264,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         leftYAxis.setEnabled(true);//设置显示左边Y坐标
         leftYAxis.setTextColor(Color.rgb(255,255,255));
         leftYAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+
         //右边Y轴
         YAxis rightAxis = mBarChart.getAxisRight();
         rightAxis.setEnabled(false);//右侧不显示Y轴
@@ -190,8 +309,8 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         mBarChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                Log.d("mm", String.valueOf(e.getX()));
-                Log.d("ww", String.valueOf(e.getY()));
+                //Log.d("mm", String.valueOf(e.getX()));
+               // Log.d("ww", String.valueOf(e.getY()));
             }
 
             @Override
@@ -205,14 +324,14 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
     private void setDatamBarChart(List<BarEntry> mm) {
 
         //每一个柱状图的数据
-        List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
+        //List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
 
-        for (int i = 0; i < 12; i++) {//添加数据源
+        /*for (int i = 0; i < 12; i++) {//添加数据源
             //yVals.add(new BarEntry(i,(float) Math.random()*520 + 1));
             int yVal = (int) (Math.random()*520 + 1);
             yVals.add(new BarEntry(i,yVal));
-        }
-        BarDataSet dataSet = new BarDataSet(yVals, "十二县市游客数量条形统计图");//一组柱状图
+        }*/
+        BarDataSet dataSet = new BarDataSet(mm, "十二县市游客数量条形统计图 单位：人");//一组柱状图
         //dataSet.setColor(Color.LTGRAY);//设置第yi组数据颜色
         dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
         dataSet.setValueTextSize(12);//修改一组柱状图的文字大小
@@ -221,21 +340,23 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
             @Override
             public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
                 int mm=(int)entry.getY();
-                return mm+"人";
+                return mm+"";
             }
         });
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         dataSets.add(dataSet);
         BarData data = new BarData(dataSets);
         mBarChart.setData(data);
-
+        mBarChart.invalidate();//重绘图表
     }
 
     /*
     饼图
      */
     private void initviewmPicChart() {
-        setDatamPicChart();
+
+        //setDatamPicChart(strings);
+
         Description description = new Description();
         description.setText("");
         mPicChart.setDescription(description);//右下角字,添加图表描述
@@ -243,7 +364,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         mPicChart.setCenterTextSize(16);//中心字大小
         mPicChart.setHoleRadius(38f);//设置圆孔半径
         mPicChart.setTransparentCircleRadius(42f);//设置半透明圈的宽度
-        mPicChart.setNoDataText("没有数据");//设置饼图没有数据时显示的文本
+        mPicChart.setNoDataText("正在获取数据...");//设置饼图没有数据时显示的文本
         mPicChart.setUsePercentValues(true); //Boolean类型  设置图表是否使用百分比
         //picChart.setTransparentCircleColor(R.color.qingse);//设置环形图与中间空心圆之间的环形的颜色
         mPicChart.setHighlightPerTapEnabled(true);//设置点击Item高亮是否可用
@@ -271,8 +392,8 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         });   //监听器
     }
 
-    private void setDatamPicChart() {
-        List<PieEntry> strings = new ArrayList<>();
+    private void setDatamPicChart(List<PieEntry> strings) {
+        /*List<PieEntry> strings = new ArrayList<>();
         strings.add(new PieEntry(30f,"云龙县"));
         strings.add(new PieEntry(170f,"大理市"));
         strings.add(new PieEntry(60f,"宾川县"));
@@ -284,7 +405,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         strings.add(new PieEntry(45f,"祥云县"));
         strings.add(new PieEntry(56f,"漾濞县"));
         strings.add(new PieEntry(24f,"巍山县"));
-        strings.add(new PieEntry(35f,"弥渡县"));
+        strings.add(new PieEntry(35f,"弥渡县"));*/
         PieDataSet dataSet = new PieDataSet(strings,"代表");
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
@@ -312,11 +433,13 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         dataSet.setValueLinePart1Length(0.3f);//设置连接线的长度
         dataSet.setValueLinePart2Length(0.6f);
         dataSet.setValueLineColor(Color.rgb(255,255,255));
-        //dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
-        dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        //dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
 
         mPicChart.highlightValues(null);
         mPicChart.setData(pieData);//设置数据
         mPicChart.invalidate();//重绘图表
     }
+
+
 }

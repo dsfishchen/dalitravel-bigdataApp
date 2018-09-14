@@ -26,6 +26,7 @@ import com.comedali.bigdata.fragment.ShouyeFragment;
 import com.comedali.bigdata.fragment.XiaofeiFragment;
 import com.comedali.bigdata.fragment.XingweiFragment;
 import com.comedali.bigdata.fragment.YoukeFragment;
+import com.comedali.bigdata.utils.NetworkUtil;
 import com.comedali.bigdata.utils.ViewPagerSlide;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 
@@ -48,7 +49,17 @@ public class MainActivity extends AppCompatActivity {
         initView();
         initData();
         initListener();
+        yanzheng();
     }
+
+    private void yanzheng() {
+        if (NetworkUtil.checkNet(this)){
+
+        }else {
+            Toast.makeText(MainActivity.this,"请检查您的网络是否开启",Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void initView() {
         viewPager = findViewById(R.id.vp_content);
         mBottomBarLayout = findViewById(R.id.bbl);

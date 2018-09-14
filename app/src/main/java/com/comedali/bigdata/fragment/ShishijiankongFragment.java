@@ -27,6 +27,9 @@ import com.comedali.bigdata.activity.Quyu_renliuActivity;
 import com.comedali.bigdata.activity.Youke_zhanbiActivity;
 import com.comedali.bigdata.adapter.YoukelaiyuanAdapter;
 import com.comedali.bigdata.entity.YoukelaiyuanEntity;
+import com.comedali.bigdata.utils.NetworkUtil;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.PieEntry;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.widget.popup.QMUIListPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
@@ -41,9 +44,24 @@ import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Marker;
 import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Cache;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by 刘杨刚 on 2018/9/6.
@@ -58,6 +76,7 @@ public class ShishijiankongFragment extends Fragment {
     private YoukelaiyuanAdapter adapter;
     private List<YoukelaiyuanEntity> youkedatas;
     private RecyclerView shishi_recyclerView;
+    private OkHttpClient client;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -76,7 +95,7 @@ public class ShishijiankongFragment extends Fragment {
         //tencentMap.animateCamera(cameraSigma);//改变地图状态
         tencentMap.moveCamera(cameraSigma);//移动地图
         initHeatMapOverlay();
-        initdata();
+        initlatLngdata();
         quyu_qiehuan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,7 +127,92 @@ public class ShishijiankongFragment extends Fragment {
 
         return view;
     }
+    /**
+     * 有网时候的缓存
+     */
+    final Interceptor NetCacheInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            Response response = chain.proceed(request);
+            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            return response.newBuilder()
+                    .header("Cache-Control", "public, max-age="+onlineCacheTime)
+                    .removeHeader("Pragma")
+                    .build();
+        }
+    };
+    /**
+     * 没有网时候的缓存
+     */
+    final Interceptor OfflineCacheInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            if (!NetworkUtil.checkNet(getActivity())) {
+                int offlineCacheTime = 60*60*24*7;//离线的时候的缓存的过期时间
+                request = request.newBuilder()
+                        .header("Cache-Control", "public, only-if-cached, max-stale=" + offlineCacheTime)
+                        .build();
+            }
+            return chain.proceed(request);
+        }
+    };
     private void initData() {
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache2");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/flowmeter/scale";
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("数据请求", "失败");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                JSONArray result1 = new JSONArray(result);
+                                final List<PieEntry> strings = new ArrayList<>();
+                                final List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
+                                for (int i=0;i<result1.length();i++){
+                                    JSONObject jsonObject=result1.getJSONObject(i);
+                                    String area_name=jsonObject.getString("area_name");
+                                    String scale=jsonObject.getString("scale");
+                                    int nums=jsonObject.getInt("nums");
+                                    strings.add(new PieEntry(nums,area_name));//饼图数据添加
+                                    yVals.add(new BarEntry(i,nums));//柱状图数据添加
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }).start();
+
         youkedatas=new ArrayList<>();
         YoukelaiyuanEntity model;
         for (int i = 0; i < 100; i++) {
@@ -118,24 +222,24 @@ public class ShishijiankongFragment extends Fragment {
             model.setBaifenbi(i*10+"");
             youkedatas.add(model);
         }
-
     }
+
     private void initoneListPopupIfNeed() {
         if (mListPopup == null) {
 
             String[] listItems = new String[]{
-                    "蝴蝶泉",
-                    "感通索道",
-                    "崇圣寺三塔",
-                    "南诏风情岛",
-                    "天龙八部影视城",
-                    "鸡足山",
-                    "洗马潭大索道",
-                    "巍宝山",
-                    "新华村",
-                    "石宝山",
-                    "沙溪古镇",
-                    "海舌公园"
+                    "蝴蝶泉",//6
+                    "感通索道",//8
+                    "崇圣寺三塔",//10
+                    "南诏风情岛",//11
+                    "天龙八部影视城",//12
+                    "鸡足山",//15
+                    "洗马潭大索道",//17
+                    "巍宝山",//36
+                    "新华村",//44
+                    "石宝山",//46
+                    "沙溪古镇",//47
+                    "海舌公园"//48
             };
             List<String> data = new ArrayList<>();
 
@@ -168,7 +272,7 @@ public class ShishijiankongFragment extends Fragment {
         }
     }
 
-    private void initdata() {
+    private void initlatLngdata() {
         //标注坐标
         LatLng latLng = new LatLng(25.695060,100.164413);
         final Marker marker = tencentMap.addMarker(new MarkerOptions().
