@@ -2,10 +2,13 @@ package com.comedali.bigdata.fragment;
 
 
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -85,6 +88,9 @@ public class ShouyeFragment extends Fragment {
     private TextView renshu4;
     private TextView renshu5;
     private TextView renshu6;
+    private String dizhi;
+    private Timer timer;
+    private Activity activity=getActivity();
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -120,6 +126,8 @@ public class ShouyeFragment extends Fragment {
         renshu5=view.findViewById(R.id.renshu_5);
         renshu6=view.findViewById(R.id.renshu_6);
 
+        dizhi=nice_button1.getText().toString();
+
         QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
         QMUIStatusBarHelper.setStatusBarDarkMode(getActivity());//状态栏字体颜色--黑色
         //设定中心点坐标
@@ -147,7 +155,7 @@ public class ShouyeFragment extends Fragment {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -161,12 +169,17 @@ public class ShouyeFragment extends Fragment {
         @Override
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
-            if (!NetworkUtil.checkNet(getActivity())) {
-                int offlineCacheTime = 60*60*24*7;//离线的时候的缓存的过期时间
-                request = request.newBuilder()
-                        .header("Cache-Control", "public, only-if-cached, max-stale=" + offlineCacheTime)
-                        .build();
+            if (activity==null){
+
+            }else {
+                if (!NetworkUtil.checkNet(activity)) {
+                    int offlineCacheTime = 60*60*24*7;//离线的时候的缓存的过期时间
+                    request = request.newBuilder()
+                            .header("Cache-Control", "public, only-if-cached, max-stale=" + offlineCacheTime)
+                            .build();
+                }
             }
+
             return chain.proceed(request);
         }
     };
@@ -188,7 +201,8 @@ public class ShouyeFragment extends Fragment {
                 .url(url)
                 .build();
         //每30秒获取实时人数
-        new Timer().schedule(new TimerTask() {
+        /*new Timer().schedule(new TimerTask(){
+
             @Override
             public void run() {
                 client.newCall(request).enqueue(new Callback() {
@@ -282,7 +296,103 @@ public class ShouyeFragment extends Fragment {
                     }
                 });
             }
-        },0,60000);
+        },0,5000);*/
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("数据请求", "失败");
+                    }
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+
+                        try {
+                            String str = response.body().string();
+                            Log.d("数据请求", "成功"+str);
+                            JSONObject jsonData = new JSONObject(str);
+                            String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                final String result = jsonData.getString("result");
+                                //Log.d("result", result);
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String renshu=result;
+                                        int m=Integer.parseInt(renshu);
+
+                                        if (renshu.length()==6){
+                                            renshu1.setText(renshu.charAt(0)+"");
+                                            renshu2.setText(renshu.charAt(1)+"");
+                                            renshu3.setText(renshu.charAt(2)+"");
+                                            renshu4.setText(renshu.charAt(3)+"");
+                                            renshu5.setText(renshu.charAt(4)+"");
+                                            renshu6.setText(renshu.charAt(5)+"");
+                                        }
+                                        if (renshu.length()==5){
+                                            renshu1.setText("0");
+                                            renshu2.setText(renshu.charAt(0)+"");
+                                            renshu3.setText(renshu.charAt(1)+"");
+                                            renshu4.setText(renshu.charAt(2)+"");
+                                            renshu5.setText(renshu.charAt(3)+"");
+                                            renshu6.setText(renshu.charAt(4)+"");
+                                        }
+                                        if (renshu.length()==4){
+                                            renshu1.setText("0");
+                                            renshu2.setText("0");
+                                            renshu3.setText(renshu.charAt(0)+"");
+                                            renshu4.setText(renshu.charAt(1)+"");
+                                            renshu5.setText(renshu.charAt(2)+"");
+                                            renshu6.setText(renshu.charAt(3)+"");
+                                        }
+                                        if (renshu.length()==3){
+                                            renshu1.setText("0");
+                                            renshu2.setText("0");
+                                            renshu3.setText("0");
+                                            renshu4.setText(renshu.charAt(0)+"");
+                                            renshu5.setText(renshu.charAt(1)+"");
+                                            renshu6.setText(renshu.charAt(2)+"");
+                                        }
+                                        if (renshu.length()==2){
+                                            renshu1.setText("0");
+                                            renshu2.setText("0");
+                                            renshu3.setText("0");
+                                            renshu4.setText("0");
+                                            renshu5.setText(renshu.charAt(0)+"");
+                                            renshu6.setText(renshu.charAt(1)+"");
+                                        }
+                                        if (renshu.length()==1){
+                                            renshu1.setText("0");
+                                            renshu2.setText("0");
+                                            renshu3.setText("0");
+                                            renshu4.setText("0");
+                                            renshu5.setText("0");
+                                            renshu6.setText(renshu.charAt(0)+"");
+                                        }
+                                        if (renshu.length()==0){
+                                            renshu1.setText("0");
+                                            renshu2.setText("0");
+                                            renshu3.setText("0");
+                                            renshu4.setText("0");
+                                            renshu5.setText("0");
+                                            renshu6.setText("0");
+                                        }
+                                    }
+                                });
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 
     private void initdata() {
@@ -337,7 +447,7 @@ public class ShouyeFragment extends Fragment {
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
                         tencentMap.moveCamera(cameraSigma);//移动地图
-
+                        dizhi="大理市";
                         //数据获取
                         initHeatMapOverlayDali();
                     }
@@ -351,7 +461,7 @@ public class ShouyeFragment extends Fragment {
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
                         tencentMap.moveCamera(cameraSigma);//移动地图
-
+                        dizhi="洱源县";
                         //数据获取
                         initeryuan();
                     }
@@ -597,21 +707,21 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.996720,100.114020), a[0]));//邓川高速路口
-                                        nodes.add(new HeatDataNode(new LatLng(26.103230,100.004490), a[1]));//洱源高速路口
-
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
                                             public int colorForValue(double arg0) {
@@ -675,7 +785,7 @@ public class ShouyeFragment extends Fragment {
         }).start();
     }
     private void initbinchuan(){
-        //获取数据洱源
+        //获取数据宾川县
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -711,22 +821,21 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.952360,100.393870), a[0]));//鸡足山
-                                        nodes.add(new HeatDataNode(new LatLng(25.808700,100.560350), a[1]));//宾川路口
-                                        nodes.add(new HeatDataNode(new LatLng(25.827089,100.573311), a[2]));//宾川县城
-
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
                                             public int colorForValue(double arg0) {
@@ -826,19 +935,21 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.049110,100.527850), a[0]));//南涧入城口
 
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
@@ -939,19 +1050,21 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.417150,99.538090), a[0]));//永平高速路口
 
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
@@ -1052,20 +1165,21 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.262240,100.292816), a[0]));//巍山路口
-                                        nodes.add(new HeatDataNode(new LatLng(25.172690,100.352240), a[1]));//巍宝山
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
                                             public int colorForValue(double arg0) {
@@ -1165,20 +1279,22 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(26.448500,100.163620), a[0]));//鹤庆高速路口
-                                        nodes.add(new HeatDataNode(new LatLng(26.615450,100.179080), a[1]));//新华村
+
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
                                             public int colorForValue(double arg0) {
@@ -1278,19 +1394,22 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.885635,99.384556), a[0]));//云龙入城口
+
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
                                             public int colorForValue(double arg0) {
@@ -1390,21 +1509,22 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.885635,99.384556), a[0]));//剑川高速路口
-                                        nodes.add(new HeatDataNode(new LatLng(26.392690,99.843380), a[1]));//石宝山
-                                        nodes.add(new HeatDataNode(new LatLng(26.524260,99.938970), a[2]));//沙溪古镇
+
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
                                             public int colorForValue(double arg0) {
@@ -1504,19 +1624,22 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.428703,100.607300), a[0]));//祥云高速路口
+
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
                                             public int colorForValue(double arg0) {
@@ -1616,19 +1739,21 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.574030,100.067510), a[0]));//漾濞高速路口
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
                                             public int colorForValue(double arg0) {
@@ -1728,19 +1853,21 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));//弥渡入城口
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.342770,100.483264), a[0]));//弥渡入城口
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
                                             public int colorForValue(double arg0) {
@@ -1840,46 +1967,21 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray nums = new JSONArray(result);
-                                final int a[]= new int[nums.length()];
+                                final ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
                                 for (int i=0;i<nums.length();i++){
                                     JSONObject jsonObject=nums.getJSONObject(i);
                                     int redu=jsonObject.getInt("nums");
-                                    a[i]=redu;
+                                    String latitude=jsonObject.getString("latitude");
+                                    String longitude=jsonObject.getString("longitude");
+                                    double lat= Double.parseDouble(latitude);
+                                    double longi= Double.parseDouble(longitude);
+                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-                                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
-                                        nodes.add(new HeatDataNode(new LatLng(25.601322,100.235074), a[0]));//大理港
-                                        nodes.add(new HeatDataNode(new LatLng(25.589401,100.251102), a[1]));//火车站
-                                        nodes.add(new HeatDataNode(new LatLng(25.695060,100.164413), a[2]));//大理古城
-                                        nodes.add(new HeatDataNode(new LatLng(25.646788,100.321312), a[3]));//飞机场
-                                        nodes.add(new HeatDataNode(new LatLng(25.853044,100.132484), a[4]));//喜洲古镇
-                                        nodes.add(new HeatDataNode(new LatLng(25.906251,100.099869), a[5]));//蝴蝶泉
-                                        nodes.add(new HeatDataNode(new LatLng(25.909610,100.193639), a[6]));//双廊镇
-                                        nodes.add(new HeatDataNode(new LatLng(25.644430,100.168370), a[7]));//感通索道
-                                        nodes.add(new HeatDataNode(new LatLng(25.591685,100.229301), a[8]));//下关城区
-                                        nodes.add(new HeatDataNode(new LatLng(25.705462,100.147462), a[9]));//崇圣寺三塔
-                                        nodes.add(new HeatDataNode(new LatLng(25.902005,100.191343), a[10]));//南诏风情岛
-                                        nodes.add(new HeatDataNode(new LatLng(25.679818,100.148862), a[11]));//天龙八部影视城
-                                        nodes.add(new HeatDataNode(new LatLng(25.691676,100.154886), a[12]));//三月街
-                                        nodes.add(new HeatDataNode(new LatLng(25.677811,100.169134), a[13]));//文献楼
-                                        nodes.add(new HeatDataNode(new LatLng(25.572413,100.224313), a[14]));//兴盛客运站
-                                        nodes.add(new HeatDataNode(new LatLng(25.680710,100.147040), a[15]));//洗马潭大索道
-                                        nodes.add(new HeatDataNode(new LatLng(25.609209,100.221076), a[16]));//客运北站
-                                        nodes.add(new HeatDataNode(new LatLng(25.591690,100.253010), a[17]));//客运东站
-                                        nodes.add(new HeatDataNode(new LatLng(25.583566,100.230981), a[18]));//快速客运站
-                                        nodes.add(new HeatDataNode(new LatLng(25.835950,100.213010), a[19]));//环海东路
-                                        nodes.add(new HeatDataNode(new LatLng(25.535600,100.328820), a[20]));//凤仪高速路口
-                                        nodes.add(new HeatDataNode(new LatLng(25.721500,100.268940), a[21]));//海东高速路口
-                                        nodes.add(new HeatDataNode(new LatLng(25.567980,100.227290), a[22]));//下关高速路口
-                                        nodes.add(new HeatDataNode(new LatLng(25.922180,100.188380), a[23]));//双廊高速路口
-                                        nodes.add(new HeatDataNode(new LatLng(25.733110,100.166590), a[24]));//马久邑
-                                        nodes.add(new HeatDataNode(new LatLng(25.644170,100.169180), a[25]));//苍山
-                                        nodes.add(new HeatDataNode(new LatLng(25.866730,100.155600), a[26]));//海舌公园
-
                                         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
                                             @Override
                                             public int colorForValue(double arg0) {
@@ -1967,6 +2069,7 @@ public class ShouyeFragment extends Fragment {
                     }
                     if (two=="区域人流量"){
                         Intent intent=new Intent(getActivity(), Quyu_renliuActivity.class);
+                        intent.putExtra("dizhi",dizhi);
                         startActivity(intent);
                     }
 
@@ -2012,6 +2115,7 @@ public class ShouyeFragment extends Fragment {
     public void onDestroy() {
         // TODO Auto-generated method stub
         super.onDestroy();
+
         mMapView.onDestroy();
     }
     }

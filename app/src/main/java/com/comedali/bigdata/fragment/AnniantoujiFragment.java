@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,9 @@ import com.bigkoo.pickerview.builder.TimePickerBuilder;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.TimePickerView;
 import com.comedali.bigdata.R;
+import com.comedali.bigdata.entity.YoukelaiyuanEntity;
 import com.comedali.bigdata.utils.MyMarkView;
+import com.comedali.bigdata.utils.NetworkUtil;
 import com.comedali.bigdata.utils.NianMarkView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -33,9 +36,16 @@ import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.EntryXComparator;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
+import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.popup.QMUIListPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,6 +53,15 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Cache;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by 刘杨刚 on 2018/9/6.
@@ -58,6 +77,7 @@ public class AnniantoujiFragment extends Fragment {
     private String year;
     private String month;
     private String day;
+    private OkHttpClient client;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -78,7 +98,6 @@ public class AnniantoujiFragment extends Fragment {
         //获取当前时间
         Date date = new Date(System.currentTimeMillis());
         time_choose.setText(getTime(date));
-
         time_choose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,7 +107,7 @@ public class AnniantoujiFragment extends Fragment {
 
 
                 //正确设置方式 原因：注意事项有说明
-                startDate.set(2017,0,1);
+                startDate.set(2016,0,1);
                 //endDate.set(2018,11,31);
 
                 TimePickerView pvTime = new TimePickerBuilder(getActivity(), new OnTimeSelectListener() {
@@ -120,7 +139,9 @@ public class AnniantoujiFragment extends Fragment {
                 pvTime.show();
             }
         });
-
+        String quyu_1=quyu_choose.getText().toString();
+        String time_1=time_choose.getText().toString();
+        initNian(quyu_1,time_1);
         anri_chaxun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -143,12 +164,113 @@ public class AnniantoujiFragment extends Fragment {
                 //Log.d("time", quyu+time);
                 mChart.invalidate();
                 mChart.animateX(1400);
-                initdata3(12,quyu,time);
+                mChart.notifyDataSetChanged();
+                initNian(quyu,time);
             }
         });
         initview();
         return view;
     }
+
+    /**
+     * 有网时候的缓存
+     */
+    final Interceptor NetCacheInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            Response response = chain.proceed(request);
+            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            return response.newBuilder()
+                    .header("Cache-Control", "public, max-age="+onlineCacheTime)
+                    .removeHeader("Pragma")
+                    .build();
+        }
+    };
+    /**
+     * 没有网时候的缓存
+     */
+    final Interceptor OfflineCacheInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            if (!NetworkUtil.checkNet(getActivity())) {
+                int offlineCacheTime = 60*60*24*7;//离线的时候的缓存的过期时间
+                request = request.newBuilder()
+                        .header("Cache-Control", "public, only-if-cached, max-stale=" + offlineCacheTime)
+                        .build();
+            }
+            return chain.proceed(request);
+        }
+    };
+    private void initNian(final String quyu,final String NIAN) {
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("正在加载")
+                .create();
+        tipDialog.show();
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache4");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+
+        String id="3";
+        //final String NIAN=time_choose.getText().toString();
+        String url="http://192.168.190.119:8080/flowmeter/statistics?type=year&place_id="+id+"&year="+NIAN+"&month=00&day=00";
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //Log.d("数据请求", "失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String str = response.body().string();
+                    //Log.d("数据请求", "成功"+str);
+                    final JSONObject jsonData = new JSONObject(str);
+                    final String resultStr = jsonData.getString("success");
+                    if (resultStr.equals("true")){
+                        String result=jsonData.getString("result");
+                        JSONArray num = new JSONArray(result);
+                        final List<Entry> entries = new ArrayList<Entry>();
+                        for (int i=0;i<num.length();i++){
+                            JSONObject jsonObject=num.getJSONObject(i);
+                            String c_nums=jsonObject.getString("c_nums");
+                            String c_month=jsonObject.getString("c_month");
+                            int yVal = Integer.parseInt(c_nums);
+                            int m=Integer.parseInt(c_month);
+                            entries.add(new Entry(m, yVal));
+                        }
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initdata3(entries,quyu,NIAN);
+                                tipDialog.dismiss();
+                            }
+                        });
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    response.body().close();
+                }
+            }
+        });
+    }
+
     //年月日
     private String getTime(Date date) {//可根据需要自行截取数据显示
         SimpleDateFormat format = new SimpleDateFormat("yyyy");
@@ -217,9 +339,7 @@ public class AnniantoujiFragment extends Fragment {
         }
     }
     private void initview() {
-        String quyu_1=quyu_choose.getText().toString();
-        String time_1=time_choose.getText().toString();
-        initdata3(12,quyu_1,time_1);
+        //initdata3(12,quyu_1,time_1);
         mChart.setDrawGridBackground(false);
 
         // no description text
@@ -235,7 +355,8 @@ public class AnniantoujiFragment extends Fragment {
         // if disabled, scaling can be done on x- and y-axis separately
         mChart.setPinchZoom(true);
         mChart.setHighlightPerDragEnabled(true);
-        mChart.setNoDataText("数据获取失败");
+        mChart.setNoDataText("正在获取数据...");
+        mChart.setNoDataTextColor(Color.WHITE);
         mChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);//颜色数值
         // set an alternative background color
         // mChart.setBackgroundColor(Color.GRAY);
@@ -281,7 +402,7 @@ public class AnniantoujiFragment extends Fragment {
         l.setTextColor(Color.rgb(255,255,255));
 
         //设置限制线 12代表某个该轴某个值，也就是要画到该轴某个值上
-        LimitLine limitLine = new LimitLine(2000);
+        LimitLine limitLine = new LimitLine(2500000);
         //设置限制线的宽
         limitLine.setLineWidth(1f);
         //设置限制线的颜色
@@ -296,15 +417,15 @@ public class AnniantoujiFragment extends Fragment {
 
     }
 
-    private void initdata3(int count,String quyu,String time) {
-        ArrayList<Entry> entries = new ArrayList<Entry>();
+    private void initdata3(List<Entry> entries,String quyu,String time) {
+        /*List<Entry> entries = new ArrayList<Entry>();
 
         for (int i = 1; i < count+1; i++) {
             //float xVal = (float) (Math.random() * 20);
             int yVal = (int) (Math.random() * 2500);
 
             entries.add(new Entry(i, yVal));
-        }
+        }*/
         // sort by x-value
         Collections.sort(entries, new EntryXComparator());
         // create a dataset and give it a type

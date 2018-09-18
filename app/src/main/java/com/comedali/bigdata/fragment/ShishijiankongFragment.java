@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -31,6 +32,7 @@ import com.comedali.bigdata.utils.NetworkUtil;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieEntry;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
+import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.popup.QMUIListPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdate;
@@ -77,6 +79,12 @@ public class ShishijiankongFragment extends Fragment {
     private List<YoukelaiyuanEntity> youkedatas;
     private RecyclerView shishi_recyclerView;
     private OkHttpClient client;
+    private TextView jdrs_1;
+    private TextView jdrs_2;
+    private TextView jdrs_3;
+    private TextView jdrs_4;
+    private TextView jdrs_5;
+    private TextView jdrs_6;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -106,8 +114,15 @@ public class ShishijiankongFragment extends Fragment {
             }
         });
 
+        jdrs_1=view.findViewById(R.id.jdrs_1);
+        jdrs_2=view.findViewById(R.id.jdrs_2);
+        jdrs_3=view.findViewById(R.id.jdrs_3);
+        jdrs_4=view.findViewById(R.id.jdrs_4);
+        jdrs_5=view.findViewById(R.id.jdrs_5);
+        jdrs_6=view.findViewById(R.id.jdrs_6);
 
         initData();
+        initjdrs();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         shishi_recyclerView.setLayoutManager(layoutManager);
@@ -118,15 +133,12 @@ public class ShishijiankongFragment extends Fragment {
         shishi_recyclerView.setAdapter(adapter);
         //添加Android自带的分割线
         shishi_recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
-        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                Toast.makeText(getActivity(),"你点击了"+position,Toast.LENGTH_SHORT).show();
-            }
-        });
+
 
         return view;
     }
+
+
     /**
      * 有网时候的缓存
      */
@@ -135,7 +147,7 @@ public class ShishijiankongFragment extends Fragment {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -159,6 +171,12 @@ public class ShishijiankongFragment extends Fragment {
         }
     };
     private void initData() {
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("正在加载")
+                .create();
+        tipDialog.show();
+
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache2");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -170,7 +188,9 @@ public class ShishijiankongFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/scale";
+        String name="dali";
+        String id="3";
+        String url="http://192.168.190.119:8080/flowmeter/toursitenum?city="+name+"&place_id="+id;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -181,49 +201,167 @@ public class ShishijiankongFragment extends Fragment {
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        Log.d("数据请求", "失败");
+                        //Log.d("数据请求", "失败");
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         try {
                             String str = response.body().string();
-                            Log.d("数据请求", "成功"+str);
+                            //Log.d("数据请求", "成功"+str);
                             final JSONObject jsonData = new JSONObject(str);
                             final String resultStr = jsonData.getString("success");
                             if (resultStr.equals("true")){
-                                String result=jsonData.getString("result");
-                                JSONArray result1 = new JSONArray(result);
-                                final List<PieEntry> strings = new ArrayList<>();
-                                final List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
-                                for (int i=0;i<result1.length();i++){
-                                    JSONObject jsonObject=result1.getJSONObject(i);
-                                    String area_name=jsonObject.getString("area_name");
-                                    String scale=jsonObject.getString("scale");
-                                    int nums=jsonObject.getInt("nums");
-                                    strings.add(new PieEntry(nums,area_name));//饼图数据添加
-                                    yVals.add(new BarEntry(i,nums));//柱状图数据添加
-                                }
+                                final String result=jsonData.getString("result");
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String renshu=result;
+                                        int m=Integer.parseInt(renshu);
+                                        if (renshu.length()==6){
+                                            jdrs_1.setText(renshu.charAt(0)+"");
+                                            jdrs_2.setText(renshu.charAt(1)+"");
+                                            jdrs_3.setText(renshu.charAt(2)+"");
+                                            jdrs_4.setText(renshu.charAt(3)+"");
+                                            jdrs_5.setText(renshu.charAt(4)+"");
+                                            jdrs_6.setText(renshu.charAt(5)+"");
+                                        }
+                                        if (renshu.length()==5){
+                                            jdrs_1.setText("0");
+                                            jdrs_2.setText(renshu.charAt(0)+"");
+                                            jdrs_3.setText(renshu.charAt(1)+"");
+                                            jdrs_4.setText(renshu.charAt(2)+"");
+                                            jdrs_5.setText(renshu.charAt(3)+"");
+                                            jdrs_6.setText(renshu.charAt(4)+"");
+                                        }
+                                        if (renshu.length()==4){
+                                            jdrs_1.setText("0");
+                                            jdrs_2.setText("0");
+                                            jdrs_3.setText(renshu.charAt(0)+"");
+                                            jdrs_4.setText(renshu.charAt(1)+"");
+                                            jdrs_5.setText(renshu.charAt(2)+"");
+                                            jdrs_6.setText(renshu.charAt(3)+"");
+                                        }
+                                        if (renshu.length()==3){
+                                            jdrs_1.setText("0");
+                                            jdrs_2.setText("0");
+                                            jdrs_3.setText("0");
+                                            jdrs_4.setText(renshu.charAt(0)+"");
+                                            jdrs_5.setText(renshu.charAt(1)+"");
+                                            jdrs_6.setText(renshu.charAt(2)+"");
+                                        }
+                                        if (renshu.length()==2){
+                                            jdrs_1.setText("0");
+                                            jdrs_2.setText("0");
+                                            jdrs_3.setText("0");
+                                            jdrs_4.setText("0");
+                                            jdrs_5.setText(renshu.charAt(0)+"");
+                                            jdrs_6.setText(renshu.charAt(1)+"");
+                                        }
+                                        if (renshu.length()==1){
+                                            jdrs_1.setText("0");
+                                            jdrs_2.setText("0");
+                                            jdrs_3.setText("0");
+                                            jdrs_4.setText("0");
+                                            jdrs_5.setText("0");
+                                            jdrs_6.setText(renshu.charAt(0)+"");
+                                        }
+                                        if (renshu.length()==0){
+                                            jdrs_1.setText("0");
+                                            jdrs_2.setText("0");
+                                            jdrs_3.setText("0");
+                                            jdrs_4.setText("0");
+                                            jdrs_5.setText("0");
+                                            jdrs_6.setText("0");
+                                        }
+                                        tipDialog.dismiss();
+                                    }
+                                });
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
                         }
                     }
                 });
             }
         }).start();
 
-        youkedatas=new ArrayList<>();
-        YoukelaiyuanEntity model;
-        for (int i = 0; i < 100; i++) {
-            model=new YoukelaiyuanEntity();
-            model.setId("古城南门"+i);
-            model.setProvince(i+"");
-            model.setBaifenbi(i*10+"");
-            youkedatas.add(model);
-        }
+
+
     }
 
+    private void initjdrs() {
+
+        youkedatas=new ArrayList<>();
+
+
+        //二
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String name="dali";
+        String id="3";
+        String url="http://192.168.190.119:8080/flowmeter/toursitepointnum?city="+name+"&place_id="+id;
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //Log.d("数据请求", "失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String str = response.body().string();
+                    //Log.d("数据请求", "成功"+str);
+                    final JSONObject jsonData = new JSONObject(str);
+                    final String resultStr = jsonData.getString("success");
+                    if (resultStr.equals("true")){
+                        String result=jsonData.getString("result");
+                        JSONArray num = new JSONArray(result);
+                        for (int i=0;i<num.length();i++){
+                            JSONObject jsonObject=num.getJSONObject(i);
+                            String location=jsonObject.getString("location");
+                            int nums=jsonObject.getInt("nums");
+                            final YoukelaiyuanEntity model=new YoukelaiyuanEntity();
+                            model.setId(location);
+                            model.setProvince(nums+"");
+                            model.setBaifenbi((int)(Math.random()*100+1)+"");
+                            youkedatas.add(model);
+                        }
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    response.body().close();
+                }
+            }
+        });
+
+
+
+    }
     private void initoneListPopupIfNeed() {
         if (mListPopup == null) {
 
@@ -274,14 +412,14 @@ public class ShishijiankongFragment extends Fragment {
 
     private void initlatLngdata() {
         //标注坐标
-        LatLng latLng = new LatLng(25.695060,100.164413);
+        /*LatLng latLng = new LatLng(25.695060,100.164413);
         final Marker marker = tencentMap.addMarker(new MarkerOptions().
                 position(latLng).
                 title("大理古城").
                 snippet("游客人数 20150人\n 设备数量 152台"));
         tencentMap.addMarker(new MarkerOptions()
                 .position(new LatLng(25.906058,100.099268))
-                .title("蝴蝶泉").snippet("游客人数 10150人\n 设备数量 152台"));
+                .title("蝴蝶泉").snippet("游客人数 10150人\n 设备数量 152台"));*/
         //创建图标
         //marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
     }

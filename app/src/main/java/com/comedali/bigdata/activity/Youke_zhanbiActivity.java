@@ -97,7 +97,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -180,6 +180,9 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
                         }
                     }
                 });

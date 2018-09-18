@@ -140,20 +140,22 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/jinru_nan"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:text="41.25%" />
+                        android:text="0.00%" />
 
                     <TextView
+                        android:id="@+id/jinru_nv"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:text="58.75%" />
+                        android:text="0.00%" />
                 </LinearLayout>
 
 
@@ -193,20 +195,22 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/sousuo_nan"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:text="41.25%" />
+                        android:text="0.00%" />
 
                     <TextView
+                        android:id="@+id/sousuo_nv"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:text="58.75%" />
+                        android:text="0.00%" />
                 </LinearLayout>
 
             </LinearLayout>

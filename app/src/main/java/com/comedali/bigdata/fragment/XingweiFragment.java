@@ -249,19 +249,7 @@ public class XingweiFragment extends Fragment {
                         0f)); //偏航角 0~360° (正北方为0)
         //tencentMap.animateCamera(cameraSigma);//改变地图状态
         tencentMap.moveCamera(cameraSigma);//移动地图
-
-
-            latLngs = new ArrayList<LatLng>();
-            latLngs.add(new LatLng(25.646788,100.322685));
-            latLngs.add(new LatLng(25.583866,100.230932));
-            latLngs.add(new LatLng(25.609217,100.221362));
-            latLngs.add(new LatLng(25.637812,100.206041));
-            latLngs.add(new LatLng(25.704727,100.168877));
-            latLngs.add(new LatLng(25.758465,100.139694));
-            latLngs.add(new LatLng(25.845784,100.133343));
-            polyline=tencentMap.addPolyline(new PolylineOptions().
-                    addAll(latLngs).color(0xff00ff00). width(5f));
-
+        initXianlu();
 
         choose_button=view.findViewById(R.id.choose_button);
         choose_button.setOnClickListener(new View.OnClickListener() {
@@ -329,6 +317,20 @@ public class XingweiFragment extends Fragment {
         });
         return view;
     }
+
+    private void initXianlu() {
+        latLngs = new ArrayList<LatLng>();
+        latLngs.add(new LatLng(25.646788,100.322685));
+        latLngs.add(new LatLng(25.583866,100.230932));
+        latLngs.add(new LatLng(25.609217,100.221362));
+        latLngs.add(new LatLng(25.637812,100.206041));
+        latLngs.add(new LatLng(25.704727,100.168877));
+        latLngs.add(new LatLng(25.758465,100.139694));
+        latLngs.add(new LatLng(25.845784,100.133343));
+        polyline=tencentMap.addPolyline(new PolylineOptions().
+                addAll(latLngs).color(0xff00ff00). width(5f));
+    }
+
     private void initJiudianData() {
         //youkedatas=new ArrayList<>();
 

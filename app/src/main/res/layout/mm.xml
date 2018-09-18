@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/jdrs_1"
         android:layout_width="20dp"
         android:layout_height="30dp"
         android:gravity="center"
@@ -39,7 +39,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/jdrs_2"
         android:layout_width="20dp"
         android:layout_height="30dp"
         android:gravity="center"
@@ -49,11 +49,11 @@
         android:text="1"
         android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintStart_toEndOf="@+id/jdrs_1"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/jdrs_3"
         android:layout_width="20dp"
         android:layout_height="30dp"
         android:gravity="center"
@@ -63,11 +63,11 @@
         android:text="3"
         android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/textView1"
+        app:layout_constraintStart_toEndOf="@+id/jdrs_2"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/jdrs_4"
         android:layout_width="20dp"
         android:layout_height="30dp"
         android:gravity="center"
@@ -77,11 +77,11 @@
         android:text="1"
         android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintStart_toEndOf="@+id/jdrs_3"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/jdrs_5"
         android:layout_width="20dp"
         android:layout_height="30dp"
         android:gravity="center"
@@ -91,7 +91,7 @@
         android:text="5"
         android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintStart_toEndOf="@+id/jdrs_4"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -105,7 +105,7 @@
         android:text="1"
         android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/textView4"
+        app:layout_constraintStart_toEndOf="@+id/jdrs_5"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

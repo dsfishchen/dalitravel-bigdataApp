@@ -8,6 +8,7 @@ public class YoukelaiyuanEntity {
     private String province;
     private String baifenbi;
 
+
     public String getId() {
         return id;
     }
