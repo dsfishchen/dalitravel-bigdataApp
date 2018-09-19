@@ -187,12 +187,6 @@ public class YoukeFragment extends Fragment {
         }
     };
     private void initAge() {
-        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
-                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载")
-                .create();
-        tipDialog.show();
-
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -237,7 +231,6 @@ public class YoukeFragment extends Fragment {
                             @Override
                             public void run() {
                                 setDatamPicChart(strings);
-                                tipDialog.dismiss();
                             }
                         });
                     }

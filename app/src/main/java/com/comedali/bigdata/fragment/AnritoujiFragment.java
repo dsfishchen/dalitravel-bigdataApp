@@ -78,10 +78,21 @@ public class AnritoujiFragment extends Fragment{
     private String day;
     private OkHttpClient client;
     private List<Entry> entries;
+    private String dizhi;
+    private String[] listItems;
+    private String[] listPlace_id;
+    private String dizhi_m=null;
+    private String id=null;
+    private String name=null;
+    private String quyu_1;
+    private String time_1;
+    private String Place_id;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.anri_touji_er,container,false);
+        dizhi=getActivity().getIntent().getStringExtra("dizhi");
+        initChoose();
         mChart=view.findViewById(R.id.ri_lineChart);
         quyu_choose=view.findViewById(R.id.quyu_choose1);
         anri_chaxun=view.findViewById(R.id.anri_chaxun1);
@@ -95,7 +106,7 @@ public class AnritoujiFragment extends Fragment{
                 mListPopup.show(view);
             }
         });
-
+        quyu_choose.setText(name);
         Date now = new Date(System.currentTimeMillis());
         final Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
@@ -147,9 +158,9 @@ public class AnritoujiFragment extends Fragment{
                 pvTime.show();
             }
         });
-        String quyu_1=quyu_choose.getText().toString();
-        final String time_1=time_choose.getText().toString();
-        initRi(quyu_1,time_1,"2018","06",time_1);
+        quyu_1=quyu_choose.getText().toString();
+        time_1=time_choose.getText().toString();
+        initRi(id,quyu_1,time_1,"2018","06",time_1);
         anri_chaxun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -173,12 +184,141 @@ public class AnritoujiFragment extends Fragment{
                 mChart.invalidate();
                 mChart.animateX(1400);
                 mChart.notifyDataSetChanged();
-                initRi(quyu,time,"2018","06",time);
+                if (Place_id==null){
+                    Place_id="3";
+                }
+                initRi(Place_id,quyu,time,"2018","06",time);
 
             }
         });
         initview();
         return view;
+    }
+    private void initChoose(){
+        if (dizhi.equals("大理市")){
+            dizhi_m="dali";
+            id="3";
+            name="大理古城";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("洱源县")){
+            dizhi_m="eryuan";
+            id="32";
+            name="洱源高速路口";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("宾川县")){
+            dizhi_m="binchuan";
+            id="15";
+            name="鸡足山";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("弥渡县")){
+            dizhi_m="midu";
+            id="43";
+            name="弥渡入城口";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("永平县")){
+            dizhi_m="yongping";
+            id="42";
+            name="平高速路口";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("南涧县")){
+            dizhi_m="nanjian";
+            id="41";
+            name="南涧入城口";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("巍山县")){
+            dizhi_m="weishan";
+            id="36";
+            name="巍宝山";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("鹤庆县")){
+            dizhi_m="heqing";
+            id="44";
+            name="新华村";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("云龙县")){
+            dizhi_m="yunlong";
+            id="39";
+            name="云龙入城口";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("剑川县")){
+            dizhi_m="jianchuan";
+            id="47";
+            name="沙溪古镇";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("祥云县")){
+            dizhi_m="xiangyun";
+            id="27";
+            name="云高速路口";
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("漾濞县")){
+            dizhi_m="yangbi";
+            id="40";
+            name="漾濞高速路口";
+            initDizhiChoose(dizhi_m);
+        }
+    }
+    private void initDizhiChoose(String dizhi_m){
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache5");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/flowmeter/num?city="+dizhi_m;
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //Log.d("数据请求", "失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String str = response.body().string();
+                    //Log.d("数据请求", "成功"+str);
+                    final JSONObject jsonData = new JSONObject(str);
+                    final String resultStr = jsonData.getString("success");
+                    if (resultStr.equals("true")){
+                        String result=jsonData.getString("result");
+                        JSONArray num = new JSONArray(result);
+                        //String[] listItems = new String[num.length()];
+                        listItems = new String[num.length()];
+                        listPlace_id=new String[num.length()];
+                        for (int i=0;i<num.length();i++){
+                            JSONObject jsonObject=num.getJSONObject(i);
+                            String place_name=jsonObject.getString("place_name");
+                            String place_id=jsonObject.getString("place_id");
+                            listItems[i]=place_name;
+                            listPlace_id[i]=place_id;
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    response.body().close();
+                }
+            }
+        });
     }
 
     /**
@@ -189,7 +329,7 @@ public class AnritoujiFragment extends Fragment{
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -212,7 +352,7 @@ public class AnritoujiFragment extends Fragment{
             return chain.proceed(request);
         }
     };
-    private void initRi(final String quyu, final String time_1, String NIAN, String Yue,String Ri) {
+    private void initRi(String id,final String quyu, final String time_1, String NIAN, String Yue,String Ri) {
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("正在加载")
@@ -230,8 +370,6 @@ public class AnritoujiFragment extends Fragment{
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-
-        String id="3";
         //final String NIAN=time_choose.getText().toString();
         String url="http://192.168.190.119:8080/flowmeter/statistics?type=day&place_id="+id+"&year="+NIAN+"&month="+Yue+"&day="+Ri;
         final Request request = new Request.Builder()
@@ -307,8 +445,12 @@ public class AnritoujiFragment extends Fragment{
     }
     private void initoneListPopupIfNeed() {
         if (mListPopup == null) {
-
-            String[] listItems = new String[]{
+            if (listItems==null){
+                listItems=new String[]{
+                        "获取失败"
+                };
+            }
+            /*String[] listItems = new String[]{
                     "蝴蝶泉",
                     "感通索道",
                     "崇圣寺三塔",
@@ -321,7 +463,7 @@ public class AnritoujiFragment extends Fragment{
                     "石宝山",
                     "沙溪古镇",
                     "海舌公园"
-            };
+            };*/
             List<String> data = new ArrayList<>();
 
             Collections.addAll(data, listItems);
@@ -336,6 +478,9 @@ public class AnritoujiFragment extends Fragment{
                     //Toast.makeText(getActivity(), "Item " + (i + 1), Toast.LENGTH_SHORT).show();
                     one=adapterView.getItemAtPosition(i).toString();
                     quyu_choose.setText(one);
+                    if (one.equals(listItems[i])){
+                        Place_id=listPlace_id[i];
+                    }
                     finalMListPopup.dismiss();
                 }
             });
@@ -346,7 +491,7 @@ public class AnritoujiFragment extends Fragment{
                     if (one!=null){
                         quyu_choose.setText(one);
                     }else {
-                        quyu_choose.setText("大理古城");
+                        quyu_choose.setText(name);
                     }
                 }
             });
@@ -371,6 +516,7 @@ public class AnritoujiFragment extends Fragment{
         mChart.setPinchZoom(true);
         mChart.setHighlightPerDragEnabled(true);
         mChart.setNoDataText("正在获取数据...");
+        mChart.setNoDataTextColor(Color.WHITE);
         mChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);//颜色数值
         // set an alternative background color
         // mChart.setBackgroundColor(Color.GRAY);

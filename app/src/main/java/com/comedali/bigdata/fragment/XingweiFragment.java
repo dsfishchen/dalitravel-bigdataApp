@@ -74,6 +74,7 @@ import com.tencent.tencentmap.mapsdk.maps.CameraUpdate;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdateFactory;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.TextureMapView;
+import com.tencent.tencentmap.mapsdk.maps.UiSettings;
 import com.tencent.tencentmap.mapsdk.maps.model.CameraPosition;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Polyline;
@@ -107,6 +108,7 @@ public class XingweiFragment extends Fragment {
     private ConstraintLayout xingwei_ConstraintLayout;
     private Button choose_button;
     private QMUIListPopup mListPopup;
+    private TextView pingfen;
     private String one;
     private String two;
     private TextureMapView mMapView;
@@ -133,10 +135,10 @@ public class XingweiFragment extends Fragment {
         top5_title=view.findViewById(R.id.top5_title);
         pianhao_choose=view.findViewById(R.id.pianhao_choose);
         jiudian_recycleView=view.findViewById(R.id.jiudian_recycleView);
+        pingfen=view.findViewById(R.id.pingfen);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         jiudian_recycleView.setLayoutManager(layoutManager);
-
         adapter = new YoukelaiyuanAdapter(R.layout.youkelaiyuan_er_item, youkedatas);
         adapter.openLoadAnimation();//动画 默认提供5种方法（渐显、缩放、从下到上，从左到右、从右到左）
         adapter.isFirstOnly(false);//重复执行可设置
@@ -205,7 +207,6 @@ public class XingweiFragment extends Fragment {
                             initKezhanData();
                             top5_title.setText(items[index1]+"热度前五名");
                             top_name.setText(items[index1]+"");
-                            adapter.notifyDataSetChanged();
                         }
                         if (index1==1){
                             /*youkedatas.clear();
@@ -221,8 +222,7 @@ public class XingweiFragment extends Fragment {
                             initMeishi();
                             top5_title.setText(items[index1]+"热度前五名");
                             top_name.setText(items[index1]+"");
-                            adapter.notifyDataSetChanged();
-                        }
+                    }
                         if (index1==2){
                             /*youkedatas.clear();
                             //youkedatas=new ArrayList<>();
@@ -235,9 +235,9 @@ public class XingweiFragment extends Fragment {
                                 youkedatas.add(model);
                             }*/
                             initJingqu();
+                            pingfen.setText("人数");
                             top5_title.setText(items[index1]+"热度前五名");
                             top_name.setText(items[index1]+"");
-                            adapter.notifyDataSetChanged();
                         }
 
 
@@ -269,6 +269,10 @@ public class XingweiFragment extends Fragment {
                         0f)); //偏航角 0~360° (正北方为0)
         //tencentMap.animateCamera(cameraSigma);//改变地图状态
         tencentMap.moveCamera(cameraSigma);//移动地图
+        UiSettings mapUiSettings = tencentMap.getUiSettings();
+        mapUiSettings.setScaleViewEnabled(false);
+        mapUiSettings.setLogoScale(-0.0f);
+
         initXianlu();
         initChuxing();
         initTingliu();
@@ -528,7 +532,7 @@ public class XingweiFragment extends Fragment {
                             String interest_name=jsonObject.getString("interest_name");
                             String percent=jsonObject.getString("percent");
                             String ww= percent.substring(0,percent.length() - 1);
-                            float val1 = Float.parseFloat(ww);
+                            float val1 = Float.parseFloat(ww)*2;
                             entries1.add(new RadarEntry(val1));
                         }
 
@@ -620,12 +624,12 @@ public class XingweiFragment extends Fragment {
                         youkedatas.clear();
                         for (int i=0;i<num.length();i++){
                             JSONObject jsonObject=num.getJSONObject(i);
-                            String zone=jsonObject.getString("zone");
-                            String nums=jsonObject.getString("nums");
+                            String name=jsonObject.getString("name");
+                            String score=jsonObject.getString("score");
                             YoukelaiyuanEntity model=new YoukelaiyuanEntity();
                             model.setId(i+1+"");
-                            model.setProvince(zone);
-                            model.setBaifenbi(nums);
+                            model.setProvince(name);
+                            model.setBaifenbi(score);
                             youkedatas.add(model);
                         }
 
@@ -681,7 +685,7 @@ public class XingweiFragment extends Fragment {
                         for (int i=0;i<num.length();i++){
                             JSONObject jsonObject=num.getJSONObject(i);
                             String name=jsonObject.getString("name");
-                            int score=jsonObject.getInt("score");
+                            double score=jsonObject.getDouble("score");
                             YoukelaiyuanEntity model=new YoukelaiyuanEntity();
                             model.setId(i+1+"");
                             model.setProvince(name);
@@ -706,6 +710,11 @@ public class XingweiFragment extends Fragment {
         });
     }
     private void initJingqu() {
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("正在加载")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -753,6 +762,7 @@ public class XingweiFragment extends Fragment {
                             @Override
                             public void run() {
                                 adapter.notifyDataSetChanged();
+                                tipDialog.dismiss();
                             }
                         });
                     }
@@ -778,6 +788,7 @@ public class XingweiFragment extends Fragment {
         mRadarChart.setWebColorInner(Color.LTGRAY);
         mRadarChart.setWebAlpha(100);
         mRadarChart.setNoDataText("正在获取数据...");
+        mRadarChart.setNoDataTextColor(Color.WHITE);
         //mRadarChart.animateXY(2400,2400);
         //mChart.animateXY(1400, 1400, Easing.EaseInOutQuad);
 
@@ -954,7 +965,8 @@ public class XingweiFragment extends Fragment {
         //mPicChart.setCenterTextSize(16);//中心字大小
         mPicChart.setHoleRadius(0f);//设置圆孔半径
         mPicChart.setTransparentCircleRadius(0f);//设置半透明圈的宽度
-        mPicChart.setNoDataText("没有数据");//设置饼图没有数据时显示的文本
+        mPicChart.setNoDataText("正在获取数据...");//设置饼图没有数据时显示的文本
+        mPicChart.setNoDataTextColor(Color.WHITE);
         mPicChart.setUsePercentValues(true); //Boolean类型  设置图表是否使用百分比
         //picChart.setTransparentCircleColor(R.color.qingse);//设置环形图与中间空心圆之间的环形的颜色
         mPicChart.setHighlightPerTapEnabled(true);//设置点击Item高亮是否可用
@@ -1044,6 +1056,7 @@ public class XingweiFragment extends Fragment {
         mBarChart.setTouchEnabled(true);//设置是否可以触摸
         mBarChart.setDragEnabled(true);//设置是否可以拖拽
         mBarChart.setNoDataText("正在获取数据...");
+        mBarChart.setNoDataTextColor(Color.WHITE);
         mBarChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);//颜色数值
         //X轴
         //自定义设置横坐标

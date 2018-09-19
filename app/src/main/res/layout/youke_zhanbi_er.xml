@@ -48,10 +48,15 @@
                 android:textColor="@color/white"
                 android:text="十二县市游客量占比" />
 
-            <com.github.mikephil.charting.charts.PieChart
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chart_mYi"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_above="@+id/seekBar1" />
+            <!--<com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/pie_chart"
                 android:layout_width="match_parent"
-                android:layout_height="300dp" />
+                android:layout_height="300dp" />-->
 
             <View
                 android:layout_width="match_parent"

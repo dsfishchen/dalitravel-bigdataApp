@@ -14,6 +14,7 @@ import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.utils.MyMarkView;
 import com.comedali.bigdata.utils.NetworkUtil;
+import com.comedali.bigdata.utils.Youke_zhanbiMarkerView;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -68,6 +69,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
     private BarChart mBarChart;
     private ScrollView scrollView;
     private OkHttpClient client;
+    private BarChart chart_mYi;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,11 +84,13 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
                 }
             }
         });
-        mPicChart = findViewById(R.id.pie_chart);
+        //mPicChart = findViewById(R.id.pie_chart);
         mBarChart = findViewById(R.id.chart1);
+        chart_mYi=findViewById(R.id.chart_mYi);
         scrollView=findViewById(R.id.mm_scrollView);
         initdata();
-        initviewmPicChart();
+        initviewmYi();
+        //initviewmPicChart();
         initviewmBarChart();
     }
     /**
@@ -158,13 +162,16 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
                                 JSONArray result1 = new JSONArray(result);
                                 final List<PieEntry> strings = new ArrayList<>();
                                 final List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
+                                final List<BarEntry> Yi = new ArrayList<>();//Y轴方向第一组数组
                                 for (int i=0;i<result1.length();i++){
                                     JSONObject jsonObject=result1.getJSONObject(i);
                                     String area_name=jsonObject.getString("area_name");
                                     String scale=jsonObject.getString("scale");
+                                    float w= Float.parseFloat(scale.substring(0,scale.length() - 1));
                                     int nums=jsonObject.getInt("nums");
                                     strings.add(new PieEntry(nums,area_name));//饼图数据添加
                                     yVals.add(new BarEntry(i,nums));//柱状图数据添加
+                                    Yi.add(new BarEntry(i,w));
                                 }
                                 //setDatamPicChart(strings);
                                 //setDatamBarChart(yVals);
@@ -172,8 +179,10 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
                                     @Override
                                     public void run() {
                                         setDatamBarChart(yVals);
-                                        setDatamPicChart(strings);
-                                        mPicChart.animateY(1400);//设置Y轴动画
+                                        //setDatamPicChart(strings);
+                                        setDataYi(Yi);
+                                        //mPicChart.animateY(1400);//设置Y轴动画
+                                        chart_mYi.animateY(1400);
                                         mBarChart.animateY(1400);
                                     }
                                 });
@@ -189,6 +198,158 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
             }
         }).start();
     }
+
+
+    /*
+    条形图
+     */
+    private void initviewmYi() {
+        //setDatamBarChart(yVals);
+        //修改图表的描述信息
+        //mBarChart.setDescription("Android Java 薪资分析");
+        //设置动画
+        chart_mYi.animateXY(1000,1000);
+        chart_mYi.setDrawBarShadow(false);//设置每个直方图阴影为false
+        chart_mYi.setDrawValueAboveBar(true);//这里设置为true每一个直方图的值就会显示在直方图的顶部
+
+        chart_mYi.getDescription().setEnabled(false);
+
+        // if more than 60 entries are displayed in the chart, no values will be
+        // drawn
+        chart_mYi.setMaxVisibleValueCount(60);
+        chart_mYi.animateY(1400);
+        // scaling can now only be done on x- and y-axis separately
+        chart_mYi.setPinchZoom(false);
+        //mBarChart.setDrawGridBackground(false);//设置不显示网格
+        chart_mYi.setScaleEnabled(true);//设置是否可以缩放
+        chart_mYi.setTouchEnabled(true);//设置是否可以触摸
+        chart_mYi.setDragEnabled(true);//设置是否可以拖拽
+        chart_mYi.setNoDataText("正在获取数据...");
+        chart_mYi.setNoDataTextColor(Color.WHITE);
+        chart_mYi.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);//颜色数值
+        //X轴
+        //自定义设置横坐标
+        //IAxisValueFormatter xValueFormatter = new ExamModelOneXValueFormatter(xListValue);
+        XAxis xAxis = chart_mYi.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。
+        xAxis.setTextSize(10f);
+        xAxis.setTextColor(Color.rgb(255,255,255));
+        xAxis.setDrawAxisLine(true);
+        xAxis.setDrawGridLines(false);
+        xAxis.setLabelCount(7);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                int m=(int)value;
+                if (m==0){
+                    return "宾川县";
+                }else if (m==1){
+                    return "大理市";
+                }else if (m==2){
+                    return "洱源县";
+                }else if (m==3){
+                    return "鹤庆县";
+                }else if (m==4){
+                    return "剑川县";
+                }else if (m==5){
+                    return "弥渡县";
+                }else if (m==6){
+                    return "南涧彝族自治县";
+                }else if (m==7){
+                    return "巍山彝族回族自治";
+                }else if (m==8){
+                    return "祥云县";
+                }else if (m==9){
+                    return "漾濞彝族自治县";
+                }else if (m==10){
+                    return "永平县";
+                }else if (m==11){
+                    return "云龙县";
+                }
+                return "";
+            }
+        });
+        //左边Y轴
+        YAxis leftYAxis = chart_mYi.getAxisLeft();
+        leftYAxis.setDrawGridLines(true);//设置从Y轴左侧发出横线
+        leftYAxis.setAxisMinimum(0.0f);
+        leftYAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。
+        leftYAxis.setEnabled(true);//设置显示左边Y坐标
+        leftYAxis.setTextColor(Color.rgb(255,255,255));
+        leftYAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+
+        //右边Y轴
+        YAxis rightAxis = chart_mYi.getAxisRight();
+        rightAxis.setEnabled(false);//右侧不显示Y轴
+        rightAxis.setAxisMinValue(0.0f);//设置Y轴显示最小值，不然0下面会有空隙
+
+        Legend l = chart_mYi.getLegend();
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setDrawInside(false);
+        l.setForm(Legend.LegendForm.SQUARE);
+        l.setFormSize(9f);
+        l.setTextSize(11f);
+        l.setTextColor(Color.rgb(255,255,255));
+        l.setXEntrySpace(4f);
+        l.setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);
+
+        //自定义markView,点击显示更多信息
+        Youke_zhanbiMarkerView markerView = new Youke_zhanbiMarkerView(Youke_zhanbiActivity.this,R.layout.custom_marker_view);
+        markerView.setChartView(chart_mYi);
+        chart_mYi.setMarker(markerView);
+
+
+
+        chart_mYi.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                //Log.d("mm", String.valueOf(e.getX()));
+                // Log.d("ww", String.valueOf(e.getY()));
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
+
+    }
+
+    private void setDataYi(List<BarEntry> mm) {
+
+        //每一个柱状图的数据
+        //List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
+
+        /*for (int i = 0; i < 12; i++) {//添加数据源
+            //yVals.add(new BarEntry(i,(float) Math.random()*520 + 1));
+            int yVal = (int) (Math.random()*520 + 1);
+            yVals.add(new BarEntry(i,yVal));
+        }*/
+        BarDataSet dataSet = new BarDataSet(mm, "十二县市游客数量条形统计图 单位：人");//一组柱状图
+        //dataSet.setColor(Color.LTGRAY);//设置第yi组数据颜色
+        dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        dataSet.setValueTextSize(12);//修改一组柱状图的文字大小
+        dataSet.setValueTextColor(Color.rgb(255,255,255));
+        dataSet.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                double mm=(double) entry.getY();
+                mm=(double)Math.round(mm*100)/100;
+                return mm+"%";
+            }
+        });
+        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+        dataSets.add(dataSet);
+        BarData data = new BarData(dataSets);
+        chart_mYi.setData(data);
+        chart_mYi.invalidate();//重绘图表
+    }
+
+
+
 
     /*
     条形图
@@ -215,6 +376,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         mBarChart.setTouchEnabled(true);//设置是否可以触摸
         mBarChart.setDragEnabled(true);//设置是否可以拖拽
         mBarChart.setNoDataText("正在获取数据...");
+        mBarChart.setNoDataTextColor(Color.WHITE);
         mBarChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);//颜色数值
         //X轴
         //自定义设置横坐标
@@ -356,7 +518,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
     /*
     饼图
      */
-    private void initviewmPicChart() {
+    /*private void initviewmPicChart() {
 
         //setDatamPicChart(strings);
 
@@ -396,7 +558,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
     }
 
     private void setDatamPicChart(List<PieEntry> strings) {
-        /*List<PieEntry> strings = new ArrayList<>();
+        *//*List<PieEntry> strings = new ArrayList<>();
         strings.add(new PieEntry(30f,"云龙县"));
         strings.add(new PieEntry(170f,"大理市"));
         strings.add(new PieEntry(60f,"宾川县"));
@@ -408,7 +570,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         strings.add(new PieEntry(45f,"祥云县"));
         strings.add(new PieEntry(56f,"漾濞县"));
         strings.add(new PieEntry(24f,"巍山县"));
-        strings.add(new PieEntry(35f,"弥渡县"));*/
+        strings.add(new PieEntry(35f,"弥渡县"));*//*
         PieDataSet dataSet = new PieDataSet(strings,"代表");
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
@@ -442,7 +604,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         mPicChart.highlightValues(null);
         mPicChart.setData(pieData);//设置数据
         mPicChart.invalidate();//重绘图表
-    }
+    }*/
 
 
 }

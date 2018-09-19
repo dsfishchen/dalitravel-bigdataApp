@@ -39,6 +39,7 @@ import com.tencent.tencentmap.mapsdk.maps.CameraUpdate;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdateFactory;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.TextureMapView;
+import com.tencent.tencentmap.mapsdk.maps.UiSettings;
 import com.tencent.tencentmap.mapsdk.maps.model.CameraPosition;
 import com.tencent.tencentmap.mapsdk.maps.model.HeatDataNode;
 import com.tencent.tencentmap.mapsdk.maps.model.HeatOverlayOptions;
@@ -76,7 +77,7 @@ public class ShishijiankongFragment extends Fragment {
     private String one;
     private String two;
     private YoukelaiyuanAdapter adapter;
-    private List<YoukelaiyuanEntity> youkedatas;
+    private List<YoukelaiyuanEntity> youkedatas=new ArrayList<>();
     private RecyclerView shishi_recyclerView;
     private OkHttpClient client;
     private TextView jdrs_1;
@@ -86,28 +87,43 @@ public class ShishijiankongFragment extends Fragment {
     private TextView jdrs_5;
     private TextView jdrs_6;
     private String dizhi;
+    private String[] listItems;
+    private String[] listPlace_id;
+    private String dizhi_m=null;
+    private String id=null;
+    private String name=null;
+    private double[] latw;
+    private double[] lonw;
+    private double lat1;
+    private double lon1;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.shishi_jiankong_er,container,false);
         dizhi=getActivity().getIntent().getStringExtra("dizhi");
-
-
+        initChoose();
         quyu_qiehuan=view.findViewById(R.id.quyu_qiehuan);
         mMapView = view.findViewById(R.id.shishi_map);
         shishi_recyclerView=view.findViewById(R.id.shishi_recyclerView);
         tencentMap = mMapView.getMap();
+
         //设定中心点坐标
         CameraUpdate cameraSigma =
                 CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                        new LatLng(25.695369,100.163383), //新的中心点坐标
+                        new LatLng(lat1,lon1), //新的中心点坐标
                         12,  //新的缩放级别
                         0f, //俯仰角 0~45° (垂直地图时为0)
                         0f)); //偏航角 0~360° (正北方为0)
         //tencentMap.animateCamera(cameraSigma);//改变地图状态
         tencentMap.moveCamera(cameraSigma);//移动地图
-        initHeatMapOverlay();
+        UiSettings mapUiSettings = tencentMap.getUiSettings();
+        mapUiSettings.setScaleViewEnabled(false);
+        mapUiSettings.setLogoScale(-0.0f);
+
+        //initHeatMapOverlay();
         initlatLngdata();
+
+        quyu_qiehuan.setText(name);
         quyu_qiehuan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -117,7 +133,6 @@ public class ShishijiankongFragment extends Fragment {
                 mListPopup.show(view);
             }
         });
-
         jdrs_1=view.findViewById(R.id.jdrs_1);
         jdrs_2=view.findViewById(R.id.jdrs_2);
         jdrs_3=view.findViewById(R.id.jdrs_3);
@@ -125,8 +140,8 @@ public class ShishijiankongFragment extends Fragment {
         jdrs_5=view.findViewById(R.id.jdrs_5);
         jdrs_6=view.findViewById(R.id.jdrs_6);
 
-        initData();
-        initjdrs();
+        initData(id);
+        initjdrs(id);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         shishi_recyclerView.setLayoutManager(layoutManager);
@@ -137,8 +152,6 @@ public class ShishijiankongFragment extends Fragment {
         shishi_recyclerView.setAdapter(adapter);
         //添加Android自带的分割线
         shishi_recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
-
-
         return view;
     }
 
@@ -151,7 +164,7 @@ public class ShishijiankongFragment extends Fragment {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -174,12 +187,7 @@ public class ShishijiankongFragment extends Fragment {
             return chain.proceed(request);
         }
     };
-    private void initData() {
-        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
-                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载")
-                .create();
-        tipDialog.show();
+    private void initData(String id) {
 
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache2");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
@@ -192,9 +200,7 @@ public class ShishijiankongFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String name="dali";
-        String id="3";
-        String url="http://192.168.190.119:8080/flowmeter/toursitenum?city="+name+"&place_id="+id;
+        String url="http://192.168.190.119:8080/flowmeter/toursitenum?city="+dizhi_m+"&place_id="+id;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -278,7 +284,6 @@ public class ShishijiankongFragment extends Fragment {
                                             jdrs_5.setText("0");
                                             jdrs_6.setText("0");
                                         }
-                                        tipDialog.dismiss();
                                     }
                                 });
                             }
@@ -297,11 +302,15 @@ public class ShishijiankongFragment extends Fragment {
 
     }
 
-    private void initjdrs() {
+    private void initjdrs(String id) {
 
-        youkedatas=new ArrayList<>();
+        //youkedatas=new ArrayList<>();
 
-
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("正在加载")
+                .create();
+        tipDialog.show();
         //二
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
@@ -314,9 +323,7 @@ public class ShishijiankongFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String name="dali";
-        String id="3";
-        String url="http://192.168.190.119:8080/flowmeter/toursitepointnum?city="+name+"&place_id="+id;
+        String url="http://192.168.190.119:8080/flowmeter/toursitepointnum?city="+dizhi_m+"&place_id="+id;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -336,6 +343,7 @@ public class ShishijiankongFragment extends Fragment {
                     if (resultStr.equals("true")){
                         String result=jsonData.getString("result");
                         JSONArray num = new JSONArray(result);
+                        youkedatas.clear();
                         for (int i=0;i<num.length();i++){
                             JSONObject jsonObject=num.getJSONObject(i);
                             String location=jsonObject.getString("location");
@@ -346,11 +354,11 @@ public class ShishijiankongFragment extends Fragment {
                             model.setBaifenbi((int)(Math.random()*100+1)+"");
                             youkedatas.add(model);
                         }
-
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 adapter.notifyDataSetChanged();
+                                tipDialog.dismiss();
                             }
                         });
                     }
@@ -363,13 +371,178 @@ public class ShishijiankongFragment extends Fragment {
             }
         });
 
-
-
     }
+    private void initChoose(){
+        if (dizhi.equals("大理市")){
+            dizhi_m="dali";
+            id="3";
+            name="大理古城";
+            lat1=25.695369;
+            lon1=100.163383;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("洱源县")){
+            dizhi_m="eryuan";
+            id="32";
+            name="洱源高速路口";
+            lat1=26.106472;
+            lon1=100.005083;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("宾川县")){
+            dizhi_m="binchuan";
+            id="15";
+            name="鸡足山";
+            lat1=25.94945;
+            lon1=100.406921;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("弥渡县")){
+            dizhi_m="midu";
+            id="43";
+            name="弥渡入城口";
+            lat1=25.520113;
+            lon1=100.451136;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("永平县")){
+            dizhi_m="yongping";
+            id="42";
+            name="平高速路口";
+            lat1=25.422875;
+            lon1=99.544791;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("南涧县")){
+            dizhi_m="nanjian";
+            id="41";
+            name="南涧入城口";
+            lat1=25.005662;
+            lon1=100.503639;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("巍山县")){
+            dizhi_m="weishan";
+            id="36";
+            name="巍宝山";
+            lat1=25.178798;
+            lon1=100.358731;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("鹤庆县")){
+            dizhi_m="heqing";
+            id="44";
+            name="新华村";
+            lat1=26.624897;
+            lon1=100.183584;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("云龙县")){
+            dizhi_m="yunlong";
+            id="39";
+            name="云龙入城口";
+            lat1=25.489151;
+            lon1=99.936838;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("剑川县")){
+            dizhi_m="jianchuan";
+            id="47";
+            name="沙溪古镇";
+            lat1=26.32321;
+            lon1=99.857058;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("祥云县")){
+            dizhi_m="xiangyun";
+            id="27";
+            name="云高速路口";
+            lat1=25.507544;
+            lon1=100.551333;
+            initDizhiChoose(dizhi_m);
+        }
+        if (dizhi.equals("漾濞县")){
+            dizhi_m="yangbi";
+            id="40";
+            name="漾濞高速路口";
+            lat1=25.579862;
+            lon1=100.074604;
+            initDizhiChoose(dizhi_m);
+        }
+    }
+    private void initDizhiChoose(String dizhi_m){
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/flowmeter/num?city="+dizhi_m;
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //Log.d("数据请求", "失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String str = response.body().string();
+                    //Log.d("数据请求", "成功"+str);
+                    final JSONObject jsonData = new JSONObject(str);
+                    final String resultStr = jsonData.getString("success");
+                    if (resultStr.equals("true")){
+                        String result=jsonData.getString("result");
+                        JSONArray num = new JSONArray(result);
+                        //String[] listItems = new String[num.length()];
+                        listItems = new String[num.length()];
+                        listPlace_id=new String[num.length()];
+                        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
+                        latw=new double[num.length()];
+                        lonw=new double[num.length()];
+                        for (int i=0;i<num.length();i++){
+                            JSONObject jsonObject=num.getJSONObject(i);
+                            String place_name=jsonObject.getString("place_name");
+                            String place_id=jsonObject.getString("place_id");
+                            String latitude=jsonObject.getString("latitude");
+                            String longitude=jsonObject.getString("longitude");
+                            int nums=jsonObject.getInt("nums");
+                            double lat= Double.parseDouble(latitude);
+                            double long1= Double.parseDouble(longitude);
+                            listItems[i]=place_name;
+                            listPlace_id[i]=place_id;
+                            latw[i]=lat;
+                            lonw[i]=long1;
+                            nodes.add(new HeatDataNode(new LatLng(lat,long1), nums));
+                        }
+                        initHeatMapOverlay(nodes);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    response.body().close();
+                }
+            }
+        });
+    }
+
     private void initoneListPopupIfNeed() {
         if (mListPopup == null) {
-
-            String[] listItems = new String[]{
+            if (listItems==null){
+                listItems=new String[]{
+                        "获取失败"
+                };
+            }
+            /*String[] listItems = new String[]{
                     "蝴蝶泉",//6
                     "感通索道",//8
                     "崇圣寺三塔",//10
@@ -382,9 +555,8 @@ public class ShishijiankongFragment extends Fragment {
                     "石宝山",//46
                     "沙溪古镇",//47
                     "海舌公园"//48
-            };
+            };*/
             List<String> data = new ArrayList<>();
-
             Collections.addAll(data, listItems);
 
             ArrayAdapter adapter = new ArrayAdapter<>(getActivity(), R.layout.simple_list_item, data);
@@ -397,6 +569,20 @@ public class ShishijiankongFragment extends Fragment {
                     //Toast.makeText(getActivity(), "Item " + (i + 1), Toast.LENGTH_SHORT).show();
                     one=adapterView.getItemAtPosition(i).toString();
                     quyu_qiehuan.setText(one);
+                    if (one.equals(listItems[i])){
+                        initData(listPlace_id[i]);
+                        initjdrs(listPlace_id[i]);
+                        double wei=latw[i];
+                        double jing=lonw[i];
+                        CameraUpdate cameraSigma =
+                                CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                                        new LatLng(wei,jing), //新的中心点坐标
+                                        12,  //新的缩放级别
+                                        0f, //俯仰角 0~45° (垂直地图时为0)
+                                        0f)); //偏航角 0~360° (正北方为0)
+                        //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        tencentMap.moveCamera(cameraSigma);//移动地图
+                    }
                     finalMListPopup.dismiss();
                 }
             });
@@ -407,7 +593,7 @@ public class ShishijiankongFragment extends Fragment {
                     if (one!=null){
                         quyu_qiehuan.setText(one);
                     }else {
-                        quyu_qiehuan.setText("大理古城");
+                        quyu_qiehuan.setText(name);
                     }
                 }
             });
@@ -427,15 +613,15 @@ public class ShishijiankongFragment extends Fragment {
         //创建图标
         //marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
     }
-    private void initHeatMapOverlay() {
+    private void initHeatMapOverlay(ArrayList<HeatDataNode> nodes) {
         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
-        ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
+        /*ArrayList<HeatDataNode> nodes = new ArrayList<HeatDataNode>();
         nodes.add(new HeatDataNode(new LatLng(25.711610,100.130424), 3486));//大理高铁站
         nodes.add(new HeatDataNode(new LatLng(25.718725,00.188961), 1126));//飞机场
         nodes.add(new HeatDataNode(new LatLng(25.711224,100.135489), 2386));//三塔
         nodes.add(new HeatDataNode(new LatLng(25.685353,100.136690), 176));//海舌
         nodes.add(new HeatDataNode(new LatLng(25.681717,100.144243), 486));//双廊
-        nodes.add(new HeatDataNode(new LatLng(25.685237,100.156903), 166));//挖色
+        nodes.add(new HeatDataNode(new LatLng(25.685237,100.156903), 166));//挖色*/
 
         HeatOverlayOptions.IColorMapper mm=new HeatOverlayOptions.IColorMapper() {
             @Override

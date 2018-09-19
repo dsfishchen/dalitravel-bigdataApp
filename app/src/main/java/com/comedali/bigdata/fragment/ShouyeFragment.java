@@ -20,9 +20,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ZoomControls;
 
 import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
@@ -36,6 +38,7 @@ import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdate;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdateFactory;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
+import com.tencent.tencentmap.mapsdk.maps.TencentMapOptions;
 import com.tencent.tencentmap.mapsdk.maps.TextureMapView;
 import com.tencent.tencentmap.mapsdk.maps.UiSettings;
 import com.tencent.tencentmap.mapsdk.maps.model.CameraPosition;
@@ -118,6 +121,9 @@ public class ShouyeFragment extends Fragment {
             }
         });
         tencentMap = mMapView.getMap();
+        UiSettings mapUiSettings = tencentMap.getUiSettings();
+        mapUiSettings.setScaleViewEnabled(false);
+        mapUiSettings.setLogoScale(-0.0f);
 
         renshu1=view.findViewById(R.id.renshu_1);
         renshu2=view.findViewById(R.id.renshu_2);
@@ -475,6 +481,7 @@ public class ShouyeFragment extends Fragment {
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
                         tencentMap.moveCamera(cameraSigma);//移动地图
+                        dizhi="宾川县";
                         //数据获取
                         initbinchuan();
                     }
@@ -488,6 +495,7 @@ public class ShouyeFragment extends Fragment {
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
                         tencentMap.moveCamera(cameraSigma);//移动地图
+                        dizhi="永平县";
                         //数据获取
                         inityongping();
                     }
@@ -500,6 +508,7 @@ public class ShouyeFragment extends Fragment {
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        dizhi="南涧县";
                         tencentMap.moveCamera(cameraSigma);//移动地图
                         initnanjian();
                     }
@@ -512,6 +521,7 @@ public class ShouyeFragment extends Fragment {
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        dizhi="巍山县";
                         tencentMap.moveCamera(cameraSigma);//移动地图
                         initweishan();
                     }
@@ -524,6 +534,7 @@ public class ShouyeFragment extends Fragment {
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        dizhi="鹤庆县";
                         tencentMap.moveCamera(cameraSigma);//移动地图
                         initheqing();
                     }
@@ -536,6 +547,7 @@ public class ShouyeFragment extends Fragment {
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        dizhi="云龙县";
                         tencentMap.moveCamera(cameraSigma);//移动地图
                         inityunlong();
                     }
@@ -548,6 +560,7 @@ public class ShouyeFragment extends Fragment {
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        dizhi="剑川县";
                         tencentMap.moveCamera(cameraSigma);//移动地图
                         initjianchuan();
                     }
@@ -560,6 +573,7 @@ public class ShouyeFragment extends Fragment {
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        dizhi="祥云县";
                         tencentMap.moveCamera(cameraSigma);//移动地图
                         initxiangyun();
                     }
@@ -572,6 +586,7 @@ public class ShouyeFragment extends Fragment {
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        dizhi="漾濞县";
                         tencentMap.moveCamera(cameraSigma);//移动地图
                         inityangbi();
                     }
@@ -584,6 +599,7 @@ public class ShouyeFragment extends Fragment {
                                         0f, //俯仰角 0~45° (垂直地图时为0)
                                         0f)); //偏航角 0~360° (正北方为0)
                         //tencentMap.animateCamera(cameraSigma);//改变地图状态
+                        dizhi="弥渡县";
                         tencentMap.moveCamera(cameraSigma);//移动地图
                         initmidu();
                     }
