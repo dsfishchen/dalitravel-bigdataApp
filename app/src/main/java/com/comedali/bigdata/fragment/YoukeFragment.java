@@ -309,10 +309,6 @@ public class YoukeFragment extends Fragment {
         });
     }
     private void initSousuoSex() {
-        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
-                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载")
-                .create();
 
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
@@ -374,12 +370,6 @@ public class YoukeFragment extends Fragment {
         youkedatas=new ArrayList<>();
 
 
-        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
-                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载")
-                .create();
-        tipDialog.show();
-
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -425,12 +415,6 @@ public class YoukeFragment extends Fragment {
                             youkedatas.add(model);
                         }
 
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                tipDialog.dismiss();
-                            }
-                        });
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

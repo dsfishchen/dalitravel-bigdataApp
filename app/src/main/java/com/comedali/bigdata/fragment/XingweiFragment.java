@@ -32,6 +32,7 @@ import com.comedali.bigdata.activity.Youke_zhanbiActivity;
 import com.comedali.bigdata.adapter.YoukelaiyuanAdapter;
 import com.comedali.bigdata.entity.YoukelaiyuanEntity;
 import com.comedali.bigdata.utils.MyMarkView;
+import com.comedali.bigdata.utils.NetworkUtil;
 import com.comedali.bigdata.utils.RadarMarkerView;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
@@ -66,6 +67,7 @@ import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
+import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.popup.QMUIListPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdate;
@@ -77,9 +79,24 @@ import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Polyline;
 import com.tencent.tencentmap.mapsdk.maps.model.PolylineOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Cache;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by 刘杨刚 on 2018/9/3.
@@ -105,6 +122,7 @@ public class XingweiFragment extends Fragment {
     private Button pianhao_choose;
     private TextView top5_title;
     private TextView top_name;
+    private OkHttpClient client;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -115,7 +133,6 @@ public class XingweiFragment extends Fragment {
         top5_title=view.findViewById(R.id.top5_title);
         pianhao_choose=view.findViewById(R.id.pianhao_choose);
         jiudian_recycleView=view.findViewById(R.id.jiudian_recycleView);
-        initJiudianData();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         jiudian_recycleView.setLayoutManager(layoutManager);
@@ -175,7 +192,7 @@ public class XingweiFragment extends Fragment {
                         pianhao_choose.setText(items[index1]);
 
                         if (index1==0){
-                            youkedatas.clear();
+                            /*youkedatas.clear();
                             //youkedatas=new ArrayList<>();
                             YoukelaiyuanEntity model;
                             for (int i = 0; i < 5; i++) {
@@ -184,13 +201,14 @@ public class XingweiFragment extends Fragment {
                                 model.setProvince("客栈"+i);
                                 model.setBaifenbi("l4.l4");
                                 youkedatas.add(model);
-                            }
+                            }*/
+                            initKezhanData();
                             top5_title.setText(items[index1]+"热度前五名");
                             top_name.setText(items[index1]+"");
                             adapter.notifyDataSetChanged();
                         }
                         if (index1==1){
-                            youkedatas.clear();
+                            /*youkedatas.clear();
                             //youkedatas=new ArrayList<>();
                             YoukelaiyuanEntity model;
                             for (int i = 0; i < 5; i++) {
@@ -199,13 +217,14 @@ public class XingweiFragment extends Fragment {
                                 model.setProvince("美食"+i);
                                 model.setBaifenbi("l4.l4");
                                 youkedatas.add(model);
-                            }
+                            }*/
+                            initMeishi();
                             top5_title.setText(items[index1]+"热度前五名");
                             top_name.setText(items[index1]+"");
                             adapter.notifyDataSetChanged();
                         }
                         if (index1==2){
-                            youkedatas.clear();
+                            /*youkedatas.clear();
                             //youkedatas=new ArrayList<>();
                             YoukelaiyuanEntity model;
                             for (int i = 0; i < 5; i++) {
@@ -214,7 +233,8 @@ public class XingweiFragment extends Fragment {
                                 model.setProvince("景点"+i);
                                 model.setBaifenbi("l4.l4");
                                 youkedatas.add(model);
-                            }
+                            }*/
+                            initJingqu();
                             top5_title.setText(items[index1]+"热度前五名");
                             top_name.setText(items[index1]+"");
                             adapter.notifyDataSetChanged();
@@ -250,7 +270,12 @@ public class XingweiFragment extends Fragment {
         //tencentMap.animateCamera(cameraSigma);//改变地图状态
         tencentMap.moveCamera(cameraSigma);//移动地图
         initXianlu();
-
+        initChuxing();
+        initTingliu();
+        initPiaohao();
+        initKezhanData();
+        //initMeishi();
+        //initJingqu();
         choose_button=view.findViewById(R.id.choose_button);
         choose_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -318,6 +343,212 @@ public class XingweiFragment extends Fragment {
         return view;
     }
 
+
+
+    /**
+     * 有网时候的缓存
+     */
+    final Interceptor NetCacheInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            Response response = chain.proceed(request);
+            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            return response.newBuilder()
+                    .header("Cache-Control", "public, max-age="+onlineCacheTime)
+                    .removeHeader("Pragma")
+                    .build();
+        }
+    };
+    /**
+     * 没有网时候的缓存
+     */
+    final Interceptor OfflineCacheInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            if (!NetworkUtil.checkNet(getActivity())) {
+                int offlineCacheTime = 60*60*24*7;//离线的时候的缓存的过期时间
+                request = request.newBuilder()
+                        .header("Cache-Control", "public, only-if-cached, max-stale=" + offlineCacheTime)
+                        .build();
+            }
+            return chain.proceed(request);
+        }
+    };
+    private void initChuxing() {
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/behavior/traffic";
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //Log.d("数据请求", "失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String str = response.body().string();
+                    //Log.d("数据请求", "成功"+str);
+                    final JSONObject jsonData = new JSONObject(str);
+                    final String resultStr = jsonData.getString("success");
+                    if (resultStr.equals("true")){
+                        String result=jsonData.getString("result");
+                        final JSONArray num = new JSONArray(result);
+                        final List<PieEntry> strings=new ArrayList<>();
+                        for (int i=0;i<num.length();i++){
+                            JSONObject jsonObject=num.getJSONObject(i);
+                            String traffic_type=jsonObject.getString("traffic_type");
+                            String nums=jsonObject.getString("nums");
+                            float renshu= Float.parseFloat(nums);
+                            strings.add(new PieEntry(renshu,traffic_type));
+                        }
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setDatamPicChart(strings);
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    response.body().close();
+                }
+            }
+        });
+    }
+
+    private void initTingliu() {
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/behavior/stay";
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //Log.d("数据请求", "失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String str = response.body().string();
+                    //Log.d("数据请求", "成功"+str);
+                    final JSONObject jsonData = new JSONObject(str);
+                    final String resultStr = jsonData.getString("success");
+                    if (resultStr.equals("true")){
+                        String result=jsonData.getString("result");
+                        final JSONArray num = new JSONArray(result);
+                        final List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
+                        for (int i=0;i<num.length();i++){
+                            JSONObject jsonObject=num.getJSONObject(i);
+                            String time=jsonObject.getString("time");
+                            int yVal = Integer.parseInt(time);
+                            yVals.add(new BarEntry(i,yVal));
+                        }
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setDatamBarChart(yVals);
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    response.body().close();
+                }
+            }
+        });
+    }
+    private void initPiaohao() {
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/behavior/predilection?type=interest";
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //Log.d("数据请求", "失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String str = response.body().string();
+                    //Log.d("数据请求", "成功"+str);
+                    final JSONObject jsonData = new JSONObject(str);
+                    final String resultStr = jsonData.getString("success");
+                    if (resultStr.equals("true")){
+                        String result=jsonData.getString("result");
+                        final JSONArray num = new JSONArray(result);
+                        final List<RadarEntry> entries1 = new ArrayList<RadarEntry>();
+                        for (int i=0;i<num.length();i++){
+                            JSONObject jsonObject=num.getJSONObject(i);
+                            String interest_name=jsonObject.getString("interest_name");
+                            String percent=jsonObject.getString("percent");
+                            String ww= percent.substring(0,percent.length() - 1);
+                            float val1 = Float.parseFloat(ww);
+                            entries1.add(new RadarEntry(val1));
+                        }
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setDatamRadarChart(entries1);
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    response.body().close();
+                }
+            }
+        });
+    }
+
     private void initXianlu() {
         latLngs = new ArrayList<LatLng>();
         latLngs.add(new LatLng(25.646788,100.322685));
@@ -331,10 +562,10 @@ public class XingweiFragment extends Fragment {
                 addAll(latLngs).color(0xff00ff00). width(5f));
     }
 
-    private void initJiudianData() {
+    private void initKezhanData() {
         //youkedatas=new ArrayList<>();
 
-        if (youkedatas.isEmpty()){
+        /*if (youkedatas.isEmpty()){
             youkedatas.clear();
             YoukelaiyuanEntity model;
             for (int i = 0; i < 5; i++) {
@@ -353,13 +584,190 @@ public class XingweiFragment extends Fragment {
                 model.setBaifenbi("l4.l4");
                 youkedatas.add(model);
             }
-        }
+        }*/
 
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/behavior/predilection?type=hotel";
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //Log.d("数据请求", "失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String str = response.body().string();
+                    //Log.d("数据请求", "成功"+str);
+                    final JSONObject jsonData = new JSONObject(str);
+                    final String resultStr = jsonData.getString("success");
+                    if (resultStr.equals("true")){
+                        String result=jsonData.getString("result");
+                        final JSONArray num = new JSONArray(result);
+                        youkedatas.clear();
+                        for (int i=0;i<num.length();i++){
+                            JSONObject jsonObject=num.getJSONObject(i);
+                            String zone=jsonObject.getString("zone");
+                            String nums=jsonObject.getString("nums");
+                            YoukelaiyuanEntity model=new YoukelaiyuanEntity();
+                            model.setId(i+1+"");
+                            model.setProvince(zone);
+                            model.setBaifenbi(nums);
+                            youkedatas.add(model);
+                        }
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                            adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    response.body().close();
+                }
+            }
+        });
+    }
+    private void initMeishi() {
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/behavior/predilection?type=food";
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //Log.d("数据请求", "失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String str = response.body().string();
+                    //Log.d("数据请求", "成功"+str);
+                    final JSONObject jsonData = new JSONObject(str);
+                    final String resultStr = jsonData.getString("success");
+                    if (resultStr.equals("true")){
+                        String result=jsonData.getString("result");
+                        final JSONArray num = new JSONArray(result);
+                        youkedatas.clear();
+                        for (int i=0;i<num.length();i++){
+                            JSONObject jsonObject=num.getJSONObject(i);
+                            String name=jsonObject.getString("name");
+                            int score=jsonObject.getInt("score");
+                            YoukelaiyuanEntity model=new YoukelaiyuanEntity();
+                            model.setId(i+1+"");
+                            model.setProvince(name);
+                            model.setBaifenbi(score+"");
+                            youkedatas.add(model);
+                        }
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    response.body().close();
+                }
+            }
+        });
+    }
+    private void initJingqu() {
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/behavior/predilection?type=scenicspot";
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //Log.d("数据请求", "失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String str = response.body().string();
+                    //Log.d("数据请求", "成功"+str);
+                    final JSONObject jsonData = new JSONObject(str);
+                    final String resultStr = jsonData.getString("success");
+                    if (resultStr.equals("true")){
+                        String result=jsonData.getString("result");
+                        final JSONArray num = new JSONArray(result);
+                        youkedatas.clear();
+                        for (int i=0;i<num.length();i++){
+                            JSONObject jsonObject=num.getJSONObject(i);
+                            String place_name=jsonObject.getString("place_name");
+                            int nums=jsonObject.getInt("nums");
+                            YoukelaiyuanEntity model=new YoukelaiyuanEntity();
+                            model.setId(i+1+"");
+                            model.setProvince(place_name);
+                            model.setBaifenbi(nums+"");
+                            youkedatas.add(model);
+                        }
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    response.body().close();
+                }
+            }
+        });
     }
 
-
     private void initviewmRadarChart() {
-        setDatamRadarChart();
+        //setDatamRadarChart();
         mRadarChart.setBackgroundColor(Color.rgb(60, 65, 82));
 
         mRadarChart.getDescription().setEnabled(false);
@@ -369,7 +777,7 @@ public class XingweiFragment extends Fragment {
         mRadarChart.setWebLineWidthInner(1f);
         mRadarChart.setWebColorInner(Color.LTGRAY);
         mRadarChart.setWebAlpha(100);
-        mRadarChart.setNoDataText("获取数据失败");
+        mRadarChart.setNoDataText("正在获取数据...");
         //mRadarChart.animateXY(2400,2400);
         //mChart.animateXY(1400, 1400, Easing.EaseInOutQuad);
 
@@ -410,20 +818,20 @@ public class XingweiFragment extends Fragment {
         l.setTextColor(Color.WHITE);
     }
 
-    private void setDatamRadarChart() {
+    private void setDatamRadarChart(List<RadarEntry> entries1) {
 
-        ArrayList<RadarEntry> entries1 = new ArrayList<RadarEntry>();
+        //ArrayList<RadarEntry> entries1 = new ArrayList<RadarEntry>();
         //ArrayList<RadarEntry> entries2 = new ArrayList<RadarEntry>();
 
         // NOTE: The order of the entries when being added to the entries array determines their position around the center of
         // the chart.
-        for (int i = 0; i < 5; i++) {
+        /*for (int i = 0; i < 5; i++) {
             float val1 = (float) (Math.random() * 80) + 20;
             entries1.add(new RadarEntry(val1));
 
-           /* float val2 = (float) (Math.random() * mult) + min;
-            entries2.add(new RadarEntry(val2));*/
-        }
+            float val2 = (float) (Math.random() * mult) + min;
+            entries2.add(new RadarEntry(val2));
+        }*/
 
         RadarDataSet set1 = new RadarDataSet(entries1, "兴趣前五名");
         set1.setColor(Color.rgb(255, 255, 255));
@@ -538,7 +946,7 @@ public class XingweiFragment extends Fragment {
         饼图
          */
     private void initviewmPicChart() {
-        setDatamPicChart();
+        //setDatamPicChart();
         Description description = new Description();
         description.setText("");
         mPicChart.setDescription(description);//右下角字,添加图表描述
@@ -576,12 +984,12 @@ public class XingweiFragment extends Fragment {
             }
         });   //监听器
     }
-    private void setDatamPicChart() {
-        List<PieEntry> strings = new ArrayList<>();
+    private void setDatamPicChart(List<PieEntry> strings) {
+        /*List<PieEntry> strings = new ArrayList<>();
         strings.add(new PieEntry(30f,"火车"));
         strings.add(new PieEntry(170f,"飞机"));
         strings.add(new PieEntry(60f,"自驾"));
-        strings.add(new PieEntry(50f,"客车"));
+        strings.add(new PieEntry(50f,"客车"));*/
         PieDataSet dataSet = new PieDataSet(strings,"出行方式");
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
@@ -615,7 +1023,7 @@ public class XingweiFragment extends Fragment {
    条形图
     */
     private void initviewmBarChart() {
-        setDatamBarChart();
+        //setDatamBarChart();
         //修改图表的描述信息
         //mBarChart.setDescription("Android Java 薪资分析");
         //设置动画
@@ -635,7 +1043,7 @@ public class XingweiFragment extends Fragment {
         mBarChart.setScaleEnabled(true);//设置是否可以缩放
         mBarChart.setTouchEnabled(true);//设置是否可以触摸
         mBarChart.setDragEnabled(true);//设置是否可以拖拽
-        mBarChart.setNoDataText("数据获取失败");
+        mBarChart.setNoDataText("正在获取数据...");
         mBarChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);//颜色数值
         //X轴
         //自定义设置横坐标
@@ -649,6 +1057,7 @@ public class XingweiFragment extends Fragment {
         xAxis.setDrawGridLines(false);
         xAxis.setLabelCount(7);
         xAxis.setTextColor(Color.WHITE);
+        xAxis.setAxisLineColor(Color.WHITE);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -674,6 +1083,7 @@ public class XingweiFragment extends Fragment {
         leftYAxis.setEnabled(true);//设置显示左边Y坐标
         leftYAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         leftYAxis.setTextColor(Color.WHITE);
+        leftYAxis.setAxisLineColor(Color.WHITE);
         //右边Y轴
         YAxis rightAxis = mBarChart.getAxisRight();
         rightAxis.setEnabled(false);//右侧不显示Y轴
@@ -711,16 +1121,16 @@ public class XingweiFragment extends Fragment {
 
     }
 
-    private void setDatamBarChart() {
+    private void setDatamBarChart(List<BarEntry> yVals) {
 
         //每一个柱状图的数据
-        List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
+        /*List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
 
         for (int i = 0; i < 5; i++) {//添加数据源
             //yVals.add(new BarEntry(i,(float) Math.random()*520 + 1));
             int yVal = (int) (Math.random()*520 + 1);
             yVals.add(new BarEntry(i,yVal));
-        }
+        }*/
         BarDataSet dataSet = new BarDataSet(yVals, "停留时间条形统计图");//一组柱状图
         //dataSet.setColor(Color.LTGRAY);//设置第yi组数据颜色
         dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);

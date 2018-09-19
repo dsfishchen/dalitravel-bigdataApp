@@ -85,10 +85,14 @@ public class ShishijiankongFragment extends Fragment {
     private TextView jdrs_4;
     private TextView jdrs_5;
     private TextView jdrs_6;
+    private String dizhi;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.shishi_jiankong_er,container,false);
+        dizhi=getActivity().getIntent().getStringExtra("dizhi");
+
+
         quyu_qiehuan=view.findViewById(R.id.quyu_qiehuan);
         mMapView = view.findViewById(R.id.shishi_map);
         shishi_recyclerView=view.findViewById(R.id.shishi_recyclerView);
