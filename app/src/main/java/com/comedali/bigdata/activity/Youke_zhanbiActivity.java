@@ -278,6 +278,13 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         leftYAxis.setEnabled(true);//设置显示左边Y坐标
         leftYAxis.setTextColor(Color.rgb(255,255,255));
         leftYAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftYAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                int m=(int)value;
+                return m+"%";
+            }
+        });
 
         //右边Y轴
         YAxis rightAxis = chart_mYi.getAxisRight();
@@ -328,7 +335,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
             int yVal = (int) (Math.random()*520 + 1);
             yVals.add(new BarEntry(i,yVal));
         }*/
-        BarDataSet dataSet = new BarDataSet(mm, "十二县市游客数量条形统计图 单位：人");//一组柱状图
+        BarDataSet dataSet = new BarDataSet(mm, "十二县市游客数量条形统计图");//一组柱状图
         //dataSet.setColor(Color.LTGRAY);//设置第yi组数据颜色
         dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
         dataSet.setValueTextSize(12);//修改一组柱状图的文字大小

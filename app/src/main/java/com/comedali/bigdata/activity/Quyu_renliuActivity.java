@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.fragment.AnniantoujiFragment;
 import com.comedali.bigdata.fragment.AnritoujiFragment;
@@ -35,10 +36,12 @@ public class Quyu_renliuActivity extends AppCompatActivity implements OnTabSelec
             "实时监控", "按日统计", "按月统计","按年统计"
     };
     private MyPagerAdapter mAdapter;
+    private static Quyu_renliuActivity instance;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.quyu_renliu_er);
+        instance = this;//存储引用
         //顶部导航栏按钮事件
         commonTitleBar=findViewById(R.id.quyurenliu_back);
         commonTitleBar.setListener(new CommonTitleBar.OnTitleBarListener() {
@@ -63,6 +66,9 @@ public class Quyu_renliuActivity extends AppCompatActivity implements OnTabSelec
         /** indicator圆角色块 */
         SlidingTabLayout tabLayout_10 = ViewFindUtils.find(decorView, R.id.techan_SlidingTabLayout);
         tabLayout_10.setViewPager(vp);
+    }
+    public static Quyu_renliuActivity getInstance(){
+        return instance;
     }
     @Override
     public void onTabSelect(int position) {

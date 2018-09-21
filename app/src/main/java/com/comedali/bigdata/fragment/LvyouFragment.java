@@ -19,8 +19,6 @@ public class LvyouFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.lvyou_er,container,false);
-        QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
-        QMUIStatusBarHelper.setStatusBarDarkMode(getActivity());//状态栏字体颜色--白色
         return view;
     }
 }

@@ -34,11 +34,10 @@
             android:id="@+id/renshu_01"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:textColor="@color/qingse"
             android:layout_gravity="center_horizontal"
             android:text="实时游客人数"
-            android:textSize="17sp" />
+            android:textSize="20sp" />
         <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -51,7 +50,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@color/qingse"
                 android:gravity="center"
-                android:text="0"
+                android:text="--"
                 android:textColor="@color/white"
                 android:textSize="28sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -65,7 +64,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@color/qingse"
                 android:gravity="center"
-                android:text="0"
+                android:text="--"
                 android:textColor="@color/white"
                 android:textSize="28sp"
                 app:layout_constraintStart_toEndOf="@+id/renshu_1"
@@ -79,7 +78,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@color/qingse"
                 android:gravity="center"
-                android:text="0"
+                android:text="--"
                 android:textColor="@color/white"
                 android:textSize="28sp"
                 app:layout_constraintStart_toEndOf="@+id/renshu_2"
@@ -93,7 +92,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@color/qingse"
                 android:gravity="center"
-                android:text="0"
+                android:text="--"
                 android:textColor="@color/white"
                 android:textSize="28sp"
                 app:layout_constraintStart_toEndOf="@+id/renshu_3"
@@ -107,7 +106,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@color/qingse"
                 android:gravity="center"
-                android:text="0"
+                android:text="--"
                 android:textColor="@color/white"
                 android:textSize="28sp"
                 app:layout_constraintStart_toEndOf="@+id/renshu_4"
@@ -121,7 +120,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@color/qingse"
                 android:gravity="center"
-                android:text="0"
+                android:text="--"
                 android:textColor="@color/white"
                 android:textSize="28sp"
                 app:layout_constraintStart_toEndOf="@+id/renshu_5"
@@ -130,17 +129,26 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/tianqi_imageView"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="24dp"
+        android:src="@mipmap/m_1"
+        app:layout_constraintEnd_toEndOf="@+id/shouye_tianqi"
+        app:layout_constraintStart_toStartOf="@+id/shouye_tianqi"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/shouye_tianqi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="42dp"
         android:text="天气"
         android:textColor="#3469af"
-        android:textSize="15sp"
+        android:textSize="13sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tianqi_imageView" />
 
     <Button
         android:id="@+id/nice_button1"

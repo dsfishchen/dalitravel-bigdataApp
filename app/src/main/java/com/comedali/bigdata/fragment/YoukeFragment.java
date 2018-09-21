@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.adapter.YoukelaiyuanAdapter;
 import com.comedali.bigdata.entity.YoukelaiyuanEntity;
@@ -35,6 +36,7 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 
@@ -163,7 +165,7 @@ public class YoukeFragment extends Fragment {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -202,46 +204,46 @@ public class YoukeFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
+                    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        final JSONArray num = new JSONArray(result);
-                        final List<PieEntry> strings=new ArrayList<>();
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String age_name=jsonObject.getString("age_name");
-                            String nums=jsonObject.getString("percent");
-                            float age= Float.parseFloat(nums);
-                            strings.add(new PieEntry(age,age_name));
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+                                final List<PieEntry> strings=new ArrayList<>();
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String age_name=jsonObject.getString("age_name");
+                                    String nums=jsonObject.getString("percent");
+                                    float age= Float.parseFloat(nums);
+                                    strings.add(new PieEntry(age,age_name));
+                                }
                                 setDatamPicChart(strings);
                             }
-                        });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+                });
             }
-        });
+        }).start();
+
     }
     private void initJinruSex() {
 
@@ -260,46 +262,51 @@ public class YoukeFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        final JSONArray num = new JSONArray(result);
-                        final List<PieEntry> strings=new ArrayList<>();
-                        final String[] m=new String[num.length()];
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String percent=jsonObject.getString("percent");
-                            m[i]=percent+"%";
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                jinru_nan.setText(m[0]);
-                                jinru_nv.setText(m[1]);
-                            }
-                        });
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+                                final List<PieEntry> strings=new ArrayList<>();
+                                final String[] m=new String[num.length()];
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String percent=jsonObject.getString("percent");
+                                    m[i]=percent+"%";
+                                }
+
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        jinru_nan.setText(m[0]);
+                                        jinru_nv.setText(m[1]);
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
             }
-        });
+        }).start();
     }
     private void initSousuoSex() {
 
@@ -318,46 +325,51 @@ public class YoukeFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        final JSONArray num = new JSONArray(result);
-                        final List<PieEntry> strings=new ArrayList<>();
-                        final String[] m=new String[num.length()];
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String percent=jsonObject.getString("percent");
-                            m[i]=percent+"%";
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                sousuo_nan.setText(m[0]);
-                                sousuo_nv.setText(m[1]);
-                            }
-                        });
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+                                final List<PieEntry> strings=new ArrayList<>();
+                                final String[] m=new String[num.length()];
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String percent=jsonObject.getString("percent");
+                                    m[i]=percent+"%";
+                                }
+
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        sousuo_nan.setText(m[0]);
+                                        sousuo_nv.setText(m[1]);
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
             }
-        });
+        }).start();
     }
     private void initData() {
         youkedatas=new ArrayList<>();
@@ -378,45 +390,50 @@ public class YoukeFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        final JSONArray num = new JSONArray(result);
-                        final List<PieEntry> strings=new ArrayList<>();
-                        final String[] m=new String[num.length()];
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String user_province=jsonObject.getString("user_province");
-                            String percent=jsonObject.getString("percent");
-                            String nums=jsonObject.getString("nums");
-                            YoukelaiyuanEntity model=new YoukelaiyuanEntity();
-                            model.setId(i+1+"");
-                            model.setProvince(user_province);
-                            model.setBaifenbi(nums);
-                            youkedatas.add(model);
-                        }
-
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+                                final List<PieEntry> strings=new ArrayList<>();
+                                final String[] m=new String[num.length()];
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String user_province=jsonObject.getString("user_province");
+                                    String percent=jsonObject.getString("percent");
+                                    String nums=jsonObject.getString("nums");
+                                    YoukelaiyuanEntity model=new YoukelaiyuanEntity();
+                                    model.setId(i+1+"");
+                                    model.setProvince(user_province);
+                                    model.setBaifenbi(percent);
+                                    youkedatas.add(model);
+                                }
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
             }
-        });
+        }).start();
     }
     /*
         饼图
@@ -441,10 +458,10 @@ public class YoukeFragment extends Fragment {
         //取消颜色数值
         Legend l = mPicChart.getLegend();
         l.setEnabled(true);
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
-        l.setFormSize(10);//设置图例的大小
+        l.setFormSize(10f);//设置图例的大小
         l.setTextColor(Color.rgb(255,255,255));
         l.setDrawInside(false);
         //结束
@@ -470,7 +487,7 @@ public class YoukeFragment extends Fragment {
         PieDataSet dataSet = new PieDataSet(strings,"年龄占比");
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
-        colors.add(getResources().getColor(R.color.app_color_theme_8));
+        //colors.add(getResources().getColor(R.color.app_color_theme_8));
         colors.add(getResources().getColor(R.color.app_color_theme_7));
         colors.add(getResources().getColor(R.color.app_color_theme_9));
         colors.add(getResources().getColor(R.color.app_color_theme_5));
@@ -483,10 +500,12 @@ public class YoukeFragment extends Fragment {
         pieData.setValueFormatter(new PercentFormatter());//转化百分比
         pieData.setValueTextSize(12f);
         pieData.setValueTextColor(Color.DKGRAY);
-        //dataSet.setValueLinePart1OffsetPercentage(80.f);
-        //dataSet.setValueLinePart1Length(0.1f);//设置连接线的长度
-       // dataSet.setValueLinePart2Length(0.6f);
-        //dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+
+        dataSet.setValueLinePart1OffsetPercentage(50.f);
+        dataSet.setValueLinePart1Length(0.1f);//设置连接线的长度
+        dataSet.setValueLinePart2Length(1.0f);
+        dataSet.setValueLineColor(Color.rgb(255,255,255));
+        dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
         //dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
 
         mPicChart.highlightValues(null);

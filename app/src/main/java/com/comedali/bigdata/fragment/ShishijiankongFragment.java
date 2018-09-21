@@ -106,7 +106,6 @@ public class ShishijiankongFragment extends Fragment {
         mMapView = view.findViewById(R.id.shishi_map);
         shishi_recyclerView=view.findViewById(R.id.shishi_recyclerView);
         tencentMap = mMapView.getMap();
-
         //设定中心点坐标
         CameraUpdate cameraSigma =
                 CameraUpdateFactory.newCameraPosition(new CameraPosition(
@@ -148,6 +147,7 @@ public class ShishijiankongFragment extends Fragment {
         adapter = new YoukelaiyuanAdapter(R.layout.youkelaiyuan_er_item, youkedatas);
         adapter.openLoadAnimation();//动画 默认提供5种方法（渐显、缩放、从下到上，从左到右、从右到左）
         adapter.isFirstOnly(false);//重复执行可设置
+
         //给RecyclerView设置适配器
         shishi_recyclerView.setAdapter(adapter);
         //添加Android自带的分割线
@@ -223,7 +223,7 @@ public class ShishijiankongFragment extends Fragment {
                             final String resultStr = jsonData.getString("success");
                             if (resultStr.equals("true")){
                                 final String result=jsonData.getString("result");
-                                getActivity().runOnUiThread(new Runnable() {
+                                Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         String renshu=result;
@@ -348,13 +348,14 @@ public class ShishijiankongFragment extends Fragment {
                             JSONObject jsonObject=num.getJSONObject(i);
                             String location=jsonObject.getString("location");
                             int nums=jsonObject.getInt("nums");
+                            String equipment_mac=jsonObject.getString("equipment_mac");
                             final YoukelaiyuanEntity model=new YoukelaiyuanEntity();
                             model.setId(location);
                             model.setProvince(nums+"");
-                            model.setBaifenbi((int)(Math.random()*100+1)+"");
+                            model.setBaifenbi(equipment_mac);
                             youkedatas.add(model);
                         }
-                        getActivity().runOnUiThread(new Runnable() {
+                        Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 adapter.notifyDataSetChanged();
@@ -664,11 +665,7 @@ public class ShishijiankongFragment extends Fragment {
                     @Override
                     public void onHeatMapReady() {
                         // TODO Auto-generated method stub
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+
 
                     }
                 });

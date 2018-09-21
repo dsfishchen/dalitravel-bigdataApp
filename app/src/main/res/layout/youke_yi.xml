@@ -109,7 +109,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:padding="10dp"
+                    android:padding="30dp"
                     android:text="进入大理男女比例"
                     android:textColor="@color/white"
                     android:textSize="16sp" />
@@ -164,7 +164,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="30dp"
-                    android:padding="10dp"
+                    android:padding="30dp"
                     android:textColor="@color/white"
                     android:text="搜索大理男女比例"
                     android:textSize="16sp" />

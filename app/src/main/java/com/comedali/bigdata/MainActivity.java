@@ -4,6 +4,7 @@ package com.comedali.bigdata;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private RotateAnimation mRotateAnimation;
     private Handler mHandler = new Handler();
     private long exitTime = 0;// 用来计算返回键的点击间隔时间
+    private static MainActivity instance;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
         initData();
         initListener();
         yanzheng();
+        instance = this;//存储引用
+    }
+    public static MainActivity getInstance(){
+        return instance;
     }
 
     private void yanzheng() {

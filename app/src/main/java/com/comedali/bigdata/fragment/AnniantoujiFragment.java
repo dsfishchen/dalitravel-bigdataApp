@@ -92,7 +92,6 @@ public class AnniantoujiFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.annian_touji_er,container,false);
         dizhi=getActivity().getIntent().getStringExtra("dizhi");
-        Log.d("w", dizhi);
         initChoose();
         mChart=view.findViewById(R.id.nian_lineChart);
         quyu_choose=view.findViewById(R.id.quyu_choose3);
@@ -277,41 +276,47 @@ public class AnniantoujiFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
+                    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        JSONArray num = new JSONArray(result);
-                        //String[] listItems = new String[num.length()];
-                        listItems = new String[num.length()];
-                        listPlace_id=new String[num.length()];
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String place_name=jsonObject.getString("place_name");
-                            String place_id=jsonObject.getString("place_id");
-                            listItems[i]=place_name;
-                            listPlace_id[i]=place_id;
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                JSONArray num = new JSONArray(result);
+                                //String[] listItems = new String[num.length()];
+                                listItems = new String[num.length()];
+                                listPlace_id=new String[num.length()];
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String place_name=jsonObject.getString("place_name");
+                                    String place_id=jsonObject.getString("place_id");
+                                    listItems[i]=place_name;
+                                    listPlace_id[i]=place_id;
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
                         }
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+                });
             }
-        });
+        }).start();
+
     }
     /**
      * 有网时候的缓存
@@ -367,48 +372,54 @@ public class AnniantoujiFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        JSONArray num = new JSONArray(result);
-                        final List<Entry> entries = new ArrayList<Entry>();
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String c_nums=jsonObject.getString("c_nums");
-                            String c_month=jsonObject.getString("c_month");
-                            int yVal = Integer.parseInt(c_nums);
-                            int m=Integer.parseInt(c_month);
-                            entries.add(new Entry(m, yVal));
-                        }
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initdata3(entries,quyu,NIAN);
-                                tipDialog.dismiss();
-                            }
-                        });
-
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                JSONArray num = new JSONArray(result);
+                                final List<Entry> entries = new ArrayList<Entry>();
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String c_nums=jsonObject.getString("c_nums");
+                                    String c_month=jsonObject.getString("c_month");
+                                    int yVal = Integer.parseInt(c_nums);
+                                    int m=Integer.parseInt(c_month);
+                                    entries.add(new Entry(m, yVal));
+                                }
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        initdata3(entries,quyu,NIAN);
+                                        tipDialog.dismiss();
+                                    }
+                                });
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
             }
-        });
+        }).start();
+
     }
 
     //年月日
@@ -556,7 +567,7 @@ public class AnniantoujiFragment extends Fragment {
         limitLine.setLineColor(Color.RED);
         //设置基线的位置
         limitLine.setLabelPosition(LimitLine.LimitLabelPosition.LEFT_TOP);
-        //limitLine.setLabel("游客多");
+        limitLine.setLabel("超过2500000人");
         //设置限制线为虚线
         //limitLine.enableDashedLine(10f, 10f, 0f);
         //左边Y轴添加限制线

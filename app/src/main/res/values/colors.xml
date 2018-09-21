@@ -7,10 +7,10 @@
     <!--自己添加颜色开始-->
     <color name="tab_gb">#F3F5F4</color>
     <color name="tab_normal_color">#515051</color>
-    <color name="tab_selected_color">#D33D3C</color>
+    <color name="tab_selected_color">#3464d0</color>
     <color name="unreadTextColor">#00ff00</color>
     <color name="msgTextColor">#00ff00</color>
-    <color name="qingse">#2BBDF3</color>
+    <color name="qingse">#3F51B5</color>
     <color name="wudi">#2BBDF3</color>
     <color name="baise">#ffffff</color>
 

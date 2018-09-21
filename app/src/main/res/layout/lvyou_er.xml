@@ -14,6 +14,7 @@
         app:centerTextSize="18sp"
         app:centerType="textView"
         app:showBottomLine="false"
+        app:statusBarMode="light"
         app:fillStatusBar="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

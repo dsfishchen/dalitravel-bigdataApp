@@ -83,6 +83,7 @@ public class ShouyeFragment extends Fragment {
     private ImageButton nice_button2;
     private QMUIListPopup mListPopup;
     private QMUIListPopup mListPopup1;
+    private ImageView tianqi_imageView;
     private String one;
     private String two;
     private TextView renshu1;
@@ -93,12 +94,14 @@ public class ShouyeFragment extends Fragment {
     private TextView renshu6;
     private String dizhi;
     private Timer timer;
-    private Activity activity=getActivity();
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.shouye_yi,container,false);
+        QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
+        QMUIStatusBarHelper.setStatusBarDarkMode(getActivity());//状态栏字体颜色--黑色
         mMapView = view.findViewById(R.id.map);
+        tianqi_imageView=view.findViewById(R.id.tianqi_imageView);
         shouye_tianqi=view.findViewById(R.id.shouye_tianqi);
         nice_button1=view.findViewById(R.id.nice_button1);
         nice_button2=view.findViewById(R.id.nice_button2);
@@ -124,7 +127,6 @@ public class ShouyeFragment extends Fragment {
         UiSettings mapUiSettings = tencentMap.getUiSettings();
         mapUiSettings.setScaleViewEnabled(false);
         mapUiSettings.setLogoScale(-0.0f);
-
         renshu1=view.findViewById(R.id.renshu_1);
         renshu2=view.findViewById(R.id.renshu_2);
         renshu3=view.findViewById(R.id.renshu_3);
@@ -134,12 +136,10 @@ public class ShouyeFragment extends Fragment {
 
         dizhi=nice_button1.getText().toString();
 
-        QMUIStatusBarHelper.translucent(getActivity());// 沉浸式状态栏
-        QMUIStatusBarHelper.setStatusBarDarkMode(getActivity());//状态栏字体颜色--黑色
         //设定中心点坐标
         CameraUpdate cameraSigma =
                 CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                        new LatLng(25.781344,100.207672), //新的中心点坐标
+                        new LatLng(25.751344,100.207672), //新的中心点坐标
                         10.8f,  //新的缩放级别
                         0f, //俯仰角 0~45° (垂直地图时为0)
                         0f)); //偏航角 0~360° (正北方为0)
@@ -161,7 +161,7 @@ public class ShouyeFragment extends Fragment {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -175,10 +175,10 @@ public class ShouyeFragment extends Fragment {
         @Override
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
-            if (activity==null){
+            if (getActivity()==null){
 
             }else {
-                if (!NetworkUtil.checkNet(activity)) {
+                if (!NetworkUtil.checkNet(getActivity())) {
                     int offlineCacheTime = 60*60*24*7;//离线的时候的缓存的过期时间
                     request = request.newBuilder()
                             .header("Cache-Control", "public, only-if-cached, max-stale=" + offlineCacheTime)
@@ -207,7 +207,7 @@ public class ShouyeFragment extends Fragment {
                 .url(url)
                 .build();
         //每30秒获取实时人数
-        /*new Timer().schedule(new TimerTask(){
+        new Timer().schedule(new TimerTask(){
 
             @Override
             public void run() {
@@ -227,7 +227,7 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 final String result = jsonData.getString("result");
                                 //Log.d("result", result);
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         String renshu=result;
@@ -302,9 +302,9 @@ public class ShouyeFragment extends Fragment {
                     }
                 });
             }
-        },0,5000);*/
+        },0,60000);
 
-        new Thread(new Runnable() {
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 client.newCall(request).enqueue(new Callback() {
@@ -323,7 +323,9 @@ public class ShouyeFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 final String result = jsonData.getString("result");
                                 //Log.d("result", result);
-                                getActivity().runOnUiThread(new Runnable() {
+
+
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         String renshu=result;
@@ -398,7 +400,7 @@ public class ShouyeFragment extends Fragment {
                     }
                 });
             }
-        }).start();
+        }).start();*/
     }
 
     private void initdata() {
@@ -644,7 +646,7 @@ public class ShouyeFragment extends Fragment {
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        getActivity().runOnUiThread(new Runnable() {
+                        MainActivity.getInstance().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 Toast.makeText(getActivity(),"请检查您的网络是否开启",Toast.LENGTH_LONG).show();
@@ -668,11 +670,48 @@ public class ShouyeFragment extends Fragment {
                             JSONObject now1=new JSONObject(now);
                             final String temperature=now1.getString("temperature");
                             final String text=now1.getString("text");
-                            getActivity().runOnUiThread(new Runnable() {
+                            final String code=now1.getString("code");
+                            final int co= Integer.parseInt(code);
+                            MainActivity.getInstance().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     shouye_tianqi.setText(text+" "+temperature+"°");
-
+                                    if (co==0|co==1|co==2|co==3|co==38){//晴
+                                        tianqi_imageView.setImageResource(R.mipmap.m_1);
+                                    }
+                                    if (co==4|co==5|co==6|co==7|co==8){//多云
+                                        tianqi_imageView.setImageResource(R.mipmap.m_2);
+                                    }
+                                    if (co==9){//阴
+                                        tianqi_imageView.setImageResource(R.mipmap.m_3);
+                                    }
+                                    if (co==10|co==11|co==12|co==37){//雨
+                                        tianqi_imageView.setImageResource(R.mipmap.m_4);
+                                    }
+                                    if (co==13){//小雨
+                                        tianqi_imageView.setImageResource(R.mipmap.m_11);
+                                    }
+                                    if (co==14){//中雨
+                                        tianqi_imageView.setImageResource(R.mipmap.m_8);
+                                    }
+                                    if (co==15|co==16|co==17|co==18){//暴雨
+                                        tianqi_imageView.setImageResource(R.mipmap.m_6);
+                                    }
+                                    if (co==19|co==20){//雨夹雪
+                                        tianqi_imageView.setImageResource(R.mipmap.m_7);
+                                    }
+                                    if (co==21|co==22|co==23|co==24|co==25){//雪
+                                        tianqi_imageView.setImageResource(R.mipmap.m_12);
+                                    }
+                                    if (co==26|co==27|co==28|co==29){//沙尘暴
+                                        tianqi_imageView.setImageResource(R.mipmap.m_9);
+                                    }
+                                    if (co==30|co==31){//雾霾
+                                        tianqi_imageView.setImageResource(R.mipmap.m_10);
+                                    }
+                                    if (co==32|co==33|co==34|co==35|co==36){//风
+                                        tianqi_imageView.setImageResource(R.mipmap.m_5);
+                                    }
                                 }
                             });
                         } catch (JSONException e) {
@@ -734,7 +773,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -779,11 +818,6 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
 
                                                     }
                                                 });
@@ -848,7 +882,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -893,11 +927,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                 });
@@ -962,7 +992,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -1008,11 +1038,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                 });
@@ -1077,7 +1103,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -1123,11 +1149,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                 });
@@ -1192,7 +1214,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -1237,11 +1259,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                 });
@@ -1306,7 +1324,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -1352,11 +1370,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                 });
@@ -1421,7 +1435,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -1467,11 +1481,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                 });
@@ -1536,7 +1546,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -1582,11 +1592,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                 });
@@ -1651,7 +1657,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -1697,11 +1703,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                 });
@@ -1766,7 +1768,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -1811,11 +1813,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                 });
@@ -1880,7 +1878,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));//弥渡入城口
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -1925,11 +1923,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                 });
@@ -1994,7 +1988,7 @@ public class ShouyeFragment extends Fragment {
                                     nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
                                 }
 
-                                getActivity().runOnUiThread(new Runnable() {
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //HeatDataNode 是热力图热点，包括热点位置和热度值（HeatOverlay会根据传入的全部节点的热度值范围计算最终的颜色表现）
@@ -2039,11 +2033,7 @@ public class ShouyeFragment extends Fragment {
                                                     @Override
                                                     public void onHeatMapReady() {
                                                         // TODO Auto-generated method stub
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                //Toast.makeText(MainActivity.this, "热力图数据准备完毕", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+
 
                                                     }
                                                     });
@@ -2100,6 +2090,7 @@ public class ShouyeFragment extends Fragment {
         }
     }
 
+
     @Override
     public void onStart() {
         // TODO Auto-generated method stub
@@ -2134,4 +2125,4 @@ public class ShouyeFragment extends Fragment {
 
         mMapView.onDestroy();
     }
-    }
+}

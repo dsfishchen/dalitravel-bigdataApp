@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.activity.Youke_zhanbiActivity;
 import com.comedali.bigdata.adapter.YoukelaiyuanAdapter;
@@ -75,8 +76,11 @@ import com.tencent.tencentmap.mapsdk.maps.CameraUpdateFactory;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.TextureMapView;
 import com.tencent.tencentmap.mapsdk.maps.UiSettings;
+import com.tencent.tencentmap.mapsdk.maps.model.BitmapDescriptorFactory;
 import com.tencent.tencentmap.mapsdk.maps.model.CameraPosition;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
+import com.tencent.tencentmap.mapsdk.maps.model.Marker;
+import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.maps.model.Polyline;
 import com.tencent.tencentmap.mapsdk.maps.model.PolylineOptions;
 
@@ -107,7 +111,10 @@ public class XingweiFragment extends Fragment {
     private PieChart mPicChart;
     private ConstraintLayout xingwei_ConstraintLayout;
     private Button choose_button;
+    private Button choose_button1;
+    private Button choose_yes;
     private QMUIListPopup mListPopup;
+    private QMUIListPopup mListPopup1;
     private TextView pingfen;
     private String one;
     private String two;
@@ -119,8 +126,12 @@ public class XingweiFragment extends Fragment {
     private RecyclerView jiudian_recycleView;
     private YoukelaiyuanAdapter adapter;
     private List<YoukelaiyuanEntity> youkedatas= new ArrayList<>();
-    private List<LatLng> latLngs;
-    private Polyline polyline;
+    private List<LatLng> latLngs1;
+    private List<LatLng> latLngs2;
+    private List<LatLng> latLngs3;
+    private List<LatLng> latLngs4;
+    private List<LatLng> latLngs5;
+    private Polyline polyline1;
     private Button pianhao_choose;
     private TextView top5_title;
     private TextView top_name;
@@ -146,12 +157,6 @@ public class XingweiFragment extends Fragment {
         jiudian_recycleView.setAdapter(adapter);
         //添加Android自带的分割线
         jiudian_recycleView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
-        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                Toast.makeText(getActivity(),"你点击了"+position,Toast.LENGTH_SHORT).show();
-            }
-        });
 
         //偏好选择
         pianhao_choose.setOnClickListener(new View.OnClickListener() {
@@ -194,46 +199,16 @@ public class XingweiFragment extends Fragment {
                         pianhao_choose.setText(items[index1]);
 
                         if (index1==0){
-                            /*youkedatas.clear();
-                            //youkedatas=new ArrayList<>();
-                            YoukelaiyuanEntity model;
-                            for (int i = 0; i < 5; i++) {
-                                model=new YoukelaiyuanEntity();
-                                model.setId(i+1+"");
-                                model.setProvince("客栈"+i);
-                                model.setBaifenbi("l4.l4");
-                                youkedatas.add(model);
-                            }*/
                             initKezhanData();
                             top5_title.setText(items[index1]+"热度前五名");
                             top_name.setText(items[index1]+"");
                         }
                         if (index1==1){
-                            /*youkedatas.clear();
-                            //youkedatas=new ArrayList<>();
-                            YoukelaiyuanEntity model;
-                            for (int i = 0; i < 5; i++) {
-                                model=new YoukelaiyuanEntity();
-                                model.setId(i+1+"");
-                                model.setProvince("美食"+i);
-                                model.setBaifenbi("l4.l4");
-                                youkedatas.add(model);
-                            }*/
                             initMeishi();
                             top5_title.setText(items[index1]+"热度前五名");
                             top_name.setText(items[index1]+"");
                     }
                         if (index1==2){
-                            /*youkedatas.clear();
-                            //youkedatas=new ArrayList<>();
-                            YoukelaiyuanEntity model;
-                            for (int i = 0; i < 5; i++) {
-                                model=new YoukelaiyuanEntity();
-                                model.setId(i+1+"");
-                                model.setProvince("景点"+i);
-                                model.setBaifenbi("l4.l4");
-                                youkedatas.add(model);
-                            }*/
                             initJingqu();
                             pingfen.setText("人数");
                             top5_title.setText(items[index1]+"热度前五名");
@@ -273,14 +248,9 @@ public class XingweiFragment extends Fragment {
         mapUiSettings.setScaleViewEnabled(false);
         mapUiSettings.setLogoScale(-0.0f);
 
-        initXianlu();
-        initChuxing();
-        initTingliu();
-        initPiaohao();
-        initKezhanData();
-        //initMeishi();
-        //initJingqu();
         choose_button=view.findViewById(R.id.choose_button);
+        choose_yes=view.findViewById(R.id.choose_yes);
+        choose_button1=view.findViewById(R.id.choose_button1);
         choose_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -290,6 +260,76 @@ public class XingweiFragment extends Fragment {
                 mListPopup.show(view);
             }
         });
+        choose_button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                inittwoListPopupIfNeed();
+                mListPopup1.setAnimStyle(QMUIPopup.ANIM_GROW_FROM_CENTER);
+                mListPopup1.setPreferredDirection(QMUIPopup.DIRECTION_TOP);
+                mListPopup1.show(view);
+            }
+        });
+
+        choose_yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String chufadian=choose_button.getText().toString();
+                final String zhongdian=choose_button1.getText().toString();
+                if (chufadian.equals("机场")){
+                    if (zhongdian.equals("大理古城方向")){
+                        initXianlu(chufadian,zhongdian,"jichang",1);
+                    }
+                    if (zhongdian.equals("双廊方向")){
+                        initXianlu(chufadian,zhongdian,"jichang",2);
+                    }
+                    if (zhongdian.equals("喜洲古镇方向")){
+                        initXianlu(chufadian,zhongdian,"jichang",3);
+                    }
+                    if (zhongdian.equals("环海西路方向")){
+                        initXianlu(chufadian,zhongdian,"jichang",4);
+                    }
+                    if (zhongdian.equals("环海东路方向")){
+                        initXianlu(chufadian,zhongdian,"jichang",5);
+                    }
+                }
+                if (chufadian.equals("火车站")){
+                    if (zhongdian.equals("大理古城方向")){
+                        initXianlu(chufadian,zhongdian,"huochezhan",1);
+                    }
+                    if (zhongdian.equals("双廊方向")){
+                        initXianlu(chufadian,zhongdian,"huochezhan",2);
+                    }
+                    if (zhongdian.equals("喜洲古镇方向")){
+                        initXianlu(chufadian,zhongdian,"huochezhan",3);
+                    }
+                    if (zhongdian.equals("环海西路方向")){
+                        initXianlu(chufadian,zhongdian,"huochezhan",4);
+                    }
+                    if (zhongdian.equals("环海东路方向")){
+                        initXianlu(chufadian,zhongdian,"huochezhan",5);
+                    }
+                }
+                if (chufadian.equals("高速路口")){
+                    if (zhongdian.equals("大理古城方向")){
+                        initXianlu(chufadian,zhongdian,"gaosuchukou",1);
+                    }
+                    if (zhongdian.equals("双廊方向")){
+                        initXianlu(chufadian,zhongdian,"gaosuchukou",2);
+                    }
+                    if (zhongdian.equals("喜洲古镇方向")){
+                        initXianlu(chufadian,zhongdian,"gaosuchukou",3);
+                    }
+                    if (zhongdian.equals("环海西路方向")){
+                        initXianlu(chufadian,zhongdian,"gaosuchukou",4);
+                    }
+                    if (zhongdian.equals("环海东路方向")){
+                        initXianlu(chufadian,zhongdian,"gaosuchukou",5);
+                    }
+                }
+
+            }
+        });
+
         xingwei_ConstraintLayout=view.findViewById(R.id.xingwei_ConstraintLayout);
         mPicChart = view.findViewById(R.id.chuxing_chart);
         mPicChart.setVisibility(View.GONE);
@@ -344,9 +384,88 @@ public class XingweiFragment extends Fragment {
                 //再次选中tab的逻辑
             }
         });
+        initXianlu("机场","大理古城方向","jichang",1);
+        initChuxing();
+        initTingliu();
+        initPiaohao();
+        initKezhanData();
+        //initMeishi();
+        //initJingqu();
         return view;
     }
+    private void initoneListPopupIfNeed() {
+        if (mListPopup == null) {
 
+            String[] listItems = new String[]{
+                    "机场",
+                    "火车站",
+                    "高速路口"
+            };
+            List<String> data = new ArrayList<>();
+
+            Collections.addAll(data, listItems);
+
+            final ArrayAdapter adapter = new ArrayAdapter<>(getActivity(), R.layout.simple_list_item, data);
+
+            mListPopup = new QMUIListPopup(getContext(), QMUIPopup.DIRECTION_NONE, adapter);
+            mListPopup.create(QMUIDisplayHelper.dp2px(getContext(), 120), QMUIDisplayHelper.dp2px(getContext(), 200), new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    one=adapterView.getItemAtPosition(i).toString();
+                    mListPopup.dismiss();
+                }
+            });
+            mListPopup.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    if (one!=null){
+                        choose_button.setText(one);
+                    }else {
+                        choose_button.setText("机场");
+                    }
+
+                }
+            });
+        }
+    }
+
+    private void inittwoListPopupIfNeed(){
+        if (mListPopup1 == null) {
+
+            String[] listItems = new String[]{
+                    "大理古城方向",
+                    "双廊方向",
+                    "喜洲古镇方向",
+                    "环海西路方向",
+                    "环海东路方向"
+            };
+            List<String> data1 = new ArrayList<>();
+
+            Collections.addAll(data1, listItems);
+
+            final ArrayAdapter adapter1 = new ArrayAdapter<>(getActivity(), R.layout.simple_list_item, data1);
+
+            mListPopup1 = new QMUIListPopup(getContext(), QMUIPopup.DIRECTION_NONE, adapter1);
+            mListPopup1.create(QMUIDisplayHelper.dp2px(getContext(), 120), QMUIDisplayHelper.dp2px(getContext(), 200), new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    two=adapterView.getItemAtPosition(i).toString();
+                    mListPopup1.dismiss();
+                }
+            });
+            mListPopup1.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    if (two!=null){
+                        choose_button1.setText(two);
+                    }else {
+                        choose_button1.setText("大理古城方向");
+                    }
+
+                }
+            });
+        }
+    }
 
 
     /**
@@ -357,7 +476,7 @@ public class XingweiFragment extends Fragment {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -396,46 +515,47 @@ public class XingweiFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        final JSONArray num = new JSONArray(result);
-                        final List<PieEntry> strings=new ArrayList<>();
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String traffic_type=jsonObject.getString("traffic_type");
-                            String nums=jsonObject.getString("nums");
-                            float renshu= Float.parseFloat(nums);
-                            strings.add(new PieEntry(renshu,traffic_type));
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                setDatamPicChart(strings);
-                            }
-                        });
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+                                final List<PieEntry> strings=new ArrayList<>();
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String traffic_type=jsonObject.getString("traffic_type");
+                                    String nums=jsonObject.getString("nums");
+                                    float renshu= Float.parseFloat(nums);
+                                    strings.add(new PieEntry(renshu,traffic_type));
+                                }
+                                setDatamPicChart(strings);
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
             }
-        });
+        }).start();
+
     }
 
     private void initTingliu() {
@@ -454,45 +574,44 @@ public class XingweiFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
+                    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        final JSONArray num = new JSONArray(result);
-                        final List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String time=jsonObject.getString("time");
-                            int yVal = Integer.parseInt(time);
-                            yVals.add(new BarEntry(i,yVal));
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+                                final List<BarEntry> yVals = new ArrayList<>();//Y轴方向第一组数组
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String time=jsonObject.getString("time");
+                                    int yVal = Integer.parseInt(time);
+                                    yVals.add(new BarEntry(i,yVal));
+                                }
                                 setDatamBarChart(yVals);
                             }
-                        });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+                });
             }
-        });
+        }).start();
     }
     private void initPiaohao() {
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
@@ -510,60 +629,255 @@ public class XingweiFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        final JSONArray num = new JSONArray(result);
-                        final List<RadarEntry> entries1 = new ArrayList<RadarEntry>();
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String interest_name=jsonObject.getString("interest_name");
-                            String percent=jsonObject.getString("percent");
-                            String ww= percent.substring(0,percent.length() - 1);
-                            float val1 = Float.parseFloat(ww)*2;
-                            entries1.add(new RadarEntry(val1));
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                setDatamRadarChart(entries1);
-                            }
-                        });
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+                                final List<RadarEntry> entries1 = new ArrayList<RadarEntry>();
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String interest_name=jsonObject.getString("interest_name");
+                                    String percent=jsonObject.getString("percent");
+                                    String ww= percent.substring(0,percent.length() - 1);
+                                    float val1 = Float.parseFloat(ww)*2;
+                                    entries1.add(new RadarEntry(val1));
+                                }
+                                setDatamRadarChart(entries1);
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
             }
-        });
+        }).start();
     }
 
-    private void initXianlu() {
-        latLngs = new ArrayList<LatLng>();
-        latLngs.add(new LatLng(25.646788,100.322685));
+    private void initXianlu(final String chufa, String jieshu, final String place, final int id) {
+        latLngs1 = new ArrayList<LatLng>();
+        latLngs2 = new ArrayList<LatLng>();
+        latLngs3 = new ArrayList<LatLng>();
+        latLngs4 = new ArrayList<LatLng>();
+        latLngs5 = new ArrayList<LatLng>();
+        final String w1=choose_button.getText().toString();
+        String w2=choose_button1.getText().toString();
+        /*latLngs.add(new LatLng(25.646788,100.322685));
         latLngs.add(new LatLng(25.583866,100.230932));
         latLngs.add(new LatLng(25.609217,100.221362));
         latLngs.add(new LatLng(25.637812,100.206041));
         latLngs.add(new LatLng(25.704727,100.168877));
         latLngs.add(new LatLng(25.758465,100.139694));
-        latLngs.add(new LatLng(25.845784,100.133343));
-        polyline=tencentMap.addPolyline(new PolylineOptions().
-                addAll(latLngs).color(0xff00ff00). width(5f));
+        latLngs.add(new LatLng(25.845784,100.133343));*/
+
+        /*polyline=tencentMap.addPolyline(new PolylineOptions().
+                addAll(latLngs).color(0xff00ff00). width(5f));*/
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("正在加载")
+                .create();
+        tipDialog.show();
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
+        client=mBuilder
+                .addNetworkInterceptor(NetCacheInterceptor)
+                .addInterceptor(OfflineCacheInterceptor)
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        String url="http://192.168.190.119:8080/behavior/locus?startplace="+place;
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+
+                                if (place.equals(chufa)){
+                                    latLngs1.clear();
+                                    latLngs2.clear();
+                                    latLngs3.clear();
+                                    latLngs4.clear();
+                                    latLngs5.clear();
+                                    polyline1.remove();
+                                }
+
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String trackpath=jsonObject.getString("trackpath");
+                                    JSONArray trackpath1=new JSONArray(trackpath);
+                                    for (int w=0;w<trackpath1.length();w++){
+                                        JSONObject json=trackpath1.getJSONObject(w);
+                                        String track_id=json.getString("track_id");
+                                        String latitude=json.getString("latitude");
+                                        String longitude=json.getString("longitude");
+                                        if (track_id.equals("1")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs1.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("2")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs2.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("3")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs3.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("4")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs4.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("13")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs5.add(new LatLng(lat,long1));
+                                        }
+                                        //2
+                                        if (track_id.equals("5")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs1.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("6")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs2.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("7")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs3.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("8")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs4.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("14")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs5.add(new LatLng(lat,long1));
+                                        }
+                                        //3
+                                        if (track_id.equals("9")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs1.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("12")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs2.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("11")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs3.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("10")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs4.add(new LatLng(lat,long1));
+                                        }
+                                        if (track_id.equals("15")){
+                                            double lat= Double.parseDouble(latitude);
+                                            double long1= Double.parseDouble(longitude);
+                                            latLngs5.add(new LatLng(lat,long1));
+                                        }
+
+                                    }
+                                }
+
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //标注坐标
+                                        final Marker marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                position(latLngs1.get(0)).
+                                                title("起点").
+                                                snippet("机场"));
+                                        Marker marker2=tencentMap.addMarker(new MarkerOptions()
+                                                .position(latLngs1.get(latLngs1.size()-1))
+                                                .title("终点").snippet("大理古城"));
+                                        //创建图标
+                                        //marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_add));
+                                        //marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.m_1));
+
+                                            if (id==1){
+                                                polyline1=tencentMap.addPolyline(new PolylineOptions().
+                                                        addAll(latLngs1).color(0xff00ff00). width(10f));
+                                            }
+                                            if (id==2){
+                                                polyline1=tencentMap.addPolyline(new PolylineOptions().
+                                                        addAll(latLngs2).color(0xff00ff00). width(10f));
+                                            }
+                                            if (id==3){
+                                                polyline1=tencentMap.addPolyline(new PolylineOptions().
+                                                        addAll(latLngs3).color(0xff00ff00). width(10f));
+                                            }
+                                            if (id==4){
+                                                polyline1=tencentMap.addPolyline(new PolylineOptions().
+                                                        addAll(latLngs4).color(0xff00ff00). width(10f));
+                                            }
+                                            if (id==5){
+                                            polyline1=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs5).color(0xff00ff00). width(10f));
+                                        }
+                                        tipDialog.dismiss();
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 
     private void initKezhanData() {
@@ -605,51 +919,62 @@ public class XingweiFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        final JSONArray num = new JSONArray(result);
-                        youkedatas.clear();
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String name=jsonObject.getString("name");
-                            String score=jsonObject.getString("score");
-                            YoukelaiyuanEntity model=new YoukelaiyuanEntity();
-                            model.setId(i+1+"");
-                            model.setProvince(name);
-                            model.setBaifenbi(score);
-                            youkedatas.add(model);
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                            adapter.notifyDataSetChanged();
-                            }
-                        });
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+                                youkedatas.clear();
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String name=jsonObject.getString("name");
+                                    String score=jsonObject.getString("score");
+                                    YoukelaiyuanEntity model=new YoukelaiyuanEntity();
+                                    model.setId(i+1+"");
+                                    model.setProvince(name);
+                                    model.setBaifenbi(score);
+                                    youkedatas.add(model);
+                                }
+
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
             }
-        });
+        }).start();
+
     }
     private void initMeishi() {
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("正在加载")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -665,49 +990,56 @@ public class XingweiFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        final JSONArray num = new JSONArray(result);
-                        youkedatas.clear();
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String name=jsonObject.getString("name");
-                            double score=jsonObject.getDouble("score");
-                            YoukelaiyuanEntity model=new YoukelaiyuanEntity();
-                            model.setId(i+1+"");
-                            model.setProvince(name);
-                            model.setBaifenbi(score+"");
-                            youkedatas.add(model);
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+                                youkedatas.clear();
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String name=jsonObject.getString("name");
+                                    double score=jsonObject.getDouble("score");
+                                    YoukelaiyuanEntity model=new YoukelaiyuanEntity();
+                                    model.setId(i+1+"");
+                                    model.setProvince(name);
+                                    model.setBaifenbi(score+"");
+                                    youkedatas.add(model);
+                                }
+
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.notifyDataSetChanged();
+                                        tipDialog.dismiss();
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
             }
-        });
+        }).start();
+
     }
     private void initJingqu() {
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
@@ -730,58 +1062,62 @@ public class XingweiFragment extends Fragment {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
+        new Thread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                //Log.d("数据请求", "失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    //Log.d("数据请求", "成功"+str);
-                    final JSONObject jsonData = new JSONObject(str);
-                    final String resultStr = jsonData.getString("success");
-                    if (resultStr.equals("true")){
-                        String result=jsonData.getString("result");
-                        final JSONArray num = new JSONArray(result);
-                        youkedatas.clear();
-                        for (int i=0;i<num.length();i++){
-                            JSONObject jsonObject=num.getJSONObject(i);
-                            String place_name=jsonObject.getString("place_name");
-                            int nums=jsonObject.getInt("nums");
-                            YoukelaiyuanEntity model=new YoukelaiyuanEntity();
-                            model.setId(i+1+"");
-                            model.setProvince(place_name);
-                            model.setBaifenbi(nums+"");
-                            youkedatas.add(model);
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyDataSetChanged();
-                                tipDialog.dismiss();
-                            }
-                        });
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        //Log.d("数据请求", "失败");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    response.body().close();
-                }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            String str = response.body().string();
+                            //Log.d("数据请求", "成功"+str);
+                            final JSONObject jsonData = new JSONObject(str);
+                            final String resultStr = jsonData.getString("success");
+                            if (resultStr.equals("true")){
+                                String result=jsonData.getString("result");
+                                final JSONArray num = new JSONArray(result);
+                                youkedatas.clear();
+                                for (int i=0;i<num.length();i++){
+                                    JSONObject jsonObject=num.getJSONObject(i);
+                                    String place_name=jsonObject.getString("place_name");
+                                    int nums=jsonObject.getInt("nums");
+                                    YoukelaiyuanEntity model=new YoukelaiyuanEntity();
+                                    model.setId(i+1+"");
+                                    model.setProvince(place_name);
+                                    model.setBaifenbi(nums+"");
+                                    youkedatas.add(model);
+                                }
+
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.notifyDataSetChanged();
+                                        tipDialog.dismiss();
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
             }
-        });
+        }).start();
     }
 
     private void initviewmRadarChart() {
         //setDatamRadarChart();
-        mRadarChart.setBackgroundColor(Color.rgb(60, 65, 82));
-
+        mRadarChart.setBackgroundColor(Color.rgb(63, 81, 181));
         mRadarChart.getDescription().setEnabled(false);
-        mRadarChart.setBackgroundColor(Color.rgb(43,189,243));
+        //mRadarChart.setBackgroundColor(Color.rgb(43,189,243));
         mRadarChart.setWebLineWidth(1f);
         mRadarChart.setWebColor(Color.LTGRAY);
         mRadarChart.setWebLineWidthInner(1f);
@@ -797,7 +1133,7 @@ public class XingweiFragment extends Fragment {
         mRadarChart.setMarker(mv); // Set the marker to the chart
 
         XAxis xAxis = mRadarChart.getXAxis();
-        xAxis.setTextSize(9f);
+        xAxis.setTextSize(12f);
         xAxis.setYOffset(0f);
         xAxis.setXOffset(0f);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
@@ -875,84 +1211,6 @@ public class XingweiFragment extends Fragment {
         mRadarChart.invalidate();
     }
 
-    private void initoneListPopupIfNeed() {
-        if (mListPopup == null) {
-
-            String[] listItems = new String[]{
-                    "机场",
-                    "火车站",
-                    "高速路口"
-            };
-            List<String> data = new ArrayList<>();
-
-            Collections.addAll(data, listItems);
-
-            final ArrayAdapter adapter = new ArrayAdapter<>(getActivity(), R.layout.simple_list_item, data);
-
-            mListPopup = new QMUIListPopup(getContext(), QMUIPopup.DIRECTION_NONE, adapter);
-            mListPopup.create(QMUIDisplayHelper.dp2px(getContext(), 120), QMUIDisplayHelper.dp2px(getContext(), 200), new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    one=adapterView.getItemAtPosition(i).toString();
-                    //Toast.makeText(getActivity(), one, Toast.LENGTH_SHORT).show();
-                    if (one=="机场"){
-                        latLngs.clear();
-                        polyline.remove();
-                        latLngs = new ArrayList<LatLng>();
-                        latLngs.add(new LatLng(25.646788,100.322685));
-                        latLngs.add(new LatLng(25.583866,100.230932));
-                        latLngs.add(new LatLng(25.609217,100.221362));
-                        latLngs.add(new LatLng(25.637812,100.206041));
-                        latLngs.add(new LatLng(25.704727,100.168877));
-                        latLngs.add(new LatLng(25.758465,100.139694));
-                        latLngs.add(new LatLng(25.845784,100.133343));
-                        polyline=tencentMap.addPolyline(new PolylineOptions().
-                                addAll(latLngs).color(0xff00ff00). width(5f));
-                    }
-                    if (one=="火车站"){
-                        latLngs.clear();
-                        polyline.remove();
-                        latLngs = new ArrayList<LatLng>();
-                        latLngs.add(new LatLng(25.589440,100.251274));
-                        latLngs.add(new LatLng(25.583866,100.230932));
-                        latLngs.add(new LatLng(25.609217,100.221362));
-                        latLngs.add(new LatLng(25.637812,100.206041));
-                        latLngs.add(new LatLng(25.704727,100.168877));
-                        latLngs.add(new LatLng(25.758465,100.139694));
-                        latLngs.add(new LatLng(25.845784,100.133343));
-                        polyline=tencentMap.addPolyline(new PolylineOptions().
-                                addAll(latLngs).color(0xff00ff00). width(5f));
-                    }
-                    if (one=="高速路口"){
-                        latLngs.clear();
-                        polyline.remove();
-                        latLngs = new ArrayList<LatLng>();
-                        latLngs.add(new LatLng(25.591762,100.253248));
-                        latLngs.add(new LatLng(25.583866,100.230932));
-                        latLngs.add(new LatLng(25.609217,100.221362));
-                        latLngs.add(new LatLng(25.637812,100.206041));
-                        latLngs.add(new LatLng(25.704727,100.168877));
-                        latLngs.add(new LatLng(25.758465,100.139694));
-                        latLngs.add(new LatLng(25.845784,100.133343));
-                        polyline=tencentMap.addPolyline(new PolylineOptions().
-                                addAll(latLngs).color(0xff00ff00). width(5f));
-                    }
-                    mListPopup.dismiss();
-                }
-            });
-            mListPopup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    if (one!=null){
-                        choose_button.setText(one);
-                    }else {
-                        choose_button.setText("机场");
-                    }
-
-                }
-            });
-        }
-    }
     /*
         饼图
          */
@@ -1004,15 +1262,16 @@ public class XingweiFragment extends Fragment {
         strings.add(new PieEntry(50f,"客车"));*/
         PieDataSet dataSet = new PieDataSet(strings,"出行方式");
 
-        ArrayList<Integer> colors = new ArrayList<Integer>();
-        colors.add(getResources().getColor(R.color.app_color_theme_8));
-        colors.add(getResources().getColor(R.color.app_color_theme_7));
+        /*ArrayList<Integer> colors = new ArrayList<Integer>();
+        //colors.add(getResources().getColor(R.color.app_color_theme_8));
+        //colors.add(getResources().getColor(R.color.app_color_theme_7));
         colors.add(getResources().getColor(R.color.app_color_theme_9));
         colors.add(getResources().getColor(R.color.app_color_theme_5));
         colors.add(getResources().getColor(R.color.app_color_theme_4));
-        colors.add(getResources().getColor(R.color.app_color_theme_3));
+        //colors.add(getResources().getColor(R.color.app_color_theme_3));
 
-        dataSet.setColors(colors);
+        dataSet.setColors(colors);*/
+        dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
         dataSet.setSliceSpace(3f);//设置饼块之间的间隔
 
         PieData pieData = new PieData(dataSet);
