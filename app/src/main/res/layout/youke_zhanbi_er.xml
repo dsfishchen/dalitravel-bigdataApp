@@ -25,7 +25,6 @@
         app:titleBarColor="@color/qingse"
         tools:ignore="MissingConstraints">
     </com.wuhenzhizao.titlebar.widget.CommonTitleBar>
-
     <ScrollView
         android:id="@+id/mm_scrollView"
         android:layout_width="match_parent"
@@ -39,7 +38,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

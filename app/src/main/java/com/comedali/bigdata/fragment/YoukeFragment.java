@@ -96,7 +96,6 @@ public class YoukeFragment extends Fragment {
         jinru_nv=view.findViewById(R.id.jinru_nv);
         sousuo_nan=view.findViewById(R.id.sousuo_nan);
         sousuo_nv=view.findViewById(R.id.sousuo_nv);
-
         initData();
         initAge();
         initJinruSex();
@@ -227,7 +226,7 @@ public class YoukeFragment extends Fragment {
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String age_name=jsonObject.getString("age_name");
-                                    String nums=jsonObject.getString("percent");
+                                    String nums=jsonObject.getString("nums");
                                     float age= Float.parseFloat(nums);
                                     strings.add(new PieEntry(age,age_name));
                                 }

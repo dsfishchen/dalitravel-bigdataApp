@@ -2,6 +2,9 @@ package com.comedali.bigdata;
 
 
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -22,6 +25,7 @@ import android.widget.Toast;
 
 import com.chaychan.library.BottomBarItem;
 import com.chaychan.library.BottomBarLayout;
+import com.comedali.bigdata.activity.LoginActivity;
 import com.comedali.bigdata.fragment.LvyouFragment;
 import com.comedali.bigdata.fragment.ShouyeFragment;
 import com.comedali.bigdata.fragment.XiaofeiFragment;
@@ -30,9 +34,22 @@ import com.comedali.bigdata.fragment.YoukeFragment;
 import com.comedali.bigdata.utils.NetworkUtil;
 import com.comedali.bigdata.utils.ViewPagerSlide;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     private ViewPagerSlide viewPager;
@@ -42,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private Handler mHandler = new Handler();
     private long exitTime = 0;// 用来计算返回键的点击间隔时间
     private static MainActivity instance;
+    private OkHttpClient client = new OkHttpClient();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,11 +77,92 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void yanzheng() {
+        SharedPreferences pref = getSharedPreferences("token", Context.MODE_PRIVATE);
+        String account = pref.getString("account", null);
+        String password = pref.getString("password", null);
+        String url="http://192.168.190.119:8080/login/login?username="+account+"&passwd="+password;
+        final Request request = new Request.Builder()
+                .get()
+                .url(url)
+                .build();
         if (NetworkUtil.checkNet(this)){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MainActivity.this,"服务器异常,请重试",Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
 
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            try {
+                                String str = response.body().string();
+                                Log.d("数据请求", "成功"+str);
+                                JSONObject jsonData = new JSONObject(str);
+                                String resultStr = jsonData.getString("success");
+                                if (resultStr.equals("true")){
+                                    String result=jsonData.getString("result");
+                                    final JSONArray result1=new JSONArray(result);
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (result1.length()>0){
+
+                                            }else {
+                                                new QMUIDialog.MessageDialogBuilder(MainActivity.this)
+                                                        .setTitle("提示")
+                                                        .setMessage("账户信息已过期，请重新登录验证")
+                                                        .setCanceledOnTouchOutside(false)
+                                                        .addAction("确定", new QMUIDialogAction.ActionListener() {
+                                                            @Override
+                                                            public void onClick(QMUIDialog dialog, int index) {
+                                                                dialog.dismiss();
+                                                                SharedPreferences pref = getSharedPreferences("token",Context.MODE_PRIVATE);
+                                                                SharedPreferences.Editor editor = pref.edit();
+                                                                editor.clear();//清除保存的TOKEN
+                                                                editor.commit();
+                                                                Intent intent=new Intent(MainActivity.this, LoginActivity.class);
+                                                                startActivity(intent);
+                                                                finish();
+                                                            }
+                                                        })
+                                                        .create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show();
+                                            }
+                                        }
+                                    });
+
+
+
+                                /*SharedPreferences sp = getSharedPreferences("token", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.putString("account",address);
+                                editor.putString("password",password);
+                                editor.commit();*/
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            finally {
+                                response.body().close();
+                            }
+                        }
+                    });
+                }
+            }).start();
         }else {
             Toast.makeText(MainActivity.this,"请检查您的网络是否开启",Toast.LENGTH_LONG).show();
         }
+
+
+
     }
 
     private void initView() {
@@ -77,8 +176,8 @@ public class MainActivity extends AppCompatActivity {
         mFragmentList.add(new ShouyeFragment());
         mFragmentList.add(new YoukeFragment());
         mFragmentList.add(new XingweiFragment());
-        mFragmentList.add(new XiaofeiFragment());
-        mFragmentList.add(new LvyouFragment());
+        //mFragmentList.add(new XiaofeiFragment());
+        //mFragmentList.add(new LvyouFragment());
 
     }
 

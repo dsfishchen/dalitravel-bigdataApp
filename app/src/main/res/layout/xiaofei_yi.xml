@@ -10,7 +10,7 @@
         android:id="@+id/xiaofei_back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:centerText="消费指数"
+        app:centerText=""
         app:centerTextColor="@color/white"
         app:centerTextSize="18sp"
         app:centerType="textView"

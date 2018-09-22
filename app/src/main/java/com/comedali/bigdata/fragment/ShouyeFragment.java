@@ -146,7 +146,7 @@ public class ShouyeFragment extends Fragment {
         //tencentMap.animateCamera(cameraSigma);//改变地图状态
         tencentMap.moveCamera(cameraSigma);//移动地图
         initHeatMapOverlayDali();
-        initdata();
+        //initdata();//标注点
         initmm();
         initrenshu();
         return view;

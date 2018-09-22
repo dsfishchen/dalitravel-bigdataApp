@@ -76,7 +76,7 @@
                 app:textColorSelected="@color/tab_selected_color"
                 app:touchDrawable="@drawable/selector_bg" />
 
-            <com.chaychan.library.BottomBarItem
+           <!-- <com.chaychan.library.BottomBarItem
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -102,7 +102,7 @@
                 app:openTouchBg="false"
                 app:textColorNormal="@color/tab_normal_color"
                 app:textColorSelected="@color/tab_selected_color"
-                app:touchDrawable="@drawable/selector_bg" />
+                app:touchDrawable="@drawable/selector_bg" />-->
 
         </com.chaychan.library.BottomBarLayout>
         <!--底部导航栏结束-->

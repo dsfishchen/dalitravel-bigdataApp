@@ -16,4 +16,11 @@
         <item name="android:windowBackground">@drawable/shape_gradient</item>
         <item name="android:windowFullscreen">true</item>
     </style>
+
+    <!--登录注册-->
+    <style name="AppTheme.Dark.Dialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorAccent">@color/white</item>
+        <item name="android:textColorPrimary">@color/iron</item>
+        <item name="android:background">@color/primary</item>
+    </style>
 </resources>

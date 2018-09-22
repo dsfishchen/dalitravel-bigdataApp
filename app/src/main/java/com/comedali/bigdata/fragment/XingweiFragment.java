@@ -136,6 +136,8 @@ public class XingweiFragment extends Fragment {
     private TextView top5_title;
     private TextView top_name;
     private OkHttpClient client;
+    private Marker marker1;
+    private Marker marker2;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -278,52 +280,67 @@ public class XingweiFragment extends Fragment {
                 if (chufadian.equals("机场")){
                     if (zhongdian.equals("大理古城方向")){
                         initXianlu(chufadian,zhongdian,"jichang",1);
+                        init();
                     }
                     if (zhongdian.equals("双廊方向")){
                         initXianlu(chufadian,zhongdian,"jichang",2);
+                        init();
                     }
                     if (zhongdian.equals("喜洲古镇方向")){
                         initXianlu(chufadian,zhongdian,"jichang",3);
+                        init();
                     }
                     if (zhongdian.equals("环海西路方向")){
                         initXianlu(chufadian,zhongdian,"jichang",4);
+                        init();
                     }
                     if (zhongdian.equals("环海东路方向")){
                         initXianlu(chufadian,zhongdian,"jichang",5);
+                        init();
                     }
                 }
                 if (chufadian.equals("火车站")){
                     if (zhongdian.equals("大理古城方向")){
                         initXianlu(chufadian,zhongdian,"huochezhan",1);
+                        init();
                     }
                     if (zhongdian.equals("双廊方向")){
                         initXianlu(chufadian,zhongdian,"huochezhan",2);
+                        init();
                     }
                     if (zhongdian.equals("喜洲古镇方向")){
                         initXianlu(chufadian,zhongdian,"huochezhan",3);
+                        init();
                     }
                     if (zhongdian.equals("环海西路方向")){
                         initXianlu(chufadian,zhongdian,"huochezhan",4);
+                        init();
                     }
                     if (zhongdian.equals("环海东路方向")){
                         initXianlu(chufadian,zhongdian,"huochezhan",5);
+                        init();
                     }
                 }
                 if (chufadian.equals("高速路口")){
                     if (zhongdian.equals("大理古城方向")){
                         initXianlu(chufadian,zhongdian,"gaosuchukou",1);
+                        init();
                     }
                     if (zhongdian.equals("双廊方向")){
                         initXianlu(chufadian,zhongdian,"gaosuchukou",2);
+                        init();
                     }
                     if (zhongdian.equals("喜洲古镇方向")){
                         initXianlu(chufadian,zhongdian,"gaosuchukou",3);
+                        init();
                     }
                     if (zhongdian.equals("环海西路方向")){
                         initXianlu(chufadian,zhongdian,"gaosuchukou",4);
+                        init();
                     }
                     if (zhongdian.equals("环海东路方向")){
                         initXianlu(chufadian,zhongdian,"gaosuchukou",5);
+                        init();
                     }
                 }
 
@@ -392,6 +409,16 @@ public class XingweiFragment extends Fragment {
         //initMeishi();
         //initJingqu();
         return view;
+    }
+    private void init(){
+        marker1.remove();
+        marker2.remove();
+        latLngs1.clear();
+        latLngs2.clear();
+        latLngs3.clear();
+        latLngs4.clear();
+        latLngs5.clear();
+        polyline1.remove();
     }
     private void initoneListPopupIfNeed() {
         if (mListPopup == null) {
@@ -690,6 +717,17 @@ public class XingweiFragment extends Fragment {
 
         /*polyline=tencentMap.addPolyline(new PolylineOptions().
                 addAll(latLngs).color(0xff00ff00). width(5f));*/
+
+            /*latLngs1.clear();
+            latLngs2.clear();
+            latLngs3.clear();
+            latLngs4.clear();
+            latLngs5.clear();
+            polyline1.remove();*/
+
+
+
+
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("正在加载")
@@ -729,15 +767,6 @@ public class XingweiFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 final JSONArray num = new JSONArray(result);
-
-                                if (place.equals(chufa)){
-                                    latLngs1.clear();
-                                    latLngs2.clear();
-                                    latLngs3.clear();
-                                    latLngs4.clear();
-                                    latLngs5.clear();
-                                    polyline1.remove();
-                                }
 
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
@@ -832,37 +861,84 @@ public class XingweiFragment extends Fragment {
                                 MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        //标注坐标
-                                        final Marker marker1 = tencentMap.addMarker(new MarkerOptions().
-                                                position(latLngs1.get(0)).
-                                                title("起点").
-                                                snippet("机场"));
-                                        Marker marker2=tencentMap.addMarker(new MarkerOptions()
-                                                .position(latLngs1.get(latLngs1.size()-1))
-                                                .title("终点").snippet("大理古城"));
-                                        //创建图标
-                                        //marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_add));
-                                        //marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.m_1));
+                                        final String chufadian=choose_button.getText().toString();
+                                        final String zhongdian=choose_button1.getText().toString();
+
 
                                             if (id==1){
                                                 polyline1=tencentMap.addPolyline(new PolylineOptions().
                                                         addAll(latLngs1).color(0xff00ff00). width(10f));
+                                                //标注坐标
+                                                marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                        position(latLngs1.get(0)).
+                                                        title("起点").
+                                                        snippet(chufadian));
+                                                marker2=tencentMap.addMarker(new MarkerOptions()
+                                                        .position(latLngs1.get(latLngs1.size()-1))
+                                                        .title("终点").snippet(zhongdian));
+                                                //创建图标
+                                                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
+                                                marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
                                             }
                                             if (id==2){
                                                 polyline1=tencentMap.addPolyline(new PolylineOptions().
                                                         addAll(latLngs2).color(0xff00ff00). width(10f));
+                                                //标注坐标
+                                                marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                        position(latLngs2.get(0)).
+                                                        title("起点").
+                                                        snippet(chufadian));
+                                                marker2=tencentMap.addMarker(new MarkerOptions()
+                                                        .position(latLngs2.get(latLngs2.size()-1))
+                                                        .title("终点").snippet(zhongdian));
+                                                //创建图标
+                                                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
+                                                marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
                                             }
                                             if (id==3){
                                                 polyline1=tencentMap.addPolyline(new PolylineOptions().
                                                         addAll(latLngs3).color(0xff00ff00). width(10f));
+                                                //标注坐标
+                                                marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                        position(latLngs3.get(0)).
+                                                        title("起点").
+                                                        snippet(chufadian));
+                                                marker2=tencentMap.addMarker(new MarkerOptions()
+                                                        .position(latLngs3.get(latLngs3.size()-1))
+                                                        .title("终点").snippet(zhongdian));
+                                                //创建图标
+                                                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
+                                                marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
                                             }
                                             if (id==4){
                                                 polyline1=tencentMap.addPolyline(new PolylineOptions().
                                                         addAll(latLngs4).color(0xff00ff00). width(10f));
+                                                //标注坐标
+                                                marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                        position(latLngs4.get(0)).
+                                                        title("起点").
+                                                        snippet(chufadian));
+                                                marker2=tencentMap.addMarker(new MarkerOptions()
+                                                        .position(latLngs4.get(latLngs4.size()-1))
+                                                        .title("终点").snippet(zhongdian));
+                                                //创建图标
+                                                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
+                                                marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
                                             }
                                             if (id==5){
                                             polyline1=tencentMap.addPolyline(new PolylineOptions().
                                                     addAll(latLngs5).color(0xff00ff00). width(10f));
+                                                //标注坐标
+                                                marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                        position(latLngs5.get(0)).
+                                                        title("起点").
+                                                        snippet(chufadian));
+                                                marker2=tencentMap.addMarker(new MarkerOptions()
+                                                        .position(latLngs5.get(latLngs5.size()-1))
+                                                        .title("终点").snippet(zhongdian));
+                                                //创建图标
+                                                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
+                                                marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
                                         }
                                         tipDialog.dismiss();
                                     }
