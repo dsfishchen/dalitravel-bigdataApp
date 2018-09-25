@@ -20,12 +20,15 @@ import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.utils.NetworkUtil;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
+import com.yalantis.taurus.PullToRefreshView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -47,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText _passwordText;
     private OkHttpClient client = new OkHttpClient();
     private Handler handler;
+    private TextView mCopyrightTextView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +61,11 @@ public class LoginActivity extends AppCompatActivity {
         _passwordText=findViewById(R.id.input_password);
         _loginButton=findViewById(R.id.btn_login);
         _addressText=findViewById(R.id.input_email);
+        mCopyrightTextView=findViewById(R.id.mCopyrightTextView);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy", Locale.CHINA);
+        String currentYear = dateFormat.format(new java.util.Date());
+        mCopyrightTextView.setText(String.format(getResources().getString(R.string.about_copyright), currentYear));
+
         if (NetworkUtil.checkNet(this)){
 
         }else {
@@ -138,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
                 .add("account",address)
                 .add("password",password)
                 .build();
-        String url="http://192.168.190.119:8080/login/login?username="+address+"&passwd="+password;
+        String url="http://home.comedali.com:8088/bigdataservice/login/login?username="+address+"&passwd="+password;
         final Request request = new Request.Builder()
                 .get()
                 .url(url)
@@ -152,6 +161,7 @@ public class LoginActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                progressDialog.dismiss();
                                 Toast.makeText(LoginActivity.this,"服务器异常,请重试",Toast.LENGTH_LONG).show();
                             }
                         });
@@ -306,15 +316,15 @@ public class LoginActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
         String address = _addressText.getText().toString();
-        if (address.isEmpty()) {
-            _addressText.setError("请输入有效账号");
+        if (address.isEmpty() || address.length() < 3) {
+            _addressText.setError("请输入正确账号");
             valid = false;
         } else {
             _addressText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 6 || password.length() > 16) {
-            _passwordText.setError("密码6-16位");
+            _passwordText.setError("请输入正确密码(密码6-16位)");
             valid = false;
         } else {
             _passwordText.setError(null);

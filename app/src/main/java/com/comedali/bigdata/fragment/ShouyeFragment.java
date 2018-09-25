@@ -33,6 +33,7 @@ import com.comedali.bigdata.activity.Youke_zhanbiActivity;
 import com.comedali.bigdata.utils.NetworkUtil;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
+import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.popup.QMUIListPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdate;
@@ -202,7 +203,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=all";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=all";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -727,6 +728,11 @@ public class ShouyeFragment extends Fragment {
 
     private void initeryuan(){
         //获取数据洱源
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -738,7 +744,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=eryuan";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=eryuan";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -822,6 +828,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -836,6 +843,11 @@ public class ShouyeFragment extends Fragment {
     }
     private void initbinchuan(){
         //获取数据宾川县
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -847,7 +859,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=binchuan";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=binchuan";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -932,6 +944,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -946,6 +959,11 @@ public class ShouyeFragment extends Fragment {
     }
     private void initnanjian(){
         //获取数据南涧
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -957,7 +975,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=nanjian";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=nanjian";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1043,6 +1061,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -1057,6 +1076,11 @@ public class ShouyeFragment extends Fragment {
     }
     private void inityongping(){
         //获取数据永平
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -1068,7 +1092,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=yongping";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=yongping";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1154,6 +1178,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -1168,6 +1193,11 @@ public class ShouyeFragment extends Fragment {
     }
     private void initweishan(){
         //获取数据巍山
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -1179,7 +1209,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=weishan";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=weishan";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1264,6 +1294,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -1278,6 +1309,11 @@ public class ShouyeFragment extends Fragment {
     }
     private void initheqing(){
         //获取数据鹤庆
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -1289,7 +1325,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=heqing";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=heqing";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1375,6 +1411,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -1389,6 +1426,11 @@ public class ShouyeFragment extends Fragment {
     }
     private void inityunlong(){
         //获取数据云龙
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -1400,7 +1442,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=yunlong";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=yunlong";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1486,6 +1528,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -1500,6 +1543,11 @@ public class ShouyeFragment extends Fragment {
     }
     private void initjianchuan(){
         //获取数据剑川县
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -1511,7 +1559,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=jianchuan";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=jianchuan";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1597,6 +1645,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -1611,6 +1660,11 @@ public class ShouyeFragment extends Fragment {
     }
     private void initxiangyun(){
         //获取数据祥云县
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -1622,7 +1676,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=xiangyun";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=xiangyun";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1708,6 +1762,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -1722,6 +1777,11 @@ public class ShouyeFragment extends Fragment {
     }
     private void inityangbi(){
         //获取数据漾濞县
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -1733,7 +1793,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=yangbi";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=yangbi";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1818,6 +1878,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -1832,6 +1893,11 @@ public class ShouyeFragment extends Fragment {
     }
     private void initmidu(){
         //获取数据弥渡县
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -1843,7 +1909,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=midu";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=midu";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1928,6 +1994,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                 });
                                         tencentMap.addHeatOverlay(heatOverlayOptions);
+                                        tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });
@@ -1941,7 +2008,11 @@ public class ShouyeFragment extends Fragment {
         }).start();
     }
     private void initHeatMapOverlayDali() {
-
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -1953,7 +2024,7 @@ public class ShouyeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city=dali";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=dali";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -2038,6 +2109,7 @@ public class ShouyeFragment extends Fragment {
                                                     }
                                                     });
                                             tencentMap.addHeatOverlay(heatOverlayOptions);
+                                            tipDialog.dismiss();
                                         //heatOverlay = tencentMap.addHeatOverlay(heatOverlayOptions);*/
                                     }
                                 });

@@ -199,7 +199,7 @@ public class YoukeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/touristproperty/agedistribution";
+        String url="http://home.comedali.com:8088/bigdataservice/touristproperty/agedistribution";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -223,14 +223,35 @@ public class YoukeFragment extends Fragment {
                                 String result=jsonData.getString("result");
                                 final JSONArray num = new JSONArray(result);
                                 final List<PieEntry> strings=new ArrayList<>();
+                                float m1 = 0;
+                                float m2 = 0;
+                                float m3 = 0;
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String age_name=jsonObject.getString("age_name");
                                     String nums=jsonObject.getString("nums");
                                     float age= Float.parseFloat(nums);
-                                    strings.add(new PieEntry(age,age_name));
+                                    if (age_name.equals("60-70岁")){
+                                        m1=age;
+                                    }
+                                    if (age_name.equals("70-80岁")){
+                                        m2=age;
+                                    }
+                                    if (age_name.equals("80-90岁")){
+                                        m3=age;
+                                    }
+                                    if(i<4){
+                                        strings.add(new PieEntry(age,age_name));
+                                    }
                                 }
-                                setDatamPicChart(strings);
+                                if (null==strings||strings.size()==0){
+                                    mPicChart.clear();
+                                    mPicChart.setNoDataText("超时，请重试");
+                                }else {
+                                    strings.add(new PieEntry(m1+m2+m3,"其它"));
+                                    setDatamPicChart(strings);
+                                }
+
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -257,7 +278,7 @@ public class YoukeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/touristproperty/sexdistribution";
+        String url="http://home.comedali.com:8088/bigdataservice/touristproperty/sexdistribution";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -320,7 +341,7 @@ public class YoukeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/touristproperty/sexoffind";
+        String url="http://home.comedali.com:8088/bigdataservice/touristproperty/sexoffind";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -385,7 +406,7 @@ public class YoukeFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/touristproperty/touristsource";
+        String url="http://home.comedali.com:8088/bigdataservice/touristproperty/touristsource";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -463,6 +484,7 @@ public class YoukeFragment extends Fragment {
         l.setFormSize(10f);//设置图例的大小
         l.setTextColor(Color.rgb(255,255,255));
         l.setDrawInside(false);
+        l.setForm(Legend.LegendForm.CIRCLE);
         //结束
         mPicChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
@@ -486,13 +508,13 @@ public class YoukeFragment extends Fragment {
         PieDataSet dataSet = new PieDataSet(strings,"年龄占比");
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
-        //colors.add(getResources().getColor(R.color.app_color_theme_8));
+        colors.add(getResources().getColor(R.color.app_color_theme_8));
         colors.add(getResources().getColor(R.color.app_color_theme_7));
         colors.add(getResources().getColor(R.color.app_color_theme_9));
         colors.add(getResources().getColor(R.color.app_color_theme_5));
         colors.add(getResources().getColor(R.color.app_color_theme_4));
         colors.add(getResources().getColor(R.color.app_color_theme_3));
-
+        colors.add(getResources().getColor(R.color.app_color_theme_9));
         dataSet.setColors(colors);
         PieData pieData = new PieData(dataSet);
         pieData.setDrawValues(true);

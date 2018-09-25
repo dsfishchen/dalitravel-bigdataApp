@@ -200,7 +200,7 @@ public class ShishijiankongFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/toursitenum?city="+dizhi_m+"&place_id="+id;
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/toursitenum?city="+dizhi_m+"&place_id="+id;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -308,7 +308,7 @@ public class ShishijiankongFragment extends Fragment {
 
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载")
+                .setTipWord("获取数据中")
                 .create();
         tipDialog.show();
         //二
@@ -323,7 +323,7 @@ public class ShishijiankongFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/toursitepointnum?city="+dizhi_m+"&place_id="+id;
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/toursitepointnum?city="+dizhi_m+"&place_id="+id;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -483,7 +483,7 @@ public class ShishijiankongFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city="+dizhi_m;
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city="+dizhi_m;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();

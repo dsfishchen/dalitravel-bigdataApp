@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.comedali.bigdata"
-        minSdkVersion 24
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -51,4 +51,5 @@ dependencies {
     implementation 'com.wuhenzhizao:titlebar:1.1.1'//透明标题栏
     implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar' //头部Frament...
     implementation 'com.contrarywind:Android-PickerView:4.1.6'//时间、条件选择器
+    implementation 'com.github.yalantis:taurus:1.0.2'
 }

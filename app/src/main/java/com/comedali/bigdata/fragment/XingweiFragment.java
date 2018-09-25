@@ -538,7 +538,7 @@ public class XingweiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/behavior/traffic";
+        String url="http://home.comedali.com:8088/bigdataservice/behavior/traffic";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -597,7 +597,7 @@ public class XingweiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/behavior/stay";
+        String url="http://home.comedali.com:8088/bigdataservice/behavior/stay";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -652,7 +652,7 @@ public class XingweiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/behavior/predilection?type=interest";
+        String url="http://home.comedali.com:8088/bigdataservice/behavior/predilection?type=interest";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -730,7 +730,7 @@ public class XingweiFragment extends Fragment {
 
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载")
+                .setTipWord("获取数据中")
                 .create();
         tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
@@ -744,7 +744,7 @@ public class XingweiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/behavior/locus?startplace="+place;
+        String url="http://home.comedali.com:8088/bigdataservice/behavior/locus?startplace="+place;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -863,8 +863,6 @@ public class XingweiFragment extends Fragment {
                                     public void run() {
                                         final String chufadian=choose_button.getText().toString();
                                         final String zhongdian=choose_button1.getText().toString();
-
-
                                             if (id==1){
                                                 polyline1=tencentMap.addPolyline(new PolylineOptions().
                                                         addAll(latLngs1).color(0xff00ff00). width(10f));
@@ -991,7 +989,7 @@ public class XingweiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/behavior/predilection?type=hotel";
+        String url="http://home.comedali.com:8088/bigdataservice/behavior/predilection?type=hotel";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1048,7 +1046,7 @@ public class XingweiFragment extends Fragment {
     private void initMeishi() {
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载")
+                .setTipWord("获取数据中")
                 .create();
         tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
@@ -1062,7 +1060,7 @@ public class XingweiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/behavior/predilection?type=food";
+        String url="http://home.comedali.com:8088/bigdataservice/behavior/predilection?type=food";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1120,7 +1118,7 @@ public class XingweiFragment extends Fragment {
     private void initJingqu() {
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载")
+                .setTipWord("获取数据中")
                 .create();
         tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
@@ -1134,7 +1132,7 @@ public class XingweiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/behavior/predilection?type=scenicspot";
+        String url="http://home.comedali.com:8088/bigdataservice/behavior/predilection?type=scenicspot";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1158,7 +1156,7 @@ public class XingweiFragment extends Fragment {
                                 String result=jsonData.getString("result");
                                 final JSONArray num = new JSONArray(result);
                                 youkedatas.clear();
-                                for (int i=0;i<num.length();i++){
+                                for (int i=0;i<5;i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String place_name=jsonObject.getString("place_name");
                                     int nums=jsonObject.getInt("nums");
@@ -1191,7 +1189,7 @@ public class XingweiFragment extends Fragment {
 
     private void initviewmRadarChart() {
         //setDatamRadarChart();
-        mRadarChart.setBackgroundColor(Color.rgb(63, 81, 181));
+        mRadarChart.setBackgroundColor(Color.rgb(29, 105, 180));
         mRadarChart.getDescription().setEnabled(false);
         //mRadarChart.setBackgroundColor(Color.rgb(43,189,243));
         mRadarChart.setWebLineWidth(1f);

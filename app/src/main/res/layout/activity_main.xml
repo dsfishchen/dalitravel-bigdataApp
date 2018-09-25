@@ -39,7 +39,7 @@
                 app:iconNormal="@mipmap/tab_1"
                 app:iconSelected="@mipmap/tab_01"
                 app:itemMarginTop="-1dp"
-                app:itemText="首页"
+                app:itemText="流量监控"
                 app:itemTextSize="8sp"
                 app:openTouchBg="false"
                 app:textColorNormal="@color/tab_normal_color"

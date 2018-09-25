@@ -279,7 +279,7 @@ public class AnyuetoujiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city="+dizhi_m;
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city="+dizhi_m;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -359,7 +359,7 @@ public class AnyuetoujiFragment extends Fragment {
     private void initYue(String id,final String quyu, final String time_1, String NIAN, String Yue) {
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载")
+                .setTipWord("获取数据中")
                 .create();
         tipDialog.show();
 
@@ -376,7 +376,7 @@ public class AnyuetoujiFragment extends Fragment {
                 .build();
 
         //final String NIAN=time_choose.getText().toString();
-        String url="http://192.168.190.119:8080/flowmeter/statistics?type=month&place_id="+id+"&year="+NIAN+"&month="+Yue+"&day=00";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/statistics?type=month&place_id="+id+"&year="+NIAN+"&month="+Yue+"&day=00";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -415,8 +415,14 @@ public class AnyuetoujiFragment extends Fragment {
                                     @Override
                                     public void run() {
                                         //String quyu_1=quyu_choose.getText().toString();
-                                        initdata2(entries,quyu,time_1);
-                                        tipDialog.dismiss();
+                                        if (null==entries||entries.size()==0){
+                                            mChart.clear();
+                                            mChart.setNoDataText("当前选择的时间没有该区域数据  请重新选择时间");
+                                            tipDialog.dismiss();
+                                        }else {
+                                            initdata2(entries,quyu,time_1);
+                                            tipDialog.dismiss();
+                                        }
                                     }
                                 });
 

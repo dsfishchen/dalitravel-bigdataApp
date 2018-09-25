@@ -23,4 +23,10 @@
         <item name="android:textColorPrimary">@color/iron</item>
         <item name="android:background">@color/primary</item>
     </style>
+
+    <!-- 关于界面 -->
+    <string name="about_title">关于</string>
+    <string name="about_item_homepage">访问官网</string>
+    <string name="about_item_github">GitHub</string>
+    <string name="about_copyright">© %1$s 智慧旅游 All rights reserved.</string>
 </resources>

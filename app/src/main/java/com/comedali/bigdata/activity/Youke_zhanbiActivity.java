@@ -137,7 +137,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/scale";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/scale";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();

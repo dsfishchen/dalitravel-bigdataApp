@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences("token", Context.MODE_PRIVATE);
         String account = pref.getString("account", null);
         String password = pref.getString("password", null);
-        String url="http://192.168.190.119:8080/login/login?username="+account+"&passwd="+password;
+        String url="http://home.comedali.com:8088/bigdataservice/login/login?username="+account+"&passwd="+password;
         final Request request = new Request.Builder()
                 .get()
                 .url(url)

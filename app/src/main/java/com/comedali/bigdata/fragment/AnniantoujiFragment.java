@@ -18,6 +18,7 @@ import com.bigkoo.pickerview.builder.TimePickerBuilder;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.TimePickerView;
 import com.comedali.bigdata.R;
+import com.comedali.bigdata.activity.Quyu_renliuActivity;
 import com.comedali.bigdata.entity.YoukelaiyuanEntity;
 import com.comedali.bigdata.utils.MyMarkView;
 import com.comedali.bigdata.utils.NetworkUtil;
@@ -261,7 +262,13 @@ public class AnniantoujiFragment extends Fragment {
         }
     }
     private void initDizhiChoose(String dizhi_m){
-        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache4");
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
+
+        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache6");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
         OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
@@ -272,7 +279,7 @@ public class AnniantoujiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://192.168.190.119:8080/flowmeter/num?city="+dizhi_m;
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city="+dizhi_m;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -305,6 +312,12 @@ public class AnniantoujiFragment extends Fragment {
                                     listItems[i]=place_name;
                                     listPlace_id[i]=place_id;
                                 }
+                                Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        tipDialog.dismiss();
+                                    }
+                                });
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -352,7 +365,7 @@ public class AnniantoujiFragment extends Fragment {
     private void initNian(String id,final String quyu,final String NIAN) {
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载")
+                .setTipWord("获取数据中")
                 .create();
         tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache4");
@@ -368,7 +381,7 @@ public class AnniantoujiFragment extends Fragment {
                 .build();
 
         //final String NIAN=time_choose.getText().toString();
-        String url="http://192.168.190.119:8080/flowmeter/statistics?type=year&place_id="+id+"&year="+NIAN+"&month=00&day=00";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/statistics?type=year&place_id="+id+"&year="+NIAN+"&month=00&day=00";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -403,8 +416,15 @@ public class AnniantoujiFragment extends Fragment {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        initdata3(entries,quyu,NIAN);
-                                        tipDialog.dismiss();
+                                        if (null==entries||entries.size()==0){
+                                            mChart.clear();
+                                            mChart.setNoDataText("当前选择的时间没有该区域数据  请重新选择时间");
+                                            tipDialog.dismiss();
+                                        }else {
+                                            initdata3(entries,quyu,NIAN);
+                                            tipDialog.dismiss();
+                                        }
+
                                     }
                                 });
 
