@@ -18,10 +18,10 @@
     <Button
         android:id="@+id/time_choose3"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="#00000000"
+        android:background="@drawable/button_zheng"
         android:drawableRight="@mipmap/ic_keyboard_arrow_down"
         android:text="2018"
         android:textColor="@color/white"
@@ -31,10 +31,11 @@
     <Button
         android:id="@+id/quyu_choose3"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="#00000000"
+        android:paddingRight="8dp"
+        android:background="@drawable/button_zheng"
         android:drawableLeft="@mipmap/ic_location_on"
         android:text="大理古城"
         android:textColor="@color/white"
@@ -47,14 +48,14 @@
         android:layout_height="35dp"
         android:layout_marginEnd="76dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="7dp"
         android:background="@drawable/btn_bg_yuan"
         android:text="查询"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/time_choose3"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
-    <com.github.mikephil.charting.charts.LineChart
+    <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/nian_lineChart"
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -65,5 +66,30 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/time_choose3">
-    </com.github.mikephil.charting.charts.LineChart>
+    </com.github.mikephil.charting.charts.BarChart>
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="注："
+        android:textColor="@color/red"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nian_lineChart" />
+
+    <TextView
+        android:id="@+id/zhushi_nian"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="18dp"
+        android:text="获取失败"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView5"
+        app:layout_constraintTop_toBottomOf="@+id/nian_lineChart" />
 </android.support.constraint.ConstraintLayout>

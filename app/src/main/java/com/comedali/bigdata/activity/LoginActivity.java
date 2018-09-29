@@ -20,7 +20,6 @@ import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.utils.NetworkUtil;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
-import com.yalantis.taurus.PullToRefreshView;
 
 import org.json.JSONArray;
 import org.json.JSONException;

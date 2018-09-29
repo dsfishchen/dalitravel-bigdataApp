@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/qingse">
+    android:id="@+id/web_root">
     <com.wuhenzhizao.titlebar.widget.CommonTitleBar
-        android:id="@+id/quyurenliu_back"
+        android:id="@+id/shiping_back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:centerText="视频监控"
         app:statusBarMode="light"
-        app:centerText="各景区客流量详情"
         app:centerTextColor="@color/white"
         app:centerTextSize="18sp"
         app:centerType="textView"
@@ -25,28 +26,25 @@
         app:titleBarColor="@color/qingse"
         tools:ignore="MissingConstraints">
     </com.wuhenzhizao.titlebar.widget.CommonTitleBar>
-    <com.flyco.tablayout.SlidingTabLayout
-        android:id="@+id/techan_SlidingTabLayout"
+
+    <ProgressBar
+        android:id="@+id/progressbar"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/qingse"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
+        android:layout_height="2dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:indeterminateTint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/quyurenliu_back"
-        app:tl_indicator_color="#cec9c9"
-        app:tl_indicator_corner_radius="5dp"
-        app:tl_indicator_margin_left="2dp"
-        app:tl_indicator_margin_right="2dp"
-        app:tl_indicator_style="BLOCK" />
+        app:layout_constraintTop_toBottomOf="@+id/shiping_back" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/techan_viewpager"
+    <WebView
+        android:id="@+id/shiping_webview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/techan_SlidingTabLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/progressbar">
+
+    </WebView>
 </android.support.constraint.ConstraintLayout>

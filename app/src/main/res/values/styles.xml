@@ -3,9 +3,9 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="QMUI.Compat.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/qingse</item>
-        <item name="colorPrimaryDark">@color/qingse</item>
-        <item name="colorAccent">@color/qingse</item>
+        <item name="colorPrimary">@color/wudi</item>
+        <item name="colorPrimaryDark">@color/wudi</item>
+        <item name="colorAccent">@color/wudi</item>
         <item name="android:windowBackground">@drawable/shape_gradient</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>

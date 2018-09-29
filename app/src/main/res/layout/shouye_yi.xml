@@ -29,7 +29,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nice_button1">
-
+        <TextView
+            android:id="@+id/true_false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="false"
+            android:visibility="gone"/>
         <TextView
             android:id="@+id/renshu_01"
             android:layout_width="wrap_content"
@@ -131,9 +136,9 @@
 
     <ImageView
         android:id="@+id/tianqi_imageView"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="30dp"
         android:src="@mipmap/m_1"
         app:layout_constraintEnd_toEndOf="@+id/shouye_tianqi"
         app:layout_constraintStart_toStartOf="@+id/shouye_tianqi"
@@ -145,8 +150,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="天气"
-        android:textColor="@color/qingse"
-        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tianqi_imageView" />
 
@@ -156,10 +161,10 @@
         android:layout_height="28dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="39dp"
-        android:background="@drawable/button_yuanxian"
-        android:drawableRight="@mipmap/drop_down_unselected_icon"
-        android:text="大理市"
-        android:textColor="@color/qingse"
+        android:background="@drawable/button_yuan_tianchong"
+        android:drawableRight="@mipmap/ic_keyboard_arrow_down"
+        android:text="大理州"
+        android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@+id/shouye_tianqi"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -170,10 +175,26 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="38dp"
-        android:background="#00000000"
-        android:src="@mipmap/ic_add"
+        android:background="@drawable/button_yuan_tianchong"
+        android:src="@mipmap/ic_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/nice_button1"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/heat_choose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/button_yuan_tianchong"
+        android:paddingRight="8dp"
+        android:text="是否开启热力图"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

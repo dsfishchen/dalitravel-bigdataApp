@@ -1,6 +1,7 @@
 package com.comedali.bigdata.activity;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -102,7 +103,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 0;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 60*3;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -212,7 +213,6 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         chart_mYi.animateXY(1000,1000);
         chart_mYi.setDrawBarShadow(false);//设置每个直方图阴影为false
         chart_mYi.setDrawValueAboveBar(true);//这里设置为true每一个直方图的值就会显示在直方图的顶部
-
         chart_mYi.getDescription().setEnabled(false);
 
         // if more than 60 entries are displayed in the chart, no values will be
@@ -228,6 +228,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         chart_mYi.setNoDataText("正在获取数据...");
         chart_mYi.setNoDataTextColor(Color.WHITE);
         chart_mYi.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);//颜色数值
+
         //X轴
         //自定义设置横坐标
         //IAxisValueFormatter xValueFormatter = new ExamModelOneXValueFormatter(xListValue);
@@ -238,7 +239,8 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         xAxis.setTextColor(Color.rgb(255,255,255));
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawGridLines(false);
-        xAxis.setLabelCount(7);
+        xAxis.setLabelCount(70);
+        xAxis.setLabelRotationAngle(-30);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -256,13 +258,13 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
                 }else if (m==5){
                     return "弥渡县";
                 }else if (m==6){
-                    return "南涧彝族自治县";
+                    return "南涧县";
                 }else if (m==7){
-                    return "巍山彝族回族自治";
+                    return "巍山县";
                 }else if (m==8){
                     return "祥云县";
                 }else if (m==9){
-                    return "漾濞彝族自治县";
+                    return "漾濞县";
                 }else if (m==10){
                     return "永平县";
                 }else if (m==11){
@@ -339,6 +341,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         BarDataSet dataSet = new BarDataSet(mm, "十二县市游客数量条形统计图");//一组柱状图
         //dataSet.setColor(Color.LTGRAY);//设置第yi组数据颜色
         dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        //dataSet.setDrawValues(false);//不显示数值
         dataSet.setValueTextSize(12);//修改一组柱状图的文字大小
         dataSet.setValueTextColor(Color.rgb(255,255,255));
         dataSet.setValueFormatter(new IValueFormatter() {
@@ -349,6 +352,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
                 return mm+"%";
             }
         });
+        dataSet.setValueTextSize(10);
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         dataSets.add(dataSet);
         BarData data = new BarData(dataSets);
@@ -396,7 +400,8 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
         xAxis.setTextColor(Color.rgb(255,255,255));
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawGridLines(false);
-        xAxis.setLabelCount(7);
+        xAxis.setLabelCount(70);
+        xAxis.setLabelRotationAngle(-30);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -414,13 +419,13 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
                 }else if (m==5){
                     return "弥渡县";
                 }else if (m==6){
-                    return "南涧彝族自治县";
+                    return "南涧县";
                 }else if (m==7){
-                    return "巍山彝族回族自治";
+                    return "巍山县";
                 }else if (m==8){
                     return "祥云县";
                 }else if (m==9){
-                    return "漾濞彝族自治县";
+                    return "漾濞县";
                 }else if (m==10){
                     return "永平县";
                 }else if (m==11){
@@ -463,7 +468,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
 
 
         //解决滑动冲突问题
-        mBarChart.setOnTouchListener(new View.OnTouchListener() {
+        /*mBarChart.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
@@ -475,7 +480,7 @@ public class Youke_zhanbiActivity extends AppCompatActivity{
                 }
                 return false;
             }
-        });
+        });*/
 
 
 

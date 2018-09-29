@@ -23,10 +23,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.activity.Quyu_renliuActivity;
 import com.comedali.bigdata.activity.Youke_zhanbiActivity;
 import com.comedali.bigdata.adapter.YoukelaiyuanAdapter;
+import com.comedali.bigdata.entity.MessageEvent;
 import com.comedali.bigdata.entity.YoukelaiyuanEntity;
 import com.comedali.bigdata.utils.NetworkUtil;
 import com.github.mikephil.charting.data.BarEntry;
@@ -47,6 +49,7 @@ import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Marker;
 import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -164,7 +167,7 @@ public class ShishijiankongFragment extends Fragment {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 60*3;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -310,6 +313,7 @@ public class ShishijiankongFragment extends Fragment {
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("获取数据中")
                 .create();
+        //tipDialog.setCanceledOnTouchOutside(true);
         tipDialog.show();
         //二
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
@@ -331,6 +335,12 @@ public class ShishijiankongFragment extends Fragment {
             @Override
             public void onFailure(Call call, IOException e) {
                 //Log.d("数据请求", "失败");
+                Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tipDialog.dismiss();
+                    }
+                });
             }
 
             @Override
@@ -350,9 +360,9 @@ public class ShishijiankongFragment extends Fragment {
                             int nums=jsonObject.getInt("nums");
                             String equipment_mac=jsonObject.getString("equipment_mac");
                             final YoukelaiyuanEntity model=new YoukelaiyuanEntity();
-                            model.setId(location);
-                            model.setProvince(nums+"");
-                            model.setBaifenbi(equipment_mac);
+                            model.setId(i+1+"");
+                            model.setProvince(location);
+                            model.setBaifenbi(nums+"");
                             youkedatas.add(model);
                         }
                         Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
@@ -374,6 +384,14 @@ public class ShishijiankongFragment extends Fragment {
 
     }
     private void initChoose(){
+        if (dizhi.equals("大理州")){
+            dizhi_m="dali";
+            id="3";
+            name="大理古城";
+            lat1=25.695369;
+            lon1=100.163383;
+            initDizhiChoose(dizhi_m);
+        }
         if (dizhi.equals("大理市")){
             dizhi_m="dali";
             id="3";
@@ -483,7 +501,7 @@ public class ShishijiankongFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city="+dizhi_m;
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/spotnum?city="+dizhi_m;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -571,6 +589,7 @@ public class ShishijiankongFragment extends Fragment {
                     one=adapterView.getItemAtPosition(i).toString();
                     quyu_qiehuan.setText(one);
                     if (one.equals(listItems[i])){
+                        EventBus.getDefault().post(new MessageEvent(one));
                         initData(listPlace_id[i]);
                         initjdrs(listPlace_id[i]);
                         double wei=latw[i];

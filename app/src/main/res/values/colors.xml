@@ -10,7 +10,7 @@
     <color name="tab_selected_color">#3464d0</color>
     <color name="unreadTextColor">#00ff00</color>
     <color name="msgTextColor">#00ff00</color>
-    <color name="qingse">#1d69b4</color>
+    <color name="qingse">#1D69BE</color>
     <color name="wudi">#2BBDF3</color>
     <color name="baise">#ffffff</color>
 
@@ -39,6 +39,14 @@
     <color name="white">#FFFFFF</color>
     <color name="primary">#E43F3F</color>
     <color name="blue">#2666ef</color>
+
+
+    <color name="age1">#4b99a5</color>
+    <color name="age2">#fbb03b</color>
+    <color name="age3">#e24f61</color>
+    <color name="age4">#29aae3</color>
+    <color name="age5">#fba8c6</color>
+    <color name="age6">#2BBDF3</color>
 
     <color name="app_color_description">@color/qmui_config_color_gray_5</color>
 </resources>

@@ -3,6 +3,7 @@ package com.comedali.bigdata.fragment;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,6 +27,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bigkoo.pickerview.builder.TimePickerBuilder;
+import com.bigkoo.pickerview.listener.OnTimeSelectListener;
+import com.bigkoo.pickerview.view.TimePickerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
@@ -90,8 +94,12 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -132,12 +140,21 @@ public class XingweiFragment extends Fragment {
     private List<LatLng> latLngs4;
     private List<LatLng> latLngs5;
     private Polyline polyline1;
+    private Polyline polyline2;
+    private Polyline polyline3;
+    private Polyline polyline4;
+    private Polyline polyline5;
     private Button pianhao_choose;
     private TextView top5_title;
     private TextView top_name;
     private OkHttpClient client;
     private Marker marker1;
     private Marker marker2;
+    private LinearLayout wudi_lin;
+    private ConstraintLayout wudi_linear;
+    private Button chuxing_time;
+    private Button chuxing_cx;
+    private TextView chuxing_text;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -147,6 +164,13 @@ public class XingweiFragment extends Fragment {
         top_name=view.findViewById(R.id.top_name);
         top5_title=view.findViewById(R.id.top5_title);
         pianhao_choose=view.findViewById(R.id.pianhao_choose);
+        wudi_lin=view.findViewById(R.id.wudi_lin);
+        wudi_linear=view.findViewById(R.id.wudi_linear);
+        chuxing_time=view.findViewById(R.id.chuxing_time);
+        chuxing_cx=view.findViewById(R.id.chuxing_cx);
+        chuxing_text=view.findViewById(R.id.chuxing_text);
+        wudi_linear.setVisibility(View.GONE);
+        wudi_lin.setVisibility(View.GONE);
         jiudian_recycleView=view.findViewById(R.id.jiudian_recycleView);
         pingfen=view.findViewById(R.id.pingfen);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -233,7 +257,6 @@ public class XingweiFragment extends Fragment {
         pianhao_ConstraintLayout=view.findViewById(R.id.pianhao_ConstraintLayout);
         pianhao_ConstraintLayout.setVisibility(View.GONE);
         mBarChart = view.findViewById(R.id.tingliuTime_chart);
-        mBarChart.setVisibility(View.GONE);
         initviewmBarChart();
         mMapView = view.findViewById(R.id.xingwei_map);
         tencentMap = mMapView.getMap();
@@ -251,8 +274,6 @@ public class XingweiFragment extends Fragment {
         mapUiSettings.setLogoScale(-0.0f);
 
         choose_button=view.findViewById(R.id.choose_button);
-        choose_yes=view.findViewById(R.id.choose_yes);
-        choose_button1=view.findViewById(R.id.choose_button1);
         choose_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -262,94 +283,10 @@ public class XingweiFragment extends Fragment {
                 mListPopup.show(view);
             }
         });
-        choose_button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                inittwoListPopupIfNeed();
-                mListPopup1.setAnimStyle(QMUIPopup.ANIM_GROW_FROM_CENTER);
-                mListPopup1.setPreferredDirection(QMUIPopup.DIRECTION_TOP);
-                mListPopup1.show(view);
-            }
-        });
 
-        choose_yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final String chufadian=choose_button.getText().toString();
-                final String zhongdian=choose_button1.getText().toString();
-                if (chufadian.equals("机场")){
-                    if (zhongdian.equals("大理古城方向")){
-                        initXianlu(chufadian,zhongdian,"jichang",1);
-                        init();
-                    }
-                    if (zhongdian.equals("双廊方向")){
-                        initXianlu(chufadian,zhongdian,"jichang",2);
-                        init();
-                    }
-                    if (zhongdian.equals("喜洲古镇方向")){
-                        initXianlu(chufadian,zhongdian,"jichang",3);
-                        init();
-                    }
-                    if (zhongdian.equals("环海西路方向")){
-                        initXianlu(chufadian,zhongdian,"jichang",4);
-                        init();
-                    }
-                    if (zhongdian.equals("环海东路方向")){
-                        initXianlu(chufadian,zhongdian,"jichang",5);
-                        init();
-                    }
-                }
-                if (chufadian.equals("火车站")){
-                    if (zhongdian.equals("大理古城方向")){
-                        initXianlu(chufadian,zhongdian,"huochezhan",1);
-                        init();
-                    }
-                    if (zhongdian.equals("双廊方向")){
-                        initXianlu(chufadian,zhongdian,"huochezhan",2);
-                        init();
-                    }
-                    if (zhongdian.equals("喜洲古镇方向")){
-                        initXianlu(chufadian,zhongdian,"huochezhan",3);
-                        init();
-                    }
-                    if (zhongdian.equals("环海西路方向")){
-                        initXianlu(chufadian,zhongdian,"huochezhan",4);
-                        init();
-                    }
-                    if (zhongdian.equals("环海东路方向")){
-                        initXianlu(chufadian,zhongdian,"huochezhan",5);
-                        init();
-                    }
-                }
-                if (chufadian.equals("高速路口")){
-                    if (zhongdian.equals("大理古城方向")){
-                        initXianlu(chufadian,zhongdian,"gaosuchukou",1);
-                        init();
-                    }
-                    if (zhongdian.equals("双廊方向")){
-                        initXianlu(chufadian,zhongdian,"gaosuchukou",2);
-                        init();
-                    }
-                    if (zhongdian.equals("喜洲古镇方向")){
-                        initXianlu(chufadian,zhongdian,"gaosuchukou",3);
-                        init();
-                    }
-                    if (zhongdian.equals("环海西路方向")){
-                        initXianlu(chufadian,zhongdian,"gaosuchukou",4);
-                        init();
-                    }
-                    if (zhongdian.equals("环海东路方向")){
-                        initXianlu(chufadian,zhongdian,"gaosuchukou",5);
-                        init();
-                    }
-                }
-
-            }
-        });
 
         xingwei_ConstraintLayout=view.findViewById(R.id.xingwei_ConstraintLayout);
         mPicChart = view.findViewById(R.id.chuxing_chart);
-        mPicChart.setVisibility(View.GONE);
         initviewmPicChart();
         mTabLayout=view.findViewById(R.id.xingwei_SlidingTabLayout);
         mTabLayout.addTab(mTabLayout.newTab().setText("游客轨迹"));
@@ -362,31 +299,31 @@ public class XingweiFragment extends Fragment {
                 //选中了tab的逻辑
                 String name=tab.getText().toString();
                 if (name=="游客轨迹"){
-                    mPicChart.setVisibility(View.GONE);
                     xingwei_ConstraintLayout.setVisibility(View.VISIBLE);
-                    mBarChart.setVisibility(View.GONE);
                     pianhao_ConstraintLayout.setVisibility(View.GONE);
+                    wudi_lin.setVisibility(View.GONE);
+                    wudi_linear.setVisibility(View.GONE);
                 }
                 if (name=="出行方式"){
-                    mPicChart.setVisibility(View.VISIBLE);
                     xingwei_ConstraintLayout.setVisibility(View.GONE);
-                    mBarChart.setVisibility(View.GONE);
                     pianhao_ConstraintLayout.setVisibility(View.GONE);
                     mPicChart.animateY(1400);//设置Y轴动画
+                    wudi_lin.setVisibility(View.GONE);
+                    wudi_linear.setVisibility(View.VISIBLE);
                 }
                 if (name=="停留时间"){
-                    mPicChart.setVisibility(View.GONE);
                     xingwei_ConstraintLayout.setVisibility(View.GONE);
-                    mBarChart.setVisibility(View.VISIBLE);
                     pianhao_ConstraintLayout.setVisibility(View.GONE);
                     mBarChart.animateY(1400);
+                    wudi_lin.setVisibility(View.VISIBLE);
+                    wudi_linear.setVisibility(View.GONE);
                 }
                 if (name=="偏好分析"){
-                    mPicChart.setVisibility(View.GONE);
                     xingwei_ConstraintLayout.setVisibility(View.GONE);
-                    mBarChart.setVisibility(View.GONE);
                     pianhao_ConstraintLayout.setVisibility(View.VISIBLE);
                     mRadarChart.animateXY(1400,1400);//雷达图动画
+                    wudi_lin.setVisibility(View.GONE);
+                    wudi_linear.setVisibility(View.GONE);
                 }
             }
 
@@ -401,8 +338,77 @@ public class XingweiFragment extends Fragment {
                 //再次选中tab的逻辑
             }
         });
+        chuxing_time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar selectedDate = Calendar.getInstance();
+                Calendar startDate = Calendar.getInstance();
+                Calendar endDate = Calendar.getInstance();
+                //正确设置方式 原因：注意事项有说明
+                startDate.set(2017,0,1);
+                //endDate.set(2018,11,31);
+
+                TimePickerView pvTime = new TimePickerBuilder(getActivity(), new OnTimeSelectListener() {
+                    @Override
+                    public void onTimeSelect(Date date, View v) {//选中事件回调
+                        //Toast.makeText(getActivity(), getTime(date), Toast.LENGTH_SHORT).show();
+                        chuxing_time.setText(getTime(date));
+                    }
+                })
+                        .setType(new boolean[]{true, true, false, false, false, false})// 默认全部显示
+                        .setCancelText("取消")//取消按钮文字
+                        .setSubmitText("确定")//确认按钮文字
+                        .setContentTextSize(18)//滚轮文字大小
+                        .setTitleSize(20)//标题文字大小
+                        .setTitleText("请选择时间")//标题文字
+                        .setOutSideCancelable(true)//点击屏幕，点在控件外部范围时，是否取消显示
+                        .isCyclic(false)//是否循环滚动
+                        .setTitleColor(Color.BLACK)//标题文字颜色
+                        .setSubmitColor(Color.BLUE)//确定按钮文字颜色
+                        .setCancelColor(Color.BLUE)//取消按钮文字颜色
+                        //.setTitleBgColor(0xFF666666)//标题背景颜色 Night mode
+                        //.setBgColor(0xFF333333)//滚轮背景颜色 Night mode
+                        .setDate(selectedDate)// 如果不设置的话，默认是系统时间*/
+                        .setRangDate(startDate,endDate)//起始终止年月日设定
+                        .setLabel("年","月","日","时","分","秒")//默认设置为年月日时分秒
+                        .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
+                        .isDialog(false)//是否显示为对话框样式
+                        .build();
+                pvTime.show();
+            }
+        });
+        chuxing_cx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String time_1=chuxing_time.getText().toString();
+                String year_1 = null;
+                String month_1 = null;
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+                    Date date1 = sdf.parse(time_1);
+                    year_1=getYear(date1);
+                    month_1=getMonth(date1);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                initChuxing(year_1,month_1);
+            }
+        });
+        //获取当前时间和设置时间
+        Date date = new Date(System.currentTimeMillis());
+        chuxing_time.setText(getTime(date));
         initXianlu("机场","大理古城方向","jichang",1);
-        initChuxing();
+        String time=chuxing_time.getText().toString();
+        String year = null,month = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            Date date1 = sdf.parse(time);
+            year=getYear(date1);
+            month=getMonth(date1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        initChuxing(year,month);
         initTingliu();
         initPiaohao();
         initKezhanData();
@@ -410,15 +416,33 @@ public class XingweiFragment extends Fragment {
         //initJingqu();
         return view;
     }
+    private String getTime(Date date) {//可根据需要自行截取数据显示
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+        return format.format(date);
+    }
+    //年
+    private String getYear(Date date) {//可根据需要自行截取数据显示
+        SimpleDateFormat format = new SimpleDateFormat("yyyy");
+        return format.format(date);
+    }
+    //月
+    private String getMonth(Date date) {//可根据需要自行截取数据显示
+        SimpleDateFormat format = new SimpleDateFormat("MM");
+        return format.format(date);
+    }
     private void init(){
-        marker1.remove();
-        marker2.remove();
         latLngs1.clear();
         latLngs2.clear();
         latLngs3.clear();
         latLngs4.clear();
         latLngs5.clear();
         polyline1.remove();
+        polyline2.remove();
+        polyline3.remove();
+        polyline4.remove();
+        polyline5.remove();
+        marker1.remove();
+        marker2.remove();
     }
     private void initoneListPopupIfNeed() {
         if (mListPopup == null) {
@@ -439,6 +463,22 @@ public class XingweiFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     one=adapterView.getItemAtPosition(i).toString();
+                    if (one.equals("机场")){
+                        tencentMap.clear();
+                        init();
+                        initXianlu(one,"1","jichang",1);
+
+                    }
+                    if (one.equals("火车站")){
+                        tencentMap.clear();
+                        init();
+                        initXianlu(one,"2","huochezhan",1);
+                    }
+                    if (one.equals("高速路口")){
+                        tencentMap.clear();
+                        init();
+                        initXianlu(one,"3","gaosuchukou",1);
+                    }
                     mListPopup.dismiss();
                 }
             });
@@ -503,7 +543,7 @@ public class XingweiFragment extends Fragment {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 60*3;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -526,7 +566,12 @@ public class XingweiFragment extends Fragment {
             return chain.proceed(request);
         }
     };
-    private void initChuxing() {
+    private void initChuxing(final String year, final String month) {
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -538,7 +583,7 @@ public class XingweiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://home.comedali.com:8088/bigdataservice/behavior/traffic";
+        String url="http://home.comedali.com:8088/bigdataservice//behavior/trafficbymonth?year="+year+"&month="+month;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -565,11 +610,19 @@ public class XingweiFragment extends Fragment {
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String traffic_type=jsonObject.getString("traffic_type");
-                                    String nums=jsonObject.getString("nums");
-                                    float renshu= Float.parseFloat(nums);
+                                    int nums=jsonObject.getInt("nums");
+                                    float renshu= nums;
                                     strings.add(new PieEntry(renshu,traffic_type));
                                 }
-                                setDatamPicChart(strings);
+                                MainActivity.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        setDatamPicChart(strings);
+                                        tipDialog.dismiss();
+                                        mPicChart.animateY(1400);//设置Y轴动画
+                                        chuxing_text.setText(year+"年"+month+"月游客出行方式占比");
+                                    }
+                                });
 
                             }
                         } catch (JSONException e) {
@@ -705,8 +758,6 @@ public class XingweiFragment extends Fragment {
         latLngs3 = new ArrayList<LatLng>();
         latLngs4 = new ArrayList<LatLng>();
         latLngs5 = new ArrayList<LatLng>();
-        final String w1=choose_button.getText().toString();
-        String w2=choose_button1.getText().toString();
         /*latLngs.add(new LatLng(25.646788,100.322685));
         latLngs.add(new LatLng(25.583866,100.230932));
         latLngs.add(new LatLng(25.609217,100.221362));
@@ -724,14 +775,20 @@ public class XingweiFragment extends Fragment {
             latLngs4.clear();
             latLngs5.clear();
             polyline1.remove();*/
-
-
+            if (latLngs1.size()!=0){
+                latLngs1.clear();
+                latLngs2.clear();
+                latLngs3.clear();
+                latLngs4.clear();
+                latLngs5.clear();
+            }
 
 
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("获取数据中")
                 .create();
+        //tipDialog.setCanceledOnTouchOutside(true);
         tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
@@ -755,6 +812,12 @@ public class XingweiFragment extends Fragment {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         //Log.d("数据请求", "失败");
+                        MainActivity.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tipDialog.dismiss();
+                            }
+                        });
                     }
 
                     @Override
@@ -771,6 +834,7 @@ public class XingweiFragment extends Fragment {
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String trackpath=jsonObject.getString("trackpath");
+                                    String allnums=jsonObject.getString("allnums");
                                     JSONArray trackpath1=new JSONArray(trackpath);
                                     for (int w=0;w<trackpath1.length();w++){
                                         JSONObject json=trackpath1.getJSONObject(w);
@@ -862,10 +926,9 @@ public class XingweiFragment extends Fragment {
                                     @Override
                                     public void run() {
                                         final String chufadian=choose_button.getText().toString();
-                                        final String zhongdian=choose_button1.getText().toString();
-                                            if (id==1){
+
                                                 polyline1=tencentMap.addPolyline(new PolylineOptions().
-                                                        addAll(latLngs1).color(0xff00ff00). width(10f));
+                                                        addAll(latLngs1).color(R.color.qingse). width(10f));
                                                 //标注坐标
                                                 marker1 = tencentMap.addMarker(new MarkerOptions().
                                                         position(latLngs1.get(0)).
@@ -873,14 +936,14 @@ public class XingweiFragment extends Fragment {
                                                         snippet(chufadian));
                                                 marker2=tencentMap.addMarker(new MarkerOptions()
                                                         .position(latLngs1.get(latLngs1.size()-1))
-                                                        .title("终点").snippet(zhongdian));
+                                                        .title("终点").snippet("大理古城"));
                                                 //创建图标
                                                 marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
                                                 marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
-                                            }
-                                            if (id==2){
-                                                polyline1=tencentMap.addPolyline(new PolylineOptions().
-                                                        addAll(latLngs2).color(0xff00ff00). width(10f));
+
+
+                                                polyline2=tencentMap.addPolyline(new PolylineOptions().
+                                                        addAll(latLngs2).color(R.color.qingse). width(10f));
                                                 //标注坐标
                                                 marker1 = tencentMap.addMarker(new MarkerOptions().
                                                         position(latLngs2.get(0)).
@@ -888,14 +951,14 @@ public class XingweiFragment extends Fragment {
                                                         snippet(chufadian));
                                                 marker2=tencentMap.addMarker(new MarkerOptions()
                                                         .position(latLngs2.get(latLngs2.size()-1))
-                                                        .title("终点").snippet(zhongdian));
+                                                        .title("终点").snippet("双廊古镇"));
                                                 //创建图标
                                                 marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
                                                 marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
-                                            }
-                                            if (id==3){
-                                                polyline1=tencentMap.addPolyline(new PolylineOptions().
-                                                        addAll(latLngs3).color(0xff00ff00). width(10f));
+
+
+                                                polyline3=tencentMap.addPolyline(new PolylineOptions().
+                                                        addAll(latLngs3).color(R.color.qingse). width(10f));
                                                 //标注坐标
                                                 marker1 = tencentMap.addMarker(new MarkerOptions().
                                                         position(latLngs3.get(0)).
@@ -903,14 +966,14 @@ public class XingweiFragment extends Fragment {
                                                         snippet(chufadian));
                                                 marker2=tencentMap.addMarker(new MarkerOptions()
                                                         .position(latLngs3.get(latLngs3.size()-1))
-                                                        .title("终点").snippet(zhongdian));
+                                                        .title("终点").snippet("喜洲古镇"));
                                                 //创建图标
                                                 marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
                                                 marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
-                                            }
-                                            if (id==4){
-                                                polyline1=tencentMap.addPolyline(new PolylineOptions().
-                                                        addAll(latLngs4).color(0xff00ff00). width(10f));
+
+
+                                                polyline4=tencentMap.addPolyline(new PolylineOptions().
+                                                        addAll(latLngs4).color(R.color.qingse). width(10f));
                                                 //标注坐标
                                                 marker1 = tencentMap.addMarker(new MarkerOptions().
                                                         position(latLngs4.get(0)).
@@ -918,14 +981,14 @@ public class XingweiFragment extends Fragment {
                                                         snippet(chufadian));
                                                 marker2=tencentMap.addMarker(new MarkerOptions()
                                                         .position(latLngs4.get(latLngs4.size()-1))
-                                                        .title("终点").snippet(zhongdian));
+                                                        .title("终点").snippet("环海西路"));
                                                 //创建图标
                                                 marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
                                                 marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
-                                            }
-                                            if (id==5){
-                                            polyline1=tencentMap.addPolyline(new PolylineOptions().
-                                                    addAll(latLngs5).color(0xff00ff00). width(10f));
+
+
+                                            polyline5=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs5).color(R.color.qingse). width(10f));
                                                 //标注坐标
                                                 marker1 = tencentMap.addMarker(new MarkerOptions().
                                                         position(latLngs5.get(0)).
@@ -933,11 +996,10 @@ public class XingweiFragment extends Fragment {
                                                         snippet(chufadian));
                                                 marker2=tencentMap.addMarker(new MarkerOptions()
                                                         .position(latLngs5.get(latLngs5.size()-1))
-                                                        .title("终点").snippet(zhongdian));
+                                                        .title("终点").snippet("环海东路"));
                                                 //创建图标
                                                 marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
                                                 marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
-                                        }
                                         tipDialog.dismiss();
                                     }
                                 });
@@ -1048,6 +1110,7 @@ public class XingweiFragment extends Fragment {
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("获取数据中")
                 .create();
+        //tipDialog.setCanceledOnTouchOutside(true);
         tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
@@ -1071,6 +1134,12 @@ public class XingweiFragment extends Fragment {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         //Log.d("数据请求", "失败");
+                        MainActivity.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tipDialog.dismiss();
+                            }
+                        });
                     }
 
                     @Override
@@ -1120,6 +1189,7 @@ public class XingweiFragment extends Fragment {
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("获取数据中")
                 .create();
+        //tipDialog.setCanceledOnTouchOutside(true);
         tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache3");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
@@ -1143,6 +1213,12 @@ public class XingweiFragment extends Fragment {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         //Log.d("数据请求", "失败");
+                        MainActivity.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tipDialog.dismiss();
+                            }
+                        });
                     }
 
                     @Override
@@ -1308,9 +1384,10 @@ public class XingweiFragment extends Fragment {
         //取消颜色数值
         Legend l = mPicChart.getLegend();
         l.setEnabled(true);
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        /*l.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
-        l.setOrientation(Legend.LegendOrientation.VERTICAL);
+        l.setOrientation(Legend.LegendOrientation.VERTICAL);*/
+        l.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
         l.setFormSize(10);//设置图例的大小
         l.setDrawInside(false);
         l.setTextColor(Color.WHITE);
@@ -1335,17 +1412,15 @@ public class XingweiFragment extends Fragment {
         strings.add(new PieEntry(60f,"自驾"));
         strings.add(new PieEntry(50f,"客车"));*/
         PieDataSet dataSet = new PieDataSet(strings,"出行方式");
-
-        /*ArrayList<Integer> colors = new ArrayList<Integer>();
-        //colors.add(getResources().getColor(R.color.app_color_theme_8));
-        //colors.add(getResources().getColor(R.color.app_color_theme_7));
-        colors.add(getResources().getColor(R.color.app_color_theme_9));
-        colors.add(getResources().getColor(R.color.app_color_theme_5));
+        ArrayList<Integer> colors = new ArrayList<Integer>();
+        colors.add(getResources().getColor(R.color.age5));
+        colors.add(getResources().getColor(R.color.wudi));
+        colors.add(getResources().getColor(R.color.age4));
+        colors.add(getResources().getColor(R.color.age6));
         colors.add(getResources().getColor(R.color.app_color_theme_4));
-        //colors.add(getResources().getColor(R.color.app_color_theme_3));
-
-        dataSet.setColors(colors);*/
-        dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        colors.add(getResources().getColor(R.color.app_color_theme_3));
+        colors.add(getResources().getColor(R.color.app_color_theme_9));
+        dataSet.setColors(colors);
         dataSet.setSliceSpace(3f);//设置饼块之间的间隔
 
         PieData pieData = new PieData(dataSet);

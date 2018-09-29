@@ -13,27 +13,36 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.bigkoo.pickerview.builder.TimePickerBuilder;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.TimePickerView;
+import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
 import com.comedali.bigdata.activity.Quyu_renliuActivity;
+import com.comedali.bigdata.entity.MessageEvent;
 import com.comedali.bigdata.entity.YoukelaiyuanEntity;
 import com.comedali.bigdata.utils.MyMarkView;
 import com.comedali.bigdata.utils.NetworkUtil;
 import com.comedali.bigdata.utils.NianMarkView;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.EntryXComparator;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
@@ -41,6 +50,9 @@ import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.popup.QMUIListPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,7 +80,7 @@ import okhttp3.Response;
  * Created by 刘杨刚 on 2018/9/6.
  */
 public class AnniantoujiFragment extends Fragment {
-    private LineChart mChart;
+    private BarChart mChart;
     private Button quyu_choose;
     private Button time_choose;
     private Button anri_chaxun;
@@ -88,6 +100,12 @@ public class AnniantoujiFragment extends Fragment {
     private String quyu_1;
     private String time_1;
     private String Place_id;
+    private TextView zhushi_nian;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -98,6 +116,7 @@ public class AnniantoujiFragment extends Fragment {
         quyu_choose=view.findViewById(R.id.quyu_choose3);
         anri_chaxun=view.findViewById(R.id.anri_chaxun3);
         time_choose=view.findViewById(R.id.time_choose3);
+        zhushi_nian=view.findViewById(R.id.zhushi_nian);
         quyu_choose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -188,6 +207,12 @@ public class AnniantoujiFragment extends Fragment {
         return view;
     }
     private void initChoose(){
+        if (dizhi.equals("大理州")){
+            dizhi_m="dali";
+            id="3";
+            name="大理古城";
+            initDizhiChoose(dizhi_m);
+        }
         if (dizhi.equals("大理市")){
             dizhi_m="dali";
             id="3";
@@ -261,11 +286,18 @@ public class AnniantoujiFragment extends Fragment {
             initDizhiChoose(dizhi_m);
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void Event(MessageEvent messageEvent) {
+        quyu_choose.setText(messageEvent.getMessage());
+    }
+
     private void initDizhiChoose(String dizhi_m){
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("获取数据中")
                 .create();
+        //tipDialog.setCanceledOnTouchOutside(true);
         tipDialog.show();
 
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache6");
@@ -279,7 +311,7 @@ public class AnniantoujiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city="+dizhi_m;
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/spotnum?city="+dizhi_m;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -290,6 +322,12 @@ public class AnniantoujiFragment extends Fragment {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         //Log.d("数据请求", "失败");
+                        Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tipDialog.dismiss();
+                            }
+                        });
                     }
 
                     @Override
@@ -339,7 +377,7 @@ public class AnniantoujiFragment extends Fragment {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
-            int onlineCacheTime = 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
+            int onlineCacheTime = 60*3;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0
             return response.newBuilder()
                     .header("Cache-Control", "public, max-age="+onlineCacheTime)
                     .removeHeader("Pragma")
@@ -367,6 +405,7 @@ public class AnniantoujiFragment extends Fragment {
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("获取数据中")
                 .create();
+        //tipDialog.setCanceledOnTouchOutside(true);
         tipDialog.show();
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache4");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
@@ -392,6 +431,12 @@ public class AnniantoujiFragment extends Fragment {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         //Log.d("数据请求", "失败");
+                        Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tipDialog.dismiss();
+                            }
+                        });
                     }
 
                     @Override
@@ -404,16 +449,19 @@ public class AnniantoujiFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray num = new JSONArray(result);
-                                final List<Entry> entries = new ArrayList<Entry>();
+                                final List<BarEntry> entries = new ArrayList<BarEntry>();
+                                int sums=0;
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String c_nums=jsonObject.getString("c_nums");
                                     String c_month=jsonObject.getString("c_month");
                                     int yVal = Integer.parseInt(c_nums);
                                     int m=Integer.parseInt(c_month);
-                                    entries.add(new Entry(m, yVal));
+                                    entries.add(new BarEntry(m, yVal));
+                                    sums+=yVal;
                                 }
-                                getActivity().runOnUiThread(new Runnable() {
+                                final int finalSums = sums;
+                                Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         if (null==entries||entries.size()==0){
@@ -421,7 +469,7 @@ public class AnniantoujiFragment extends Fragment {
                                             mChart.setNoDataText("当前选择的时间没有该区域数据  请重新选择时间");
                                             tipDialog.dismiss();
                                         }else {
-                                            initdata3(entries,quyu,NIAN);
+                                            initdata3(entries,quyu,NIAN,finalSums);
                                             tipDialog.dismiss();
                                         }
 
@@ -553,6 +601,8 @@ public class AnniantoujiFragment extends Fragment {
         xAxis.setDrawGridLines(false);
         xAxis.setTextColor(Color.rgb(255,255,255));
         xAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。
+        xAxis.setLabelCount(13);
+        xAxis.setLabelRotationAngle(-20);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -595,7 +645,7 @@ public class AnniantoujiFragment extends Fragment {
 
     }
 
-    private void initdata3(List<Entry> entries,String quyu,String time) {
+    private void initdata3(List<BarEntry> entries, String quyu, String time,int sums) {
         /*List<Entry> entries = new ArrayList<Entry>();
 
         for (int i = 1; i < count+1; i++) {
@@ -605,7 +655,6 @@ public class AnniantoujiFragment extends Fragment {
             entries.add(new Entry(i, yVal));
         }*/
         // sort by x-value
-        Collections.sort(entries, new EntryXComparator());
         // create a dataset and give it a type
         //时间转换设置
         String newmonth = null;
@@ -624,13 +673,12 @@ public class AnniantoujiFragment extends Fragment {
         String times=year+"年";
 
 
-        LineDataSet set1 = new LineDataSet(entries, times+quyu+"客流量年统计 单位：人");
-        set1.setLineWidth(1.5f);
-        set1.setCircleRadius(4f);
-        set1.setValueTextSize(12);
-        set1.setDrawCircleHole(false);//设置是否在数据点中间显示一个孔
-        set1.setValueTextColor(Color.rgb(255,255,255));
-        set1.setValueFormatter(new IValueFormatter() {
+        BarDataSet dataSet = new BarDataSet(entries, times+quyu+"客流量年统计 单位：人");
+        dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        dataSet.setValueTextSize(12);//修改一组柱状图的文字大小
+        dataSet.setValueTextColor(Color.rgb(255,255,255));
+        //set1.setDrawValues(false);//不显示点数值
+        dataSet.setValueFormatter(new IValueFormatter() {
             @Override
             public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
                 int mm=(int)entry.getY();
@@ -638,8 +686,15 @@ public class AnniantoujiFragment extends Fragment {
             }
         });
         // create a data object with the datasets
-        LineData data2 = new LineData(set1);
+        BarData data2 = new BarData(dataSet);
         // set data
         mChart.setData(data2);
+        mChart.invalidate();//重绘图表
+        zhushi_nian.setText(year+"年"+quyu+"总客流量约"+sums+"人");
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

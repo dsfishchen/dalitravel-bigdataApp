@@ -15,12 +15,13 @@
             <Button
                 android:id="@+id/quyu_qiehuan"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="#00000000"
+                android:layout_height="35dp"
+                android:layout_marginTop="15dp"
+                android:paddingRight="8dp"
+                android:background="@drawable/button_zheng"
                 android:drawableLeft="@mipmap/ic_location_on"
                 android:text="大理古城"
-                android:maxEms="4"
+                android:maxEms="6"
                 android:textColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -209,7 +210,7 @@
                         android:gravity="center"
                         android:layout_weight="1"
                         android:textColor="@color/white"
-                        android:text="景点" />
+                        android:text="排名" />
 
                     <TextView
                         android:id="@+id/textView8"
@@ -218,7 +219,7 @@
                         android:gravity="center"
                         android:layout_weight="1"
                         android:textColor="@color/white"
-                        android:text="当前人数" />
+                        android:text="景点名称" />
 
                     <TextView
                         android:id="@+id/textView7"
@@ -227,7 +228,7 @@
                         android:gravity="center"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:text="设备MAC" />
+                        android:text="当前人数" />
                 </LinearLayout>
 
                 <View

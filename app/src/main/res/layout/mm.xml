@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-</android.support.constraint.ConstraintLayout>
+    android:layout_height="match_parent"
+    android:background="@drawable/button_zheng"
+    android:orientation="vertical"
+    android:padding="5dp">
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="大理古城"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#ff000000"
+        android:textSize="12sp"/>
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
+</LinearLayout>

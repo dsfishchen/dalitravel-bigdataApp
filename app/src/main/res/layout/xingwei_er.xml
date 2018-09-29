@@ -60,6 +60,7 @@
                 android:layout_marginTop="8dp"
                 android:padding="4dp"
                 android:text="出发点："
+                android:textColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -69,18 +70,20 @@
                 android:layout_height="25dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/button_yuanxian"
+                android:background="@drawable/button_yuan_tianchong"
                 android:drawableRight="@mipmap/drop_down_unselected_icon"
                 android:text="机场"
+                android:textColor="@color/qingse"
                 app:layout_constraintStart_toEndOf="@+id/textView10"
                 app:layout_constraintTop_toTopOf="parent" />
-            <TextView
+            <!--<TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:padding="4dp"
                 android:text="方向："
+                android:textColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
@@ -89,9 +92,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/button_yuanxian"
+                android:background="@drawable/button_yuan_tianchong"
                 android:drawableRight="@mipmap/drop_down_unselected_icon"
                 android:text="大理古城方向"
+                android:textColor="@color/qingse"
                 app:layout_constraintEnd_toEndOf="@+id/choose_button"
                 app:layout_constraintStart_toStartOf="@+id/choose_button"
                 app:layout_constraintTop_toBottomOf="@+id/choose_button" />
@@ -108,18 +112,89 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/choose_button"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />-->
         </android.support.constraint.ConstraintLayout>
         <!--出行方式-->
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/chuxing_chart"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/wudi_linear"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
-        <!--停留时间-->
-        <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/tingliuTime_chart"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="23dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="8dp"
+                android:text="请选择查询时间:"
+                android:textColor="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/chuxing_time"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/button_yuan_tianchong"
+                android:drawableRight="@mipmap/ic_keyboard_arrow_down"
+                android:text="2018-02"
+                android:textColor="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+            <Button
+                android:id="@+id/chuxing_cx"
+                android:layout_width="80dp"
+                android:layout_height="35dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/btn_bg_yuan"
+                android:text="查询"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.05"
+                app:layout_constraintStart_toEndOf="@+id/chuxing_time"
+                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+            <TextView
+                android:id="@+id/chuxing_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="2018年9月游客出行方式占比"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/chuxing_time" />
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/chuxing_chart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/chuxing_text" />
+        </android.support.constraint.ConstraintLayout>
+
+
+        <LinearLayout
+            android:id="@+id/wudi_lin"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="30dp">
+            <!--停留时间-->
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/tingliuTime_chart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+        </LinearLayout>
+
         <!--偏好分析-->
         <ScrollView
             android:layout_width="match_parent"
@@ -201,7 +276,6 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:drawableRight="@mipmap/ic_keyboard_arrow_down"
                         android:text="排名" />
 
                     <TextView
@@ -211,7 +285,6 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:drawableRight="@mipmap/ic_keyboard_arrow_down"
                         android:text="客栈" />
 
                     <TextView
@@ -221,7 +294,6 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:drawableRight="@mipmap/ic_keyboard_arrow_down"
                         android:text="评分" />
                 </LinearLayout>
                 <View
