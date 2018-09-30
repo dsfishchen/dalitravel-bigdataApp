@@ -73,7 +73,7 @@
                 android:background="@drawable/button_yuan_tianchong"
                 android:drawableRight="@mipmap/drop_down_unselected_icon"
                 android:text="机场"
-                android:textColor="@color/qingse"
+                android:textColor="@color/white"
                 app:layout_constraintStart_toEndOf="@+id/textView10"
                 app:layout_constraintTop_toTopOf="parent" />
             <!--<TextView

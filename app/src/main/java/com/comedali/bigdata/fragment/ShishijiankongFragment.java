@@ -654,20 +654,33 @@ public class ShishijiankongFragment extends Fragment {
                 arg0 = Math.sqrt(arg0);
                 float a = 20000;
                 red = 255;
-                green = 119;
-                blue = 3;
+                green = 0;
+                blue = 0;
                 if (arg0 > 0.7) {
-                    green = 78;
-                    blue = 1;
+                    red=255;
+                    green = 0;
+                    blue = 0;
                 }
                 if (arg0 > 0.6) {
                     alpha = (int) (a * Math.pow(arg0 - 0.7, 3) + 240);
+                    red=255;
+                    green = 0;
+                    blue = 0;
                 } else if (arg0 > 0.4) {
                     alpha = (int) (a * Math.pow(arg0 - 0.5, 3) + 200);
+                    red=255;
+                    green = 255;
+                    blue = 0;
                 } else if (arg0 > 0.2) {
                     alpha = (int) (a * Math.pow(arg0 - 0.3, 3) + 160);
+                    red=0;
+                    green = 255;
+                    blue = 0;
                 } else {
-                    alpha = (int) (700 * arg0);
+                    alpha = (int) (1700 * arg0);
+                    red=0;
+                    green = 0;
+                    blue = 255;
                 }
                 if (alpha > 255) {
                     alpha = 255;
@@ -684,7 +697,6 @@ public class ShishijiankongFragment extends Fragment {
                     @Override
                     public void onHeatMapReady() {
                         // TODO Auto-generated method stub
-
 
                     }
                 });

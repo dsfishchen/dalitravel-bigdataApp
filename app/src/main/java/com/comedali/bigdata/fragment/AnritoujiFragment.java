@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -431,7 +433,7 @@ public class AnritoujiFragment extends Fragment{
                                 JSONArray num = new JSONArray(result);
                                 //final List<Entry> entries = new ArrayList<Entry>();
                                 entries = new ArrayList<Entry>();
-                                int sums=0;
+                                Integer[] sums=new Integer[num.length()];
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String c_nums=jsonObject.getString("c_nums");
@@ -441,9 +443,9 @@ public class AnritoujiFragment extends Fragment{
                                     int yVal = Integer.parseInt(c_nums);
                                     int m=Integer.parseInt(c_hour);
                                     entries.add(new Entry(m, yVal));
-                                    sums+=yVal;
+                                    sums[i]=yVal;
                                 }
-                                final int finalSums = sums;
+                                final int max = (int) Collections.max(Arrays.asList(sums));
                                 Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -453,7 +455,7 @@ public class AnritoujiFragment extends Fragment{
                                             mChart.setNoDataText("当前选择的时间没有该区域数据  请重新选择时间");
                                             tipDialog.dismiss();
                                         }else {
-                                            initdata1(entries,quyu,time_1, finalSums);
+                                            initdata1(entries,quyu,time_1, max);
                                             tipDialog.dismiss();
                                         }
                                     }
@@ -618,7 +620,7 @@ public class AnritoujiFragment extends Fragment{
         limitLine.setLineColor(Color.RED);
         //设置基线的位置
         limitLine.setLabelPosition(LimitLine.LimitLabelPosition.LEFT_TOP);
-        limitLine.setLabel("超过15000人");
+        limitLine.setLabel("超过1.5万人");
         //设置限制线为虚线
         //limitLine.enableDashedLine(10f, 10f, 0f);
         //左边Y轴添加限制线
@@ -674,7 +676,8 @@ public class AnritoujiFragment extends Fragment{
         LineData data = new LineData(set1);
         // set data
         mChart.setData(data);
-        zhushi_ri.setText(year+"年"+month+"月"+day+"日"+quyu+"总客流量约"+sums+"人");
+        String html=year+"年"+month+"月"+day+"日"+quyu+"总客流量约<font color='#ff0000'><big>"+sums+"</big></font>人";
+        zhushi_ri.setText(Html.fromHtml(html));
     }
 
     @Override

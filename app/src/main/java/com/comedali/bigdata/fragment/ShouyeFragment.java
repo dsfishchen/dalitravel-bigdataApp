@@ -2,13 +2,9 @@ package com.comedali.bigdata.fragment;
 
 
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Interpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,11 +19,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ZoomControls;
 
 import com.comedali.bigdata.MainActivity;
 import com.comedali.bigdata.R;
@@ -45,11 +38,11 @@ import com.qmuiteam.qmui.widget.popup.QMUIListPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdate;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdateFactory;
+import com.tencent.tencentmap.mapsdk.maps.MapView;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.TencentMapOptions;
 import com.tencent.tencentmap.mapsdk.maps.TextureMapView;
 import com.tencent.tencentmap.mapsdk.maps.UiSettings;
-import com.tencent.tencentmap.mapsdk.maps.model.Animation;
 import com.tencent.tencentmap.mapsdk.maps.model.BitmapDescriptorFactory;
 import com.tencent.tencentmap.mapsdk.maps.model.CameraPosition;
 import com.tencent.tencentmap.mapsdk.maps.model.HeatDataNode;
@@ -79,6 +72,8 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static com.tencent.tencentmap.mapsdk.maps.TencentMap.MAP_TYPE_NIGHT;
 
 /**
  * Created by 刘杨刚 on 2018/9/3.
@@ -139,7 +134,9 @@ public class ShouyeFragment extends Fragment {
                 mListPopup1.show(view);
             }
         });
+
         tencentMap = mMapView.getMap();
+        //tencentMap.setMapStyle(MAP_TYPE_NIGHT);//样式
         //tencentMap.setOnTapMapViewInfoWindowHidden(true);//点击其他地方让气泡信息消失
         tencentMap.enableMultipleInfowindow(true);
         UiSettings mapUiSettings = tencentMap.getUiSettings();
@@ -339,7 +336,7 @@ public class ShouyeFragment extends Fragment {
                     }
                 });
             }
-        },0,60000);
+        },0,60000*2);
 
     }
     private void initrenshu1(final String city) {
@@ -542,7 +539,7 @@ public class ShouyeFragment extends Fragment {
                                                 .alpha(0.5f)
                                                 .position(jingwei.get(i))
                                                 .title(dizhi_name[i])));
-                                        mm.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.hongdian));
+                                        mm.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.red));
                                         mm.get(i).showInfoWindow();
                                     }
                                 //创建图标
@@ -553,7 +550,12 @@ public class ShouyeFragment extends Fragment {
                                        String ren_nums = null;
                                        for (int i=0;i<jingwei.size();i++){
                                            if (marker.getTitle().equals(dizhi_name[i])){
-                                               ren_nums="人数："+renshu[i];
+                                               if (renshu[i].equals("0")){
+                                                   ren_nums="人数："+renshu[i]+"人   (设备离线)";
+                                               }else {
+                                                   ren_nums="人数："+renshu[i]+"人";
+                                               }
+
                                            }
                                        }
 

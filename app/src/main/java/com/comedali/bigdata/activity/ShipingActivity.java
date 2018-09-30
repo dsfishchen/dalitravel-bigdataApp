@@ -44,7 +44,12 @@ public class ShipingActivity extends AppCompatActivity {
             @Override
             public void onClicked(View v, int action, String extra) {
                 if (action==commonTitleBar.ACTION_LEFT_BUTTON){
-                    ShipingActivity.this.finish();
+                    if (shiping_webview.canGoBack()){
+                        shiping_webview.goBack();
+                    }else {
+                        ShipingActivity.this.finish();
+                    }
+
                 }
             }
         });
@@ -58,7 +63,7 @@ public class ShipingActivity extends AppCompatActivity {
         }else {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);//不使用缓存，只从网络获取数据.
         }
-
+        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);// 排版适应屏幕
         webSettings.setLoadWithOverviewMode(true); // 缩放至屏幕的大小
         //支持屏幕缩放
         webSettings.setSupportZoom(true);

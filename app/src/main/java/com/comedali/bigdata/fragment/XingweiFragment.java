@@ -583,7 +583,7 @@ public class XingweiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://home.comedali.com:8088/bigdataservice//behavior/trafficbymonth?year="+year+"&month="+month;
+        String url="http://home.comedali.com:8088/bigdataservice/behavior/trafficbymonth?year="+year+"&month="+month;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -830,17 +830,37 @@ public class XingweiFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 final JSONArray num = new JSONArray(result);
-
+                                final String[] all_nums=new String[num.length()];
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String trackpath=jsonObject.getString("trackpath");
-                                    String allnums=jsonObject.getString("allnums");
+                                    String destination=jsonObject.getString("destination");//终点
                                     JSONArray trackpath1=new JSONArray(trackpath);
                                     for (int w=0;w<trackpath1.length();w++){
                                         JSONObject json=trackpath1.getJSONObject(w);
                                         String track_id=json.getString("track_id");
                                         String latitude=json.getString("latitude");
                                         String longitude=json.getString("longitude");
+
+
+                                        String nums=jsonObject.getString("nums");//总人数
+                                        if (destination.equals("大理古城")){
+                                            all_nums[0]=nums;
+                                        }
+                                        if (destination.equals("双廊")){
+                                            all_nums[1]=nums;
+                                        }
+                                        if (destination.equals("喜洲古镇")){
+                                            all_nums[2]=nums;
+                                        }
+                                        if (destination.equals("环海西路")){
+                                            all_nums[3]=nums;
+                                        }
+                                        if (destination.equals("环海东路")){
+                                            all_nums[4]=nums;
+                                        }
+
+
                                         if (track_id.equals("1")){
                                             double lat= Double.parseDouble(latitude);
                                             double long1= Double.parseDouble(longitude);
@@ -927,79 +947,79 @@ public class XingweiFragment extends Fragment {
                                     public void run() {
                                         final String chufadian=choose_button.getText().toString();
 
-                                                polyline1=tencentMap.addPolyline(new PolylineOptions().
-                                                        addAll(latLngs1).color(R.color.qingse). width(10f));
-                                                //标注坐标
-                                                marker1 = tencentMap.addMarker(new MarkerOptions().
-                                                        position(latLngs1.get(0)).
-                                                        title("起点").
-                                                        snippet(chufadian));
-                                                marker2=tencentMap.addMarker(new MarkerOptions()
-                                                        .position(latLngs1.get(latLngs1.size()-1))
-                                                        .title("终点").snippet("大理古城"));
-                                                //创建图标
-                                                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
-                                                marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
+                                        polyline1=tencentMap.addPolyline(new PolylineOptions().
+                                                addAll(latLngs1).color(R.color.qingse). width(10f));
+                                        //标注坐标
+                                        marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                position(latLngs1.get(0)).
+                                                title("起点").
+                                                snippet(chufadian));
+                                        marker2=tencentMap.addMarker(new MarkerOptions()
+                                                .position(latLngs1.get(latLngs1.size()-1))
+                                                .title("终点").snippet("大理古城"+all_nums[0]+"人"));
+                                        //创建图标
+                                        marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
+                                        marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
 
 
-                                                polyline2=tencentMap.addPolyline(new PolylineOptions().
-                                                        addAll(latLngs2).color(R.color.qingse). width(10f));
-                                                //标注坐标
-                                                marker1 = tencentMap.addMarker(new MarkerOptions().
-                                                        position(latLngs2.get(0)).
-                                                        title("起点").
-                                                        snippet(chufadian));
-                                                marker2=tencentMap.addMarker(new MarkerOptions()
-                                                        .position(latLngs2.get(latLngs2.size()-1))
-                                                        .title("终点").snippet("双廊古镇"));
-                                                //创建图标
-                                                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
-                                                marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
+                                        polyline2=tencentMap.addPolyline(new PolylineOptions().
+                                                addAll(latLngs2).color(R.color.qingse). width(10f));
+                                        //标注坐标
+                                        marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                position(latLngs2.get(0)).
+                                                title("起点").
+                                                snippet(chufadian));
+                                        marker2=tencentMap.addMarker(new MarkerOptions()
+                                                .position(latLngs2.get(latLngs2.size()-1))
+                                                .title("终点").snippet("双廊古镇"+all_nums[1]+"人"));
+                                        //创建图标
+                                        marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
+                                        marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
 
 
-                                                polyline3=tencentMap.addPolyline(new PolylineOptions().
-                                                        addAll(latLngs3).color(R.color.qingse). width(10f));
-                                                //标注坐标
-                                                marker1 = tencentMap.addMarker(new MarkerOptions().
-                                                        position(latLngs3.get(0)).
-                                                        title("起点").
-                                                        snippet(chufadian));
-                                                marker2=tencentMap.addMarker(new MarkerOptions()
-                                                        .position(latLngs3.get(latLngs3.size()-1))
-                                                        .title("终点").snippet("喜洲古镇"));
-                                                //创建图标
-                                                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
-                                                marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
+                                        polyline3=tencentMap.addPolyline(new PolylineOptions().
+                                                addAll(latLngs3).color(R.color.qingse). width(10f));
+                                        //标注坐标
+                                        marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                position(latLngs3.get(0)).
+                                                title("起点").
+                                                snippet(chufadian));
+                                        marker2=tencentMap.addMarker(new MarkerOptions()
+                                                .position(latLngs3.get(latLngs3.size()-1))
+                                                .title("终点").snippet("喜洲古镇"+all_nums[2]+"人"));
+                                        //创建图标
+                                        marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
+                                        marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
 
 
-                                                polyline4=tencentMap.addPolyline(new PolylineOptions().
-                                                        addAll(latLngs4).color(R.color.qingse). width(10f));
-                                                //标注坐标
-                                                marker1 = tencentMap.addMarker(new MarkerOptions().
-                                                        position(latLngs4.get(0)).
-                                                        title("起点").
-                                                        snippet(chufadian));
-                                                marker2=tencentMap.addMarker(new MarkerOptions()
-                                                        .position(latLngs4.get(latLngs4.size()-1))
-                                                        .title("终点").snippet("环海西路"));
-                                                //创建图标
-                                                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
-                                                marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
+                                        polyline4=tencentMap.addPolyline(new PolylineOptions().
+                                                addAll(latLngs4).color(R.color.qingse). width(10f));
+                                        //标注坐标
+                                        marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                position(latLngs4.get(0)).
+                                                title("起点").
+                                                snippet(chufadian));
+                                        marker2=tencentMap.addMarker(new MarkerOptions()
+                                                .position(latLngs4.get(latLngs4.size()-1))
+                                                .title("终点").snippet("环海西路"+all_nums[3]+"人"));
+                                        //创建图标
+                                        marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
+                                        marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
 
 
-                                            polyline5=tencentMap.addPolyline(new PolylineOptions().
-                                                    addAll(latLngs5).color(R.color.qingse). width(10f));
-                                                //标注坐标
-                                                marker1 = tencentMap.addMarker(new MarkerOptions().
-                                                        position(latLngs5.get(0)).
-                                                        title("起点").
-                                                        snippet(chufadian));
-                                                marker2=tencentMap.addMarker(new MarkerOptions()
-                                                        .position(latLngs5.get(latLngs5.size()-1))
-                                                        .title("终点").snippet("环海东路"));
-                                                //创建图标
-                                                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
-                                                marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
+                                        polyline5=tencentMap.addPolyline(new PolylineOptions().
+                                                addAll(latLngs5).color(R.color.qingse). width(10f));
+                                        //标注坐标
+                                        marker1 = tencentMap.addMarker(new MarkerOptions().
+                                                position(latLngs5.get(0)).
+                                                title("起点").
+                                                snippet(chufadian));
+                                        marker2=tencentMap.addMarker(new MarkerOptions()
+                                                .position(latLngs5.get(latLngs5.size()-1))
+                                                .title("终点").snippet("环海东路"+all_nums[4]+"人"));
+                                        //创建图标
+                                        marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
+                                        marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
                                         tipDialog.dismiss();
                                     }
                                 });

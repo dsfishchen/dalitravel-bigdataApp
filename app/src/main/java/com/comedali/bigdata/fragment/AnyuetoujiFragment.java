@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -621,7 +622,7 @@ public class AnyuetoujiFragment extends Fragment {
         limitLine.setLineColor(Color.RED);
         //设置基线的位置
         limitLine.setLabelPosition(LimitLine.LimitLabelPosition.LEFT_TOP);
-        limitLine.setLabel("超过100000人");
+        limitLine.setLabel("超过10万人");
         //设置限制线为虚线
         //limitLine.enableDashedLine(10f, 10f, 0f);
         //左边Y轴添加限制线
@@ -677,7 +678,8 @@ public class AnyuetoujiFragment extends Fragment {
         LineData data1 = new LineData(set1);
         // set data
         mChart.setData(data1);
-        zhushi_yue.setText(year+"年"+month+"月"+quyu+"总客流量约"+sums+"人");
+        String html=year+"年"+month+"月"+quyu+"总客流量约<font color='#ff0000'><big>"+sums+"</big></font>人";
+        zhushi_yue.setText(Html.fromHtml(html));
     }
     @Override
     public void onDestroy() {

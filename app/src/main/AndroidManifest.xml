@@ -44,9 +44,11 @@
         <activity android:name=".activity.Quyu_renliuActivity">
 
         </activity>
-        <activity android:name=".activity.ShipingActivity">
+
+        <activity android:name=".activity.ShipingActivity" android:hardwareAccelerated="true" android:configChanges="orientation|screenSize|keyboardHidden">
 
         </activity>
+
         <meta-data
                 android:name="TencentMapSDK"
                 android:value="B3SBZ-BE466-UKKSO-EZNHK-23FRT-V5FKT" />
