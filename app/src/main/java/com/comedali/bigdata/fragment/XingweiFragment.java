@@ -617,10 +617,17 @@ public class XingweiFragment extends Fragment {
                                 MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        setDatamPicChart(strings);
-                                        tipDialog.dismiss();
-                                        mPicChart.animateY(1400);//设置Y轴动画
-                                        chuxing_text.setText(year+"年"+month+"月游客出行方式占比");
+                                        if (null==strings||strings.size()==0){
+                                            mPicChart.clear();
+                                            mPicChart.setNoDataText("当前的时间没有数据  请重新选择时间");
+                                            tipDialog.dismiss();
+                                        }else {
+                                            setDatamPicChart(strings);
+                                            tipDialog.dismiss();
+                                            mPicChart.animateY(1400);//设置Y轴动画
+                                            chuxing_text.setText(year+"年"+month+"月游客出行方式占比");
+                                        }
+
                                     }
                                 });
 
