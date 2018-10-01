@@ -551,9 +551,9 @@ public class ShouyeFragment extends Fragment {
                                        for (int i=0;i<jingwei.size();i++){
                                            if (marker.getTitle().equals(dizhi_name[i])){
                                                if (renshu[i].equals("0")){
-                                                   ren_nums="人数："+renshu[i]+"人   (设备离线)";
+                                                   ren_nums="实时人数："+renshu[i]+"人   (设备离线)";
                                                }else {
-                                                   ren_nums="人数："+renshu[i]+"人";
+                                                   ren_nums="实时人数："+renshu[i]+"人";
                                                }
 
                                            }
