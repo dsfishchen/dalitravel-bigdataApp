@@ -76,13 +76,13 @@
                 android:textColor="@color/white"
                 app:layout_constraintStart_toEndOf="@+id/textView10"
                 app:layout_constraintTop_toTopOf="parent" />
-            <!--<TextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:padding="4dp"
-                android:text="方向："
+                android:text="目的地："
                 android:textColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView10" />
@@ -94,12 +94,12 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/button_yuan_tianchong"
                 android:drawableRight="@mipmap/drop_down_unselected_icon"
-                android:text="大理古城方向"
-                android:textColor="@color/qingse"
+                android:text="全部方向"
+                android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="@+id/choose_button"
                 app:layout_constraintStart_toStartOf="@+id/choose_button"
                 app:layout_constraintTop_toBottomOf="@+id/choose_button" />
-            <Button
+            <!--<Button
                 android:id="@+id/choose_yes"
                 android:layout_width="80dp"
                 android:layout_height="35dp"

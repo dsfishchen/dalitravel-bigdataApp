@@ -283,7 +283,16 @@ public class XingweiFragment extends Fragment {
                 mListPopup.show(view);
             }
         });
-
+        choose_button1=view.findViewById(R.id.choose_button1);
+        choose_button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                inittwoListPopupIfNeed();
+                mListPopup1.setAnimStyle(QMUIPopup.ANIM_GROW_FROM_CENTER);
+                mListPopup1.setPreferredDirection(QMUIPopup.DIRECTION_TOP);
+                mListPopup1.show(view);
+            }
+        });
 
         xingwei_ConstraintLayout=view.findViewById(R.id.xingwei_ConstraintLayout);
         mPicChart = view.findViewById(R.id.chuxing_chart);
@@ -500,11 +509,12 @@ public class XingweiFragment extends Fragment {
         if (mListPopup1 == null) {
 
             String[] listItems = new String[]{
-                    "大理古城方向",
-                    "双廊方向",
-                    "喜洲古镇方向",
-                    "环海西路方向",
-                    "环海东路方向"
+                    "全部方向",
+                    "大理古城",
+                    "双廊古镇",
+                    "喜洲古镇",
+                    "环海西路",
+                    "环海东路"
             };
             List<String> data1 = new ArrayList<>();
 
@@ -517,6 +527,23 @@ public class XingweiFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     two=adapterView.getItemAtPosition(i).toString();
+                    String chufadian=choose_button.getText().toString();
+                    if (chufadian.equals("机场")){
+                        tencentMap.clear();
+                        init();
+                        initXianlu(one,"1","jichang",1);
+
+                    }
+                    if (chufadian.equals("火车站")){
+                        tencentMap.clear();
+                        init();
+                        initXianlu(one,"2","huochezhan",1);
+                    }
+                    if (chufadian.equals("高速路口")){
+                        tencentMap.clear();
+                        init();
+                        initXianlu(one,"3","gaosuchukou",1);
+                    }
                     mListPopup1.dismiss();
                 }
             });
@@ -526,7 +553,7 @@ public class XingweiFragment extends Fragment {
                     if (two!=null){
                         choose_button1.setText(two);
                     }else {
-                        choose_button1.setText("大理古城方向");
+                        choose_button1.setText("大理古城");
                     }
 
                 }
@@ -838,6 +865,7 @@ public class XingweiFragment extends Fragment {
                                 String result=jsonData.getString("result");
                                 final JSONArray num = new JSONArray(result);
                                 final String[] all_nums=new String[num.length()];
+                                final String[] all_zhanbi=new String[num.length()];
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String trackpath=jsonObject.getString("trackpath");
@@ -851,20 +879,26 @@ public class XingweiFragment extends Fragment {
 
 
                                         String nums=jsonObject.getString("nums");//总人数
+                                        String percent=jsonObject.getString("percent");//总人数
                                         if (destination.equals("大理古城")){
                                             all_nums[0]=nums;
+                                            all_zhanbi[0]=percent;
                                         }
                                         if (destination.equals("双廊")){
                                             all_nums[1]=nums;
+                                            all_zhanbi[1]=percent;
                                         }
                                         if (destination.equals("喜洲古镇")){
                                             all_nums[2]=nums;
+                                            all_zhanbi[2]=percent;
                                         }
                                         if (destination.equals("环海西路")){
                                             all_nums[3]=nums;
+                                            all_zhanbi[3]=percent;
                                         }
                                         if (destination.equals("环海东路")){
                                             all_nums[4]=nums;
+                                            all_zhanbi[4]=percent;
                                         }
 
 
@@ -952,10 +986,17 @@ public class XingweiFragment extends Fragment {
                                 MainActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        final String chufadian=choose_button.getText().toString();
+                                        String chufadian=choose_button.getText().toString();
+                                        String mudidi=choose_button1.getText().toString();
 
-                                        polyline1=tencentMap.addPolyline(new PolylineOptions().
-                                                addAll(latLngs1).color(R.color.qingse). width(10f));
+                                        //1
+                                        if (mudidi.equals("大理古城")){
+                                            polyline1=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs1).alpha(1f).color(Color.WHITE). width(20f));
+                                        }else {
+                                            polyline1=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs1).color(Color.rgb(29, 105, 180)). width(10f));
+                                        }
                                         //标注坐标
                                         marker1 = tencentMap.addMarker(new MarkerOptions().
                                                 position(latLngs1.get(0)).
@@ -963,14 +1004,20 @@ public class XingweiFragment extends Fragment {
                                                 snippet(chufadian));
                                         marker2=tencentMap.addMarker(new MarkerOptions()
                                                 .position(latLngs1.get(latLngs1.size()-1))
-                                                .title("终点").snippet("大理古城"+all_nums[0]+"人"));
+                                                .title("终点").snippet("大理古城"+all_nums[0]+"人\n占比："+all_zhanbi[0]));
                                         //创建图标
                                         marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
                                         marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
 
+                                        //2
+                                        if (mudidi.equals("双廊古镇")){
+                                            polyline2=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs2).color(Color.WHITE). width(20f));
+                                        }else {
+                                            polyline2=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs2).alpha(0.5f).color(Color.rgb(29, 105, 180)). width(10f));
+                                        }
 
-                                        polyline2=tencentMap.addPolyline(new PolylineOptions().
-                                                addAll(latLngs2).color(R.color.qingse). width(10f));
                                         //标注坐标
                                         marker1 = tencentMap.addMarker(new MarkerOptions().
                                                 position(latLngs2.get(0)).
@@ -978,14 +1025,21 @@ public class XingweiFragment extends Fragment {
                                                 snippet(chufadian));
                                         marker2=tencentMap.addMarker(new MarkerOptions()
                                                 .position(latLngs2.get(latLngs2.size()-1))
-                                                .title("终点").snippet("双廊古镇"+all_nums[1]+"人"));
+                                                .title("终点").snippet("双廊古镇"+all_nums[1]+"人\n占比："+all_zhanbi[1]));
                                         //创建图标
                                         marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
                                         marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
 
 
-                                        polyline3=tencentMap.addPolyline(new PolylineOptions().
-                                                addAll(latLngs3).color(R.color.qingse). width(10f));
+                                        //3
+                                        if (mudidi.equals("喜洲古镇")){
+                                            polyline3=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs3).color(Color.WHITE). width(20f));
+                                        }else {
+                                            polyline3=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs3).alpha(0.5f).color(Color.rgb(29, 105, 180)). width(10f));
+                                        }
+
                                         //标注坐标
                                         marker1 = tencentMap.addMarker(new MarkerOptions().
                                                 position(latLngs3.get(0)).
@@ -993,14 +1047,20 @@ public class XingweiFragment extends Fragment {
                                                 snippet(chufadian));
                                         marker2=tencentMap.addMarker(new MarkerOptions()
                                                 .position(latLngs3.get(latLngs3.size()-1))
-                                                .title("终点").snippet("喜洲古镇"+all_nums[2]+"人"));
+                                                .title("终点").snippet("喜洲古镇"+all_nums[2]+"人\n占比："+all_zhanbi[2]));
                                         //创建图标
                                         marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
                                         marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
 
+                                        //4
+                                        if (mudidi.equals("环海西路")){
+                                            polyline4=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs4).color(Color.WHITE). width(20f));
+                                        }else {
+                                            polyline4=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs4).alpha(0.5f).color(Color.rgb(29, 105, 180)). width(10f));
+                                        }
 
-                                        polyline4=tencentMap.addPolyline(new PolylineOptions().
-                                                addAll(latLngs4).color(R.color.qingse). width(10f));
                                         //标注坐标
                                         marker1 = tencentMap.addMarker(new MarkerOptions().
                                                 position(latLngs4.get(0)).
@@ -1008,14 +1068,20 @@ public class XingweiFragment extends Fragment {
                                                 snippet(chufadian));
                                         marker2=tencentMap.addMarker(new MarkerOptions()
                                                 .position(latLngs4.get(latLngs4.size()-1))
-                                                .title("终点").snippet("环海西路"+all_nums[3]+"人"));
+                                                .title("终点").snippet("环海西路"+all_nums[3]+"人\n占比："+all_zhanbi[3]));
                                         //创建图标
                                         marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
                                         marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));
 
+                                        //5
+                                        if (mudidi.equals("环海东路")){
+                                            polyline5=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs5).color(Color.WHITE). width(20f));
+                                        }else {
+                                            polyline5=tencentMap.addPolyline(new PolylineOptions().
+                                                    addAll(latLngs5).alpha(0.5f).color(Color.rgb(29, 105, 180)). width(10f));
+                                        }
 
-                                        polyline5=tencentMap.addPolyline(new PolylineOptions().
-                                                addAll(latLngs5).color(R.color.qingse). width(10f));
                                         //标注坐标
                                         marker1 = tencentMap.addMarker(new MarkerOptions().
                                                 position(latLngs5.get(0)).
@@ -1023,7 +1089,7 @@ public class XingweiFragment extends Fragment {
                                                 snippet(chufadian));
                                         marker2=tencentMap.addMarker(new MarkerOptions()
                                                 .position(latLngs5.get(latLngs5.size()-1))
-                                                .title("终点").snippet("环海东路"+all_nums[4]+"人"));
+                                                .title("终点").snippet("环海东路"+all_nums[4]+"人\n占比："+all_zhanbi[4]));
                                         //创建图标
                                         marker1.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.qidian));
                                         marker2.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.zhongdian));

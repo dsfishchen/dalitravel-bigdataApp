@@ -28,6 +28,7 @@ import com.comedali.bigdata.R;
 import com.comedali.bigdata.activity.Quyu_renliuActivity;
 import com.comedali.bigdata.activity.ShipingActivity;
 import com.comedali.bigdata.activity.Youke_zhanbiActivity;
+import com.comedali.bigdata.utils.Dialog_Util;
 import com.comedali.bigdata.utils.NetworkUtil;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
@@ -559,7 +560,7 @@ public class ShouyeFragment extends Fragment {
                                            }
                                        }
 
-                                       new QMUIDialog.MessageDialogBuilder(getActivity())
+                                       /*new QMUIDialog.MessageDialogBuilder(getActivity())
                                                .setTitle(marker.getTitle())
                                                .setMessage(ren_nums)
                                                .addAction("取消", new QMUIDialogAction.ActionListener() {
@@ -568,7 +569,20 @@ public class ShouyeFragment extends Fragment {
                                                        dialog.dismiss();
                                                    }
                                                })
-                                               .create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show();
+                                               .create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show();*/
+
+                                       final Dialog_Util dialog=new Dialog_Util(getActivity());
+                                                dialog.setTitle(marker.getTitle())
+                                                .setMessage(ren_nums)
+                                                .setOnClickBottomListener(new Dialog_Util.OnClickBottomListener() {
+                                                    @Override
+                                                    public void onNegtiveClick() {
+                                                        dialog.dismiss();
+                                                    }
+                                                })
+                                                .show();
+
+
                                        return true;
                                    }
                                });

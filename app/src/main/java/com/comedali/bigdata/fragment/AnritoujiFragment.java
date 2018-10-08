@@ -1,10 +1,12 @@
 package com.comedali.bigdata.fragment;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -195,7 +197,7 @@ public class AnritoujiFragment extends Fragment{
                 String times=year+"年"+newmonth+"月"+newday+"日";*/
                 //Log.d("time", quyu+time);
                 mChart.invalidate();
-                mChart.animateX(1400);
+                mChart.animateY(1400);
                 mChart.notifyDataSetChanged();
                 if (Place_id==null){
                     Place_id="3";
@@ -662,7 +664,9 @@ public class AnritoujiFragment extends Fragment{
         set1.setValueTextSize(12);
         set1.setDrawCircleHole(false);//设置是否在数据点中间显示一个孔
         set1.setDrawFilled(true);
-        set1.setFillColor(Color.argb(255,10,30,40));
+        //set1.setFillColor(Color.argb(255,10,30,40));
+        Drawable drawable = ContextCompat.getDrawable(getActivity(), R.drawable.wudi);
+        set1.setFillDrawable(drawable);
         set1.setValueTextColor(Color.rgb(255,255,255));
         //set1.setDrawValues(false);//不显示点数值
         set1.setValueFormatter(new IValueFormatter() {

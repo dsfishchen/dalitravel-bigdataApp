@@ -1,5 +1,6 @@
 package com.comedali.bigdata.activity;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,12 +10,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -30,7 +34,8 @@ public class ShipingActivity extends AppCompatActivity {
     private CommonTitleBar commonTitleBar;
     private WebView shiping_webview;
     private ProgressBar progressBar;
-    private ConstraintLayout web_root;
+    private LinearLayout web_root;
+    private FrameLayout fullVideo;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +45,7 @@ public class ShipingActivity extends AppCompatActivity {
         progressBar= findViewById(R.id.progressbar);//进度条
         shiping_webview=findViewById(R.id.shiping_webview);
         web_root=findViewById(R.id.web_root);
+        fullVideo=findViewById(R.id.full_video);
         commonTitleBar.setListener(new CommonTitleBar.OnTitleBarListener() {
             @Override
             public void onClicked(View v, int action, String extra) {
@@ -58,6 +64,8 @@ public class ShipingActivity extends AppCompatActivity {
         shiping_webview.setWebViewClient(webViewClient);
         WebSettings webSettings=shiping_webview.getSettings();
         webSettings.setJavaScriptEnabled(true);//允许使用js
+        webSettings.setPluginState(WebSettings.PluginState.ON);//告诉webview 是否使用插件
+        webSettings.setLoadWithOverviewMode(true);//q全屏
         if (NetworkUtil.checkNet(this)){
             webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);//不使用缓存，只从网络获取数据.
         }else {
@@ -92,6 +100,8 @@ public class ShipingActivity extends AppCompatActivity {
 
     //WebChromeClient主要辅助WebView处理Javascript的对话框、网站图标、网站title、加载进度等
     private WebChromeClient webChromeClient=new WebChromeClient(){
+        private CustomViewCallback customViewCallback;
+        private View nVideoView = null;
         //不支持js的alert弹窗，需要自己监听然后通过dialog弹窗
         @Override
         public boolean onJsAlert(WebView webView, String url, String message, JsResult result) {
@@ -120,6 +130,47 @@ public class ShipingActivity extends AppCompatActivity {
         public void onProgressChanged(WebView view, int newProgress) {
             progressBar.setProgress(newProgress);
         }
+
+      /*  @Override
+        public void onShowCustomView(View view, CustomViewCallback callback) {//进入全屏
+            super.onShowCustomView(view, callback);
+            if (nVideoView != null) {
+                callback.onCustomViewHidden();
+                return;
+            }
+            nVideoView = view;
+            nVideoView.setVisibility(View.VISIBLE);
+            customViewCallback = callback;
+            fullVideo.addView(nVideoView);
+            fullVideo.setVisibility(View.VISIBLE);
+            fullVideo.bringToFront();
+            //设置横屏
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            //设置全屏
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+
+        @Override
+        public void onHideCustomView() {//退出全屏
+            if (nVideoView == null) {
+                return;
+            }
+            try {
+                customViewCallback.onCustomViewHidden();
+            } catch (Exception e) {
+            }
+            nVideoView.setVisibility(View.GONE);
+            fullVideo.removeView(nVideoView);
+            nVideoView = null;
+            fullVideo.setVisibility(View.GONE);
+            // 设置竖屏
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            // 取消全屏
+            final WindowManager.LayoutParams attrs = getWindow().getAttributes();
+            attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setAttributes(attrs);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }*/
     };
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -140,7 +191,10 @@ public class ShipingActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         //释放资源
-        web_root.removeView(shiping_webview);
+        shiping_webview.onPause();
+        shiping_webview.freeMemory();
+        shiping_webview.removeAllViews();
         shiping_webview.destroy();
+        shiping_webview = null;
     }
 }

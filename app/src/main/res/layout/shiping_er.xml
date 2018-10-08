@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/web_root">
+    android:id="@+id/web_root"
+    android:orientation="vertical">
+    <FrameLayout
+        android:id="@+id/full_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+    </FrameLayout>
     <com.wuhenzhizao.titlebar.widget.CommonTitleBar
         android:id="@+id/shiping_back"
         android:layout_width="match_parent"
@@ -17,34 +28,21 @@
         app:centerType="textView"
         app:showBottomLine="false"
         app:fillStatusBar="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:leftImageResource="@drawable/qmui_icon_topbar_back"
         app:leftType="imageButton"
         app:statusBarColor="@color/qingse"
         app:titleBarColor="@color/qingse"
         tools:ignore="MissingConstraints">
     </com.wuhenzhizao.titlebar.widget.CommonTitleBar>
-
     <ProgressBar
         android:id="@+id/progressbar"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         style="?android:attr/progressBarStyleHorizontal"
-        android:indeterminateTint="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shiping_back" />
-
+        android:indeterminateTint="@color/white" />
     <WebView
         android:id="@+id/shiping_webview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressbar">
-
+        android:layout_height="match_parent">
     </WebView>
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

@@ -45,7 +45,8 @@
 
         </activity>
 
-        <activity android:name=".activity.ShipingActivity" android:hardwareAccelerated="true" android:configChanges="orientation|screenSize|keyboardHidden">
+        <activity android:name=".activity.ShipingActivity" android:hardwareAccelerated="true"
+            android:configChanges="orientation|keyboardHidden|navigation|screenSize">
 
         </activity>
 

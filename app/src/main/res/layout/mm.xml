@@ -5,18 +5,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/button_zheng"
-    android:orientation="vertical"
-    android:padding="5dp">
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="大理古城"
-        android:layout_gravity="center_horizontal"
-        android:textColor="#ff000000"
-        android:textSize="12sp"/>
-    <ProgressBar
+    android:orientation="vertical">
+    <com.wuhenzhizao.titlebar.widget.CommonTitleBar
+        android:id="@+id/shiping_back"
         android:layout_width="match_parent"
-        android:layout_height="10dp" />
+        android:layout_height="wrap_content"
+        app:centerText="视频监控"
+        app:statusBarMode="light"
+        app:centerTextColor="@color/white"
+        app:centerTextSize="18sp"
+        app:centerType="textView"
+        app:showBottomLine="false"
+        app:fillStatusBar="true"
+        app:leftImageResource="@drawable/qmui_icon_topbar_back"
+        app:leftType="imageButton"
+        app:statusBarColor="@color/qingse"
+        app:titleBarColor="@color/qingse"
+        tools:ignore="MissingConstraints">
+    </com.wuhenzhizao.titlebar.widget.CommonTitleBar>
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:indeterminateTint="@color/white" />
+    <WebView
+        android:id="@+id/shiping_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </WebView>
 </LinearLayout>
