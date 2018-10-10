@@ -1358,7 +1358,7 @@ public class XingweiFragment extends Fragment {
 
     private void initviewmRadarChart() {
         //setDatamRadarChart();
-        mRadarChart.setBackgroundColor(Color.rgb(29, 105, 180));
+        mRadarChart.setBackgroundColor(Color.rgb(29, 105, 190));
         mRadarChart.getDescription().setEnabled(false);
         //mRadarChart.setBackgroundColor(Color.rgb(43,189,243));
         mRadarChart.setWebLineWidth(1f);

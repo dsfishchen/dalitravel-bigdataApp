@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +32,7 @@ import com.comedali.bigdata.activity.ShipingActivity;
 import com.comedali.bigdata.activity.Youke_zhanbiActivity;
 import com.comedali.bigdata.utils.Dialog_Util;
 import com.comedali.bigdata.utils.NetworkUtil;
+import com.github.mikephil.charting.data.Entry;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
@@ -506,9 +509,9 @@ public class ShouyeFragment extends Fragment {
                     if (resultStr.equals("true")){
                         String result=jsonData.getString("result");
                         JSONArray num = new JSONArray(result);
+                        final List<List<Entry>> entrie = new ArrayList<>();
 
                         final List<LatLng> jingwei=new ArrayList<>();
-
                         final String[] renshu=new String[num.length()];
                         final String[] dizhi_name=new String[num.length()];
                         for (int i=0;i<num.length();i++){
@@ -523,6 +526,19 @@ public class ShouyeFragment extends Fragment {
                             String renshu_nums= String.valueOf(nums);
                             renshu[i]=renshu_nums;
                             dizhi_name[i]=place_name;
+
+                            List<Entry> entries = new ArrayList<Entry>();
+                            String hourtouristlist=jsonObject.getString("hourtouristlist");
+                            JSONArray result1 = new JSONArray(hourtouristlist);
+                            for (int w=0;w<result1.length();w++){
+                                JSONObject jsonObject1=result1.getJSONObject(w);
+                                String c_hour=jsonObject1.getString("c_hour");
+                                String c_nums=jsonObject1.getString("c_nums");
+                                int c_hour1= Integer.parseInt(c_hour);
+                                int c_nums1= Integer.parseInt(c_nums);
+                                entries.add(new Entry(c_hour1, c_nums1));
+                            }
+                            entrie.add(entries);
                         }
                         MainActivity.getInstance().runOnUiThread(new Runnable() {
                             @Override
@@ -549,14 +565,16 @@ public class ShouyeFragment extends Fragment {
                                    @Override
                                    public boolean onMarkerClick(Marker marker) {
                                        String ren_nums = null;
+                                       List<Entry> wodetian=new ArrayList<>();
                                        for (int i=0;i<jingwei.size();i++){
                                            if (marker.getTitle().equals(dizhi_name[i])){
                                                if (renshu[i].equals("0")){
-                                                   ren_nums="实时人数："+renshu[i]+"人   (设备离线)";
+                                                   ren_nums=renshu[i]+"";
+                                                   wodetian.addAll(entrie.get(i));//设备离线
                                                }else {
-                                                   ren_nums="实时人数："+renshu[i]+"人";
+                                                   ren_nums=renshu[i]+"";
+                                                   wodetian.addAll(entrie.get(i));//当前点的人数统计图数据
                                                }
-
                                            }
                                        }
 
@@ -571,9 +589,16 @@ public class ShouyeFragment extends Fragment {
                                                })
                                                .create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show();*/
 
+                                       String html;
+                                       if (ren_nums.equals("0")){
+                                            html="今日累积：<font color='#ff0000'>"+ren_nums+"</font>人   (设备离线)";
+                                       }else {
+                                            html="今日累积：<font color='#ff0000'>"+ren_nums+"</font>人";
+                                       }
                                        final Dialog_Util dialog=new Dialog_Util(getActivity());
+                                       dialog.setEntries(wodetian);
                                                 dialog.setTitle(marker.getTitle())
-                                                .setMessage(ren_nums)
+                                                .setMessage(Html.fromHtml(html))
                                                 .setOnClickBottomListener(new Dialog_Util.OnClickBottomListener() {
                                                     @Override
                                                     public void onNegtiveClick() {

@@ -7,16 +7,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/web_root"
     android:orientation="vertical">
-    <FrameLayout
-        android:id="@+id/full_video"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-    </FrameLayout>
     <com.wuhenzhizao.titlebar.widget.CommonTitleBar
         android:id="@+id/shiping_back"
         android:layout_width="match_parent"
@@ -45,4 +35,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </WebView>
+    <FrameLayout
+        android:id="@+id/full_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+    </FrameLayout>
 </LinearLayout>

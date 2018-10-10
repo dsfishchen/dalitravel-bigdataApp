@@ -174,7 +174,7 @@ public class AnniantoujiFragment extends Fragment {
         });
         quyu_1=quyu_choose.getText().toString();
         time_1=time_choose.getText().toString();
-        initNian(id,quyu_1,time_1);
+        initNian("",quyu_1,time_1);
         anri_chaxun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -209,81 +209,81 @@ public class AnniantoujiFragment extends Fragment {
     }
     private void initChoose(){
         if (dizhi.equals("大理州")){
-            dizhi_m="dali";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
             id="3";
-            name="大理古城";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("大理市")){
-            dizhi_m="dali";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
             id="3";
             name="大理古城";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("洱源县")){
-            dizhi_m="eryuan";
-            id="32";
-            name="洱源高速路口";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("宾川县")){
-            dizhi_m="binchuan";
-            id="15";
-            name="鸡足山";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("弥渡县")){
-            dizhi_m="midu";
-            id="43";
-            name="弥渡入城口";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("永平县")){
-            dizhi_m="yongping";
-            id="42";
-            name="平高速路口";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("南涧县")){
-            dizhi_m="nanjian";
-            id="41";
-            name="南涧入城口";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("巍山县")){
-            dizhi_m="weishan";
-            id="36";
-            name="巍宝山";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("鹤庆县")){
-            dizhi_m="heqing";
-            id="44";
-            name="新华村";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("云龙县")){
-            dizhi_m="yunlong";
-            id="39";
-            name="云龙入城口";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("剑川县")){
-            dizhi_m="jianchuan";
-            id="47";
-            name="沙溪古镇";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("祥云县")){
-            dizhi_m="xiangyun";
-            id="27";
-            name="云高速路口";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("漾濞县")){
-            dizhi_m="yangbi";
-            id="40";
-            name="漾濞高速路口";
+            dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
+            id="3";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
     }
@@ -343,13 +343,55 @@ public class AnniantoujiFragment extends Fragment {
                                 JSONArray num = new JSONArray(result);
                                 //String[] listItems = new String[num.length()];
                                 listItems = new String[num.length()];
-                                listPlace_id=new String[num.length()];
+                                //listPlace_id=new String[num.length()];
+                                listPlace_id=new String[15];
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String place_name=jsonObject.getString("place_name");
                                     String place_id=jsonObject.getString("place_id");
                                     listItems[i]=place_name;
-                                    listPlace_id[i]=place_id;
+                                    //listPlace_id[i]=place_id;
+                                    listPlace_id[0]="";
+                                    listPlace_id[1]="'22','24','5','6','48','23','3','10','12','13','14','17','18','34','35','50','1','2','4','8','9','16','19','20','21','25','7','11','26'";
+                                    if (place_name.equals("大理古城")){
+                                        listPlace_id[2]=place_id;
+                                    }
+                                    if (place_name.equals("蝴蝶泉")){
+                                        listPlace_id[3]=place_id;
+                                    }
+                                    if (place_name.equals("感通索道")){
+                                        listPlace_id[4]=place_id;
+                                    }
+                                    if (place_name.equals("崇圣寺三塔")){
+                                        listPlace_id[5]=place_id;
+                                    }
+                                    if (place_name.equals("南诏风情岛")){
+                                        listPlace_id[6]=place_id;
+                                    }
+                                    if (place_name.equals("天龙八部影视城")){
+                                        listPlace_id[7]=place_id;
+                                    }
+                                    if (place_name.equals("鸡足山")){
+                                        listPlace_id[8]=place_id;
+                                    }
+                                    if (place_name.equals("洗马潭大索道")){
+                                        listPlace_id[9]=place_id;
+                                    }
+                                    if (place_name.equals("巍宝山")){
+                                        listPlace_id[10]=place_id;
+                                    }
+                                    if (place_name.equals("新华村")){
+                                        listPlace_id[11]=place_id;
+                                    }
+                                    if (place_name.equals("石宝山")){
+                                        listPlace_id[12]=place_id;
+                                    }
+                                    if (place_name.equals("沙溪古镇")){
+                                        listPlace_id[13]=place_id;
+                                    }
+                                    if (place_name.equals("海舌公园")){
+                                        listPlace_id[14]=place_id;
+                                    }
                                 }
                                 Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
@@ -513,28 +555,31 @@ public class AnniantoujiFragment extends Fragment {
     }
     private void initoneListPopupIfNeed() {
         if (mListPopup == null) {
-            if (listItems==null){
+            /*if (listItems==null){
                 listItems=new String[]{
                         "获取失败"
                 };
-            }
-            /*String[] listItems = new String[]{
-                    "蝴蝶泉",
-                    "感通索道",
-                    "崇圣寺三塔",
-                    "南诏风情岛",
-                    "天龙八部影视城",
-                    "鸡足山",
-                    "洗马潭大索道",
-                    "巍宝山",
-                    "新华村",
-                    "石宝山",
-                    "沙溪古镇",
-                    "海舌公园"
-            };*/
+            }*/
+            final String[] listItems1 = new String[]{
+                    "大理州",
+                    "大理市",
+                    "大理古城",
+                    "蝴蝶泉",//6
+                    "感通索道",//8
+                    "崇圣寺三塔",//10
+                    "南诏风情岛",//11
+                    "天龙八部影视城",//12
+                    "鸡足山",//15
+                    "洗马潭大索道",//17
+                    "巍宝山",//36
+                    "新华村",//44
+                    "石宝山",//46
+                    "沙溪古镇",//47
+                    "海舌公园"//48
+            };
             List<String> data = new ArrayList<>();
 
-            Collections.addAll(data, listItems);
+            Collections.addAll(data, listItems1);
 
             ArrayAdapter adapter = new ArrayAdapter<>(getActivity(), R.layout.simple_list_item, data);
 
@@ -546,7 +591,7 @@ public class AnniantoujiFragment extends Fragment {
                     //Toast.makeText(getActivity(), "Item " + (i + 1), Toast.LENGTH_SHORT).show();
                     one=adapterView.getItemAtPosition(i).toString();
                     quyu_choose.setText(one);
-                    if (one.equals(listItems[i])){
+                    if (one.equals(listItems1[i])){
                         Place_id=listPlace_id[i];
                     }
                     finalMListPopup.dismiss();

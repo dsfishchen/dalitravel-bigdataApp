@@ -46,13 +46,11 @@
         android:id="@+id/anri_chaxun3"
         android:layout_width="80dp"
         android:layout_height="35dp"
-        android:layout_marginEnd="76dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/btn_bg_yuan"
         android:text="查询"
         android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/time_choose3"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
     <com.github.mikephil.charting.charts.BarChart

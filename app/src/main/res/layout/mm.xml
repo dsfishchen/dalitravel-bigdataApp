@@ -6,32 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <com.wuhenzhizao.titlebar.widget.CommonTitleBar
-        android:id="@+id/shiping_back"
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:centerText="视频监控"
-        app:statusBarMode="light"
-        app:centerTextColor="@color/white"
-        app:centerTextSize="18sp"
-        app:centerType="textView"
-        app:showBottomLine="false"
-        app:fillStatusBar="true"
-        app:leftImageResource="@drawable/qmui_icon_topbar_back"
-        app:leftType="imageButton"
-        app:statusBarColor="@color/qingse"
-        app:titleBarColor="@color/qingse"
-        tools:ignore="MissingConstraints">
-    </com.wuhenzhizao.titlebar.widget.CommonTitleBar>
-    <ProgressBar
-        android:id="@+id/progressbar"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:indeterminateTint="@color/white" />
-    <WebView
-        android:id="@+id/shiping_webview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </WebView>
+        android:text="我的天" />
 </LinearLayout>
