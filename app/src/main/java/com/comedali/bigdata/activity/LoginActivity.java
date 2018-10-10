@@ -7,10 +7,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -74,6 +76,12 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(imm.isActive()&&getCurrentFocus()!=null){
+                    if (getCurrentFocus().getWindowToken()!=null) {
+                        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    }
+                }
                 login();
             }
         });
@@ -194,6 +202,8 @@ public class LoginActivity extends AppCompatActivity {
                                         }else {
                                             progressDialog.dismiss();
                                             Toast.makeText(LoginActivity.this,"账号或密码错误",Toast.LENGTH_LONG).show();
+                                            Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);//振动
+                                            vibrator.vibrate(200);
                                         }
                                     }
                                 });

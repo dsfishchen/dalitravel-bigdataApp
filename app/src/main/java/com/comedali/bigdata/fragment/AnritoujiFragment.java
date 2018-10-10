@@ -119,35 +119,28 @@ public class AnritoujiFragment extends Fragment{
             }
         });
         quyu_choose.setText(name);
-        Date now = new Date(System.currentTimeMillis());
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTime(now);
-        calendar.add(calendar.DATE, -1);
-        final Date date = calendar.getTime();
-        time_choose.setText(getTime(date));//设置当前时间
+        //获取当前时间和设置时间
+        Date date = new Date(System.currentTimeMillis());
+        time_choose.setText(getTime(date));
+
         time_choose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Calendar selectedDate = Calendar.getInstance();
                 Calendar startDate = Calendar.getInstance();
                 Calendar endDate = Calendar.getInstance();
-
-
                 //正确设置方式 原因：注意事项有说明
-                startDate.set(2016,10,1);
-                int y= Integer.parseInt(getYear(date));
-                int m= Integer.parseInt(getMonth(date));
-                int d= Integer.parseInt(getDay(date));
-                endDate.set(y,m-1,d);
+                startDate.set(2017,0,1);
+                //endDate.set(2018,11,31);
 
-                TimePickerView  pvTime = new TimePickerBuilder(getActivity(), new OnTimeSelectListener() {
+                TimePickerView pvTime = new TimePickerBuilder(getActivity(), new OnTimeSelectListener() {
                     @Override
-                    public void onTimeSelect(Date date,View v) {//选中事件回调
+                    public void onTimeSelect(Date date, View v) {//选中事件回调
                         //Toast.makeText(getActivity(), getTime(date), Toast.LENGTH_SHORT).show();
                         time_choose.setText(getTime(date));
                     }
                 })
-                        .setType(new boolean[]{true, true, true, false, false, false})// 默认全部显示
+                        .setType(new boolean[]{true, true, false, false, false, false})// 默认全部显示
                         .setCancelText("取消")//取消按钮文字
                         .setSubmitText("确定")//确认按钮文字
                         .setContentTextSize(18)//滚轮文字大小
@@ -160,7 +153,7 @@ public class AnritoujiFragment extends Fragment{
                         .setCancelColor(Color.BLUE)//取消按钮文字颜色
                         //.setTitleBgColor(0xFF666666)//标题背景颜色 Night mode
                         //.setBgColor(0xFF333333)//滚轮背景颜色 Night mode
-                        .setDate(calendar)// 如果不设置的话，默认是系统时间*/
+                        .setDate(selectedDate)// 如果不设置的话，默认是系统时间*/
                         .setRangDate(startDate,endDate)//起始终止年月日设定
                         .setLabel("年","月","日","时","分","秒")//默认设置为年月日时分秒
                         .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
@@ -169,36 +162,42 @@ public class AnritoujiFragment extends Fragment{
                 pvTime.show();
             }
         });
+
         quyu_1=quyu_choose.getText().toString();
         time_1=time_choose.getText().toString();
-        initRi("",quyu_1,time_1,"2018","06",time_1);
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            Date date1 = sdf.parse(time_1);
+            year=getYear(date1);
+            month=getMonth(date1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        initRi("",quyu_1,time_1,year,month);//设置开始加载数据...
+
         anri_chaxun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String quyu=quyu_choose.getText().toString();
                 String time=time_choose.getText().toString();
-               /* String newmonth = null;
-                String newday=null;
+                String year_1 = null;
+                String month_1=null;
                 try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    Date date = sdf.parse(time);
-                    year=getYear(date);
-                    month=getMonth(date);
-                    newmonth = month.replaceAll("^(0+)", "");
-                    day=getDay(date);
-                    newday = day.replaceAll("^(0+)", "");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+                    Date date1 = sdf.parse(time);
+                    year_1=getYear(date1);
+                    month_1=getMonth(date1);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                String times=year+"年"+newmonth+"月"+newday+"日";*/
-                //Log.d("time", quyu+time);
                 mChart.invalidate();
                 mChart.animateY(1400);
                 mChart.notifyDataSetChanged();
                 if (Place_id==null){
                     Place_id="3";
                 }
-                initRi(Place_id,quyu,time,"2018","06",time);
+                initRi(Place_id,quyu,time,year_1,month_1);
 
             }
         });
@@ -417,7 +416,7 @@ public class AnritoujiFragment extends Fragment{
             return chain.proceed(request);
         }
     };
-    private void initRi(String id,final String quyu, final String time_1, String NIAN, String Yue,String Ri) {
+    private void initRi(String id,final String quyu, final String time_1, String NIAN, String Yue) {
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("获取数据中")
@@ -437,7 +436,7 @@ public class AnritoujiFragment extends Fragment{
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
         //final String NIAN=time_choose.getText().toString();
-        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/statistics?type=day&place_id="+id+"&year="+NIAN+"&month="+Yue+"&day="+Ri;
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/statistics?type=day&place_id="+id+"&year="+NIAN+"&month="+Yue+"&day=00";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -473,10 +472,10 @@ public class AnritoujiFragment extends Fragment{
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String c_nums=jsonObject.getString("c_nums");
 
-                                    String c_hour=jsonObject.getString("c_hour");
+                                    String c_day=jsonObject.getString("c_day");
 
                                     int yVal = Integer.parseInt(c_nums);
-                                    int m=Integer.parseInt(c_hour);
+                                    int m=Integer.parseInt(c_day);
                                     entries.add(new Entry(m, yVal));
                                     sums[i]=yVal;
                                 }
@@ -638,7 +637,7 @@ public class AnritoujiFragment extends Fragment{
             public String getFormattedValue(float value, AxisBase axis) {
                 int m=(int)value;
 
-                return m+"时";
+                return m+"日";
             }
         });
 
@@ -719,10 +718,13 @@ public class AnritoujiFragment extends Fragment{
             }
         });
         // create a data object with the datasets
+        if (entries.size()>15){
+            set1.setDrawValues(false);//不显示点数值
+        }
         LineData data = new LineData(set1);
         // set data
         mChart.setData(data);
-        String html=year+"年"+month+"月"+day+"日"+quyu+"总客流量约<font color='#ff0000'><big>"+sums+"</big></font>人";
+        String html=year+"年"+month+"月"+quyu+"总客流量约<font color='#ff0000'><big>"+sums+"</big></font>人";
         zhushi_ri.setText(Html.fromHtml(html));
     }
 

@@ -158,6 +158,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }).start();
         }else {
+            new QMUIDialog.MessageDialogBuilder(MainActivity.this)
+                    .setTitle("提示")
+                    .setMessage("当前无网络连接,请检查您的网络是否正常")
+                    .setCanceledOnTouchOutside(false)
+                    .addAction("确定", new QMUIDialogAction.ActionListener() {
+                        @Override
+                        public void onClick(QMUIDialog dialog, int index) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show();
             Toast.makeText(MainActivity.this,"请检查您的网络是否开启",Toast.LENGTH_LONG).show();
         }
 
