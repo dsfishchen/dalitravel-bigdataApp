@@ -30,56 +30,8 @@ public class RiMarkView extends MarkerView {
     public void refreshContent(Entry e, Highlight highlight) {
         int m=(int)e.getX();
         int renshu=(int)e.getY();
-        String name=null;
-        if (m==1){
-            name="1时";
-        }else if(m==2){
-            name="2时";
-        }else if(m==3){
-            name="3时";
-        }else if(m==4){
-            name="4时";
-        }else if(m==5){
-            name="5时";
-        }else if(m==6){
-            name="6时";
-        }else if(m==7){
-            name="7时";
-        }else if(m==8){
-            name="8时";
-        }else if(m==9){
-            name="9时";
-        }else if(m==10){
-            name="10时";
-        }else if(m==11){
-            name="11时";
-        }else if(m==12){
-            name="12时";
-        }else if(m==13){
-            name="13时";
-        }else if(m==14){
-            name="14时";
-        }else if(m==15){
-            name="15时";
-        }else if(m==16){
-            name="16时";
-        }else if(m==17){
-            name="17时";
-        }else if(m==18){
-            name="18时";
-        }else if(m==19){
-            name="19时";
-        }else if(m==20){
-            name="20时";
-        }else if(m==21){
-            name="21时";
-        }else if(m==22){
-            name="22时";
-        }else if(m==23){
-            name="23时";
-        }else if(m==24){
-            name="24时";
-        }
+        String name=m+"日";
+
         tv_content.setText(name+"  人数:"+renshu+"人");
         super.refreshContent(e, highlight);
     }

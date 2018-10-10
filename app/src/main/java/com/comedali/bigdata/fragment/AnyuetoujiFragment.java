@@ -610,7 +610,7 @@ public class AnyuetoujiFragment extends Fragment {
         // create a custom MarkerView (extend MarkerView) and specify the layout
         // to use for it
         //自定义markView,点击显示更多信息
-        NianMarkView markerView = new NianMarkView(getActivity(),R.layout.custom_marker_view);
+        YueMarkView markerView = new YueMarkView(getActivity(),R.layout.custom_marker_view);
         markerView.setChartView(mChart);
         mChart.setMarker(markerView);
 
