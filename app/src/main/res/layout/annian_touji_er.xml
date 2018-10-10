@@ -24,6 +24,7 @@
         android:background="@drawable/button_zheng"
         android:drawableRight="@mipmap/ic_keyboard_arrow_down"
         android:text="2018"
+        android:visibility="gone"
         android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@+id/quyu_choose3"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
@@ -63,7 +64,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time_choose3">
+        app:layout_constraintTop_toBottomOf="@+id/anri_chaxun3">
     </com.github.mikephil.charting.charts.BarChart>
 
     <TextView

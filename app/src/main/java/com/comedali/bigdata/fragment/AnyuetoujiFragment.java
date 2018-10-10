@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,18 +25,24 @@ import com.comedali.bigdata.R;
 import com.comedali.bigdata.activity.Quyu_renliuActivity;
 import com.comedali.bigdata.entity.MessageEvent;
 import com.comedali.bigdata.utils.NetworkUtil;
+import com.comedali.bigdata.utils.NianMarkView;
 import com.comedali.bigdata.utils.YueMarkView;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.EntryXComparator;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
@@ -73,7 +80,7 @@ import okhttp3.Response;
  * Created by 刘杨刚 on 2018/9/6.
  */
 public class AnyuetoujiFragment extends Fragment {
-    private LineChart mChart;
+    private BarChart mChart;
     private Button quyu_choose;
     private Button time_choose;
     private Button anri_chaxun;
@@ -85,7 +92,6 @@ public class AnyuetoujiFragment extends Fragment {
     private String day;
     private Date now = new Date();
     private OkHttpClient client;
-    private List<Entry> entries;
     private String dizhi;
     private String[] listItems;
     private String[] listPlace_id;
@@ -96,11 +102,6 @@ public class AnyuetoujiFragment extends Fragment {
     private String time_1;
     private String Place_id;
     private TextView zhushi_yue;
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
-    }
 
     @Nullable
     @Override
@@ -123,18 +124,19 @@ public class AnyuetoujiFragment extends Fragment {
             }
         });
         quyu_choose.setText(name);
-        //获取当前时间和设置时间
+        //获取当前时间
         Date date = new Date(System.currentTimeMillis());
         time_choose.setText(getTime(date));
-
         time_choose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Calendar selectedDate = Calendar.getInstance();
                 Calendar startDate = Calendar.getInstance();
                 Calendar endDate = Calendar.getInstance();
+
+
                 //正确设置方式 原因：注意事项有说明
-                startDate.set(2017,0,1);
+                startDate.set(2016,0,1);
                 //endDate.set(2018,11,31);
 
                 TimePickerView pvTime = new TimePickerBuilder(getActivity(), new OnTimeSelectListener() {
@@ -144,7 +146,7 @@ public class AnyuetoujiFragment extends Fragment {
                         time_choose.setText(getTime(date));
                     }
                 })
-                        .setType(new boolean[]{true, true, false, false, false, false})// 默认全部显示
+                        .setType(new boolean[]{true, false, false, false, false, false})// 默认全部显示
                         .setCancelText("取消")//取消按钮文字
                         .setSubmitText("确定")//确认按钮文字
                         .setContentTextSize(18)//滚轮文字大小
@@ -166,43 +168,36 @@ public class AnyuetoujiFragment extends Fragment {
                 pvTime.show();
             }
         });
-
         quyu_1=quyu_choose.getText().toString();
         time_1=time_choose.getText().toString();
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-            Date date1 = sdf.parse(time_1);
-            year=getYear(date1);
-            month=getMonth(date1);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        initYue("",quyu_1,time_1,year,month);//设置开始加载数据...
-
+        initYue("",quyu_1,time_1);
         anri_chaxun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String quyu=quyu_choose.getText().toString();
                 String time=time_choose.getText().toString();
-                String year_1 = null;
-                String month_1=null;
+                /*String newmonth = null;
+                String newday=null;
                 try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-                    Date date1 = sdf.parse(time);
-                    year_1=getYear(date1);
-                    month_1=getMonth(date1);
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+                    Date date = sdf.parse(time);
+                    year=getYear(date);
+                    month=getMonth(date);
+                    newmonth = month.replaceAll("^(0+)", "");
+                    day=getDay(date);
+                    newday = day.replaceAll("^(0+)", "");
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                String times=year+"年";*/
+                //Log.d("time", quyu+time);
                 mChart.invalidate();
-                mChart.animateY(1400);
+                mChart.animateX(1400);
                 mChart.notifyDataSetChanged();
                 if (Place_id==null){
                     Place_id="3";
                 }
-                initYue(Place_id,quyu,time,year_1,month_1);
-
+                initYue(Place_id,quyu,time);
             }
         });
         initview();
@@ -289,10 +284,7 @@ public class AnyuetoujiFragment extends Fragment {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void Event(MessageEvent messageEvent) {
-        quyu_choose.setText(messageEvent.getMessage());
-    }
+
 
     private void initDizhiChoose(String dizhi_m){
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache4");
@@ -424,14 +416,13 @@ public class AnyuetoujiFragment extends Fragment {
             return chain.proceed(request);
         }
     };
-    private void initYue(String id,final String quyu, final String time_1, String NIAN, String Yue) {
+    private void initYue(String id,final String quyu,final String NIAN) {
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("获取数据中")
                 .create();
         //tipDialog.setCanceledOnTouchOutside(true);
         tipDialog.show();
-
         File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache4");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
@@ -445,7 +436,7 @@ public class AnyuetoujiFragment extends Fragment {
                 .build();
 
         //final String NIAN=time_choose.getText().toString();
-        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/statistics?type=month&place_id="+id+"&year="+NIAN+"&month="+Yue+"&day=00";
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/statistics?type=month&place_id="+id+"&year="+NIAN+"&month=00&day=00";
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -474,33 +465,30 @@ public class AnyuetoujiFragment extends Fragment {
                             if (resultStr.equals("true")){
                                 String result=jsonData.getString("result");
                                 JSONArray num = new JSONArray(result);
-                                //final List<Entry> entries = new ArrayList<Entry>();
-                                entries = new ArrayList<Entry>();
+                                final List<BarEntry> entries = new ArrayList<BarEntry>();
                                 int sums=0;
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String c_nums=jsonObject.getString("c_nums");
-
-                                    String c_day=jsonObject.getString("c_day");
-
+                                    String c_month=jsonObject.getString("c_month");
                                     int yVal = Integer.parseInt(c_nums);
-                                    int m=Integer.parseInt(c_day);
-                                    entries.add(new Entry(m, yVal));
+                                    int m=Integer.parseInt(c_month);
+                                    entries.add(new BarEntry(m, yVal));
                                     sums+=yVal;
                                 }
                                 final int finalSums = sums;
                                 Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        //String quyu_1=quyu_choose.getText().toString();
                                         if (null==entries||entries.size()==0){
                                             mChart.clear();
                                             mChart.setNoDataText("当前选择的时间没有该区域数据  请重新选择时间");
                                             tipDialog.dismiss();
                                         }else {
-                                            initdata2(entries,quyu,time_1,finalSums);
+                                            initdata2(entries,quyu,NIAN,finalSums);
                                             tipDialog.dismiss();
                                         }
+
                                     }
                                 });
 
@@ -515,12 +503,13 @@ public class AnyuetoujiFragment extends Fragment {
                 });
             }
         }).start();
+
     }
 
 
     //年月日
     private String getTime(Date date) {//可根据需要自行截取数据显示
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy");
         return format.format(date);
     }
     //年
@@ -596,7 +585,7 @@ public class AnyuetoujiFragment extends Fragment {
         }
     }
     private void initview() {
-        //initdata2(30,quyu_1,time_1);
+        //initdata3(12,quyu_1,time_1);
         mChart.setDrawGridBackground(false);
 
         // no description text
@@ -621,17 +610,18 @@ public class AnyuetoujiFragment extends Fragment {
         // create a custom MarkerView (extend MarkerView) and specify the layout
         // to use for it
         //自定义markView,点击显示更多信息
-        YueMarkView markerView = new YueMarkView(getActivity(),R.layout.custom_marker_view);
+        NianMarkView markerView = new NianMarkView(getActivity(),R.layout.custom_marker_view);
         markerView.setChartView(mChart);
         mChart.setMarker(markerView);
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setAvoidFirstLastClipping(true);
-        xAxis.setAxisMinimum(1f);
+        xAxis.setAxisMinimum(0f);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
-        xAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。
         xAxis.setTextColor(Color.rgb(255,255,255));
+        xAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。
+        xAxis.setLabelCount(13);
         xAxis.setLabelRotationAngle(-20);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
@@ -640,9 +630,8 @@ public class AnyuetoujiFragment extends Fragment {
                 if (m==0){
                     return "";
                 }else {
-                    return m+"日";
+                    return m+"月";
                 }
-
             }
         });
 
@@ -661,14 +650,14 @@ public class AnyuetoujiFragment extends Fragment {
         l.setTextColor(Color.rgb(255,255,255));
 
         //设置限制线 12代表某个该轴某个值，也就是要画到该轴某个值上
-        LimitLine limitLine = new LimitLine(100000);
+        LimitLine limitLine = new LimitLine(2500000);
         //设置限制线的宽
         limitLine.setLineWidth(1f);
         //设置限制线的颜色
         limitLine.setLineColor(Color.RED);
         //设置基线的位置
         limitLine.setLabelPosition(LimitLine.LimitLabelPosition.LEFT_TOP);
-        limitLine.setLabel("超过10万人");
+        limitLine.setLabel("超过250万人");
         //设置限制线为虚线
         //limitLine.enableDashedLine(10f, 10f, 0f);
         //左边Y轴添加限制线
@@ -676,8 +665,8 @@ public class AnyuetoujiFragment extends Fragment {
 
     }
 
-    private void initdata2(List<Entry> entries,String quyu,String time,int sums) {
-        /*ArrayList<Entry> entries = new ArrayList<Entry>();
+    private void initdata2(List<BarEntry> entries, String quyu, String time,int sums) {
+        /*List<Entry> entries = new ArrayList<Entry>();
 
         for (int i = 1; i < count+1; i++) {
             //float xVal = (float) (Math.random() * 20);
@@ -686,13 +675,12 @@ public class AnyuetoujiFragment extends Fragment {
             entries.add(new Entry(i, yVal));
         }*/
         // sort by x-value
-        Collections.sort(entries, new EntryXComparator());
         // create a dataset and give it a type
         //时间转换设置
         String newmonth = null;
         String newday=null;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             Date date = sdf.parse(time);
             year=getYear(date);
             month=getMonth(date);
@@ -702,23 +690,15 @@ public class AnyuetoujiFragment extends Fragment {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        String times=year+"年"+newmonth+"月";
+        String times=year+"年";
 
-        LineDataSet set1 = new LineDataSet(entries, times+quyu+"客流量月统计 单位：人");
-        set1.setLineWidth(1.5f);
-        set1.setCircleRadius(4f);
-        set1.setValueTextSize(12);
-        set1.setDrawCircleHole(false);//设置是否在数据点中间显示一个孔
-        set1.setValueTextColor(Color.rgb(255,255,255));
-        set1.setDrawFilled(true);
-        //set1.setFillColor(Color.argb(255,10,30,40));
-        Drawable drawable = ContextCompat.getDrawable(getActivity(), R.drawable.wudi);
-        set1.setFillDrawable(drawable);
-        if (entries.size()>15){
-            set1.setDrawValues(false);
-        }
+
+        BarDataSet dataSet = new BarDataSet(entries, times+quyu+"客流量年统计 单位：人");
+        dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        dataSet.setValueTextSize(12);//修改一组柱状图的文字大小
+        dataSet.setValueTextColor(Color.rgb(255,255,255));
         //set1.setDrawValues(false);//不显示点数值
-        set1.setValueFormatter(new IValueFormatter() {
+        dataSet.setValueFormatter(new IValueFormatter() {
             @Override
             public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
                 int mm=(int)entry.getY();
@@ -726,15 +706,11 @@ public class AnyuetoujiFragment extends Fragment {
             }
         });
         // create a data object with the datasets
-        LineData data1 = new LineData(set1);
+        BarData data2 = new BarData(dataSet);
         // set data
-        mChart.setData(data1);
-        String html=year+"年"+month+"月"+quyu+"总客流量约<font color='#ff0000'><big>"+sums+"</big></font>人";
+        mChart.setData(data2);
+        mChart.invalidate();//重绘图表
+        String html=year+"年"+quyu+"总客流量约<font color='#ff0000'><big>"+sums+"</big></font>人";
         zhushi_yue.setText(Html.fromHtml(html));
-    }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 }

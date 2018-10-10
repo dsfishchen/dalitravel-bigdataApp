@@ -491,7 +491,7 @@ public class AnritoujiFragment extends Fragment{
                                         if (null==entries||entries.size()==0){
                                             mChart.clear();
                                             mChart.setNoDataText("当前选择的时间没有该区域数据  请重新选择时间");
-                                            String html=year+"年"+month+"月"+day+"日"+quyu+"总客流量约<font color='#ff0000'><big>0</big></font>人";
+                                            String html=year+"年"+month+"月"+quyu+"总客流量约<font color='#ff0000'><big>0</big></font>人";
                                             zhushi_ri.setText(Html.fromHtml(html));
                                             tipDialog.dismiss();
                                         }else {
@@ -517,7 +517,7 @@ public class AnritoujiFragment extends Fragment{
 
     //年月日
     private String getTime(Date date) {//可根据需要自行截取数据显示
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
         return format.format(date);
     }
     //年
@@ -687,7 +687,7 @@ public class AnritoujiFragment extends Fragment{
         String newmonth = null;
         String newday=null;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
             Date date = sdf.parse(time);
             year=getYear(date);
             month=getMonth(date);
@@ -697,7 +697,7 @@ public class AnritoujiFragment extends Fragment{
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        String times=year+"年"+newmonth+"月"+newday+"日";
+        String times=year+"年"+newmonth+"月";
 
         LineDataSet set1 = new LineDataSet(entries, times+quyu+"客流量日统计 单位：人");
         set1.setLineWidth(1.5f);

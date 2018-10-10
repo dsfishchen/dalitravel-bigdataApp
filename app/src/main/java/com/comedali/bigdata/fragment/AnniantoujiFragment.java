@@ -63,6 +63,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -102,11 +103,6 @@ public class AnniantoujiFragment extends Fragment {
     private String time_1;
     private String Place_id;
     private TextView zhushi_nian;
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
-    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -288,10 +284,6 @@ public class AnniantoujiFragment extends Fragment {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void Event(MessageEvent messageEvent) {
-        quyu_choose.setText(messageEvent.getMessage());
-    }
 
     private void initDizhiChoose(String dizhi_m){
         final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
@@ -493,17 +485,21 @@ public class AnniantoujiFragment extends Fragment {
                                 String result=jsonData.getString("result");
                                 JSONArray num = new JSONArray(result);
                                 final List<BarEntry> entries = new ArrayList<BarEntry>();
-                                int sums=0;
+                                Integer[] sums=new Integer[num.length()];
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String c_nums=jsonObject.getString("c_nums");
-                                    String c_month=jsonObject.getString("c_month");
+                                    String c_year=jsonObject.getString("c_year");
                                     int yVal = Integer.parseInt(c_nums);
-                                    int m=Integer.parseInt(c_month);
+                                    int m=Integer.parseInt(c_year);
                                     entries.add(new BarEntry(m, yVal));
-                                    sums+=yVal;
+                                    sums[i]=yVal;
                                 }
-                                final int finalSums = sums;
+                                int max = 0;
+                                if (sums.length!=0){
+                                    max = (int) Collections.max(Arrays.asList(sums));
+                                }
+                                final int finalMax = max;
                                 Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -512,7 +508,7 @@ public class AnniantoujiFragment extends Fragment {
                                             mChart.setNoDataText("当前选择的时间没有该区域数据  请重新选择时间");
                                             tipDialog.dismiss();
                                         }else {
-                                            initdata3(entries,quyu,NIAN,finalSums);
+                                            initdata3(entries,quyu,NIAN,finalMax);
                                             tipDialog.dismiss();
                                         }
 
@@ -642,7 +638,7 @@ public class AnniantoujiFragment extends Fragment {
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setAvoidFirstLastClipping(true);
-        xAxis.setAxisMinimum(0f);
+        xAxis.setAxisMinimum(2016f);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setTextColor(Color.rgb(255,255,255));
@@ -656,7 +652,7 @@ public class AnniantoujiFragment extends Fragment {
                 if (m==0){
                     return "";
                 }else {
-                    return m+"月";
+                    return m+"年";
                 }
             }
         });
@@ -676,14 +672,14 @@ public class AnniantoujiFragment extends Fragment {
         l.setTextColor(Color.rgb(255,255,255));
 
         //设置限制线 12代表某个该轴某个值，也就是要画到该轴某个值上
-        LimitLine limitLine = new LimitLine(2500000);
+        LimitLine limitLine = new LimitLine(10000000);
         //设置限制线的宽
         limitLine.setLineWidth(1f);
         //设置限制线的颜色
         limitLine.setLineColor(Color.RED);
         //设置基线的位置
         limitLine.setLabelPosition(LimitLine.LimitLabelPosition.LEFT_TOP);
-        limitLine.setLabel("超过250万人");
+        limitLine.setLabel("超过1000万人");
         //设置限制线为虚线
         //limitLine.enableDashedLine(10f, 10f, 0f);
         //左边Y轴添加限制线
@@ -736,12 +732,7 @@ public class AnniantoujiFragment extends Fragment {
         // set data
         mChart.setData(data2);
         mChart.invalidate();//重绘图表
-        String html=year+"年"+quyu+"总客流量约<font color='#ff0000'><big>"+sums+"</big></font>人";
+        String html=year+"年"+quyu+"客流量约<font color='#ff0000'><big>"+sums+"</big></font>人";
         zhushi_nian.setText(Html.fromHtml(html));
-    }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 }
