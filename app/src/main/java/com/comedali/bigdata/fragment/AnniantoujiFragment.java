@@ -638,7 +638,7 @@ public class AnniantoujiFragment extends Fragment {
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setAvoidFirstLastClipping(true);
-        xAxis.setAxisMinimum(2016f);
+        xAxis.setAxisMinimum(2015.5f);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setTextColor(Color.rgb(255,255,255));

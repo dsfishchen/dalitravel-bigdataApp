@@ -467,7 +467,8 @@ public class AnritoujiFragment extends Fragment{
                                 JSONArray num = new JSONArray(result);
                                 //final List<Entry> entries = new ArrayList<Entry>();
                                 entries = new ArrayList<Entry>();
-                                Integer[] sums=new Integer[num.length()];
+                                int sums=0;
+
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String c_nums=jsonObject.getString("c_nums");
@@ -477,13 +478,13 @@ public class AnritoujiFragment extends Fragment{
                                     int yVal = Integer.parseInt(c_nums);
                                     int m=Integer.parseInt(c_day);
                                     entries.add(new Entry(m, yVal));
-                                    sums[i]=yVal;
+                                    sums+=yVal;
                                 }
-                                int max = 0;
+                                /*int max = 0;
                                 if (sums.length!=0){
                                     max = (int) Collections.max(Arrays.asList(sums));
-                                }
-                                final int finalMax = max;
+                                }*/
+                                final int finalMax = sums;
                                 Quyu_renliuActivity.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -625,7 +626,7 @@ public class AnritoujiFragment extends Fragment{
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setAvoidFirstLastClipping(true);
-        xAxis.setAxisMinimum(0f);
+        xAxis.setAxisMinimum(1f);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。
