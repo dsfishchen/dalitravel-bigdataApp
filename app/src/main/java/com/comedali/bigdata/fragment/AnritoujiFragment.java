@@ -323,7 +323,7 @@ public class AnritoujiFragment extends Fragment{
                                 JSONArray num = new JSONArray(result);
                                 //String[] listItems = new String[num.length()];
                                 listItems = new String[num.length()];
-                                listPlace_id=new String[15];
+                                listPlace_id=new String[26];
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String place_name=jsonObject.getString("place_name");
@@ -332,44 +332,57 @@ public class AnritoujiFragment extends Fragment{
                                     //listPlace_id[i]=place_id;
                                     listPlace_id[0]="";
                                     listPlace_id[1]="'22','24','5','6','48','23','3','10','12','13','14','17','18','34','35','50','1','2','4','8','9','16','19','20','21','25','7','11','26'";
+                                    listPlace_id[2]="'15','33','49'";
+                                    listPlace_id[3]="'27'";
+                                    listPlace_id[4]="'28','46','47'";
+                                    listPlace_id[5]="'30','36'";
+                                    listPlace_id[6]="'29','32'";
+                                    listPlace_id[7]="'38','44'";
+                                    listPlace_id[8]="'39'";
+                                    listPlace_id[9]="'40'";
+                                    listPlace_id[10]="'41'";
+                                    listPlace_id[11]="'42'";
+                                    listPlace_id[12]="'43'";
+
+
                                     if (place_name.equals("大理古城")){
-                                        listPlace_id[2]=place_id;
-                                    }
-                                    if (place_name.equals("蝴蝶泉")){
-                                        listPlace_id[3]=place_id;
-                                    }
-                                    if (place_name.equals("感通索道")){
-                                        listPlace_id[4]=place_id;
-                                    }
-                                    if (place_name.equals("崇圣寺三塔")){
-                                        listPlace_id[5]=place_id;
-                                    }
-                                    if (place_name.equals("南诏风情岛")){
-                                        listPlace_id[6]=place_id;
-                                    }
-                                    if (place_name.equals("天龙八部影视城")){
-                                        listPlace_id[7]=place_id;
-                                    }
-                                    if (place_name.equals("鸡足山")){
-                                        listPlace_id[8]=place_id;
-                                    }
-                                    if (place_name.equals("洗马潭大索道")){
-                                        listPlace_id[9]=place_id;
-                                    }
-                                    if (place_name.equals("巍宝山")){
-                                        listPlace_id[10]=place_id;
-                                    }
-                                    if (place_name.equals("新华村")){
-                                        listPlace_id[11]=place_id;
-                                    }
-                                    if (place_name.equals("石宝山")){
-                                        listPlace_id[12]=place_id;
-                                    }
-                                    if (place_name.equals("沙溪古镇")){
                                         listPlace_id[13]=place_id;
                                     }
-                                    if (place_name.equals("海舌公园")){
+                                    if (place_name.equals("蝴蝶泉")){
                                         listPlace_id[14]=place_id;
+                                    }
+                                    if (place_name.equals("感通索道")){
+                                        listPlace_id[15]=place_id;
+                                    }
+                                    if (place_name.equals("崇圣寺三塔")){
+                                        listPlace_id[16]=place_id;
+                                    }
+                                    if (place_name.equals("南诏风情岛")){
+                                        listPlace_id[17]=place_id;
+                                    }
+                                    if (place_name.equals("天龙八部影视城")){
+                                        listPlace_id[18]=place_id;
+                                    }
+                                    if (place_name.equals("鸡足山")){
+                                        listPlace_id[19]=place_id;
+                                    }
+                                    if (place_name.equals("洗马潭大索道")){
+                                        listPlace_id[20]=place_id;
+                                    }
+                                    if (place_name.equals("巍宝山")){
+                                        listPlace_id[21]=place_id;
+                                    }
+                                    if (place_name.equals("新华村")){
+                                        listPlace_id[22]=place_id;
+                                    }
+                                    if (place_name.equals("石宝山")){
+                                        listPlace_id[23]=place_id;
+                                    }
+                                    if (place_name.equals("沙溪古镇")){
+                                        listPlace_id[24]=place_id;
+                                    }
+                                    if (place_name.equals("海舌公园")){
+                                        listPlace_id[25]=place_id;
                                     }
                                 }
                             }
@@ -546,6 +559,17 @@ public class AnritoujiFragment extends Fragment{
             final String[] listItems1 = new String[]{
                     "大理州",
                     "大理市",
+                    "宾川县",
+                    "祥云县",
+                    "剑川县",
+                    "巍山县",
+                    "洱源县",
+                    "鹤庆县",
+                    "云龙县",
+                    "漾濞县",
+                    "南涧县",
+                    "永平县",
+                    "弥渡县",
                     "大理古城",
                     "蝴蝶泉",//6
                     "感通索道",//8
@@ -657,14 +681,14 @@ public class AnritoujiFragment extends Fragment{
         l.setTextColor(Color.rgb(255,255,255));
 
         //设置限制线 12代表某个该轴某个值，也就是要画到该轴某个值上
-        LimitLine limitLine = new LimitLine(15000);
+        LimitLine limitLine = new LimitLine(150000);
         //设置限制线的宽
         limitLine.setLineWidth(1f);
         //设置限制线的颜色
         limitLine.setLineColor(Color.RED);
         //设置基线的位置
         limitLine.setLabelPosition(LimitLine.LimitLabelPosition.LEFT_TOP);
-        limitLine.setLabel("超过1.5万人");
+        limitLine.setLabel("超过15万人");
         //设置限制线为虚线
         //limitLine.enableDashedLine(10f, 10f, 0f);
         //左边Y轴添加限制线
