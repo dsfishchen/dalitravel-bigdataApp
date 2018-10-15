@@ -298,7 +298,7 @@ public class AnyuetoujiFragment extends Fragment {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
-        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/spotnum?city="+dizhi_m;
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/spotnum1?city="+dizhi_m;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
