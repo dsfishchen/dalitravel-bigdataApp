@@ -38,7 +38,7 @@
         android:paddingRight="8dp"
         android:background="@drawable/button_zheng"
         android:drawableLeft="@mipmap/ic_location_on"
-        android:text="大理古城"
+        android:text="大理州"
         android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />

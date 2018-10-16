@@ -31,6 +31,7 @@ import com.comedali.bigdata.activity.Quyu_renliuActivity;
 import com.comedali.bigdata.activity.ShipingActivity;
 import com.comedali.bigdata.activity.Youke_zhanbiActivity;
 import com.comedali.bigdata.utils.Dialog_Util;
+import com.comedali.bigdata.utils.Jingwei_Util;
 import com.comedali.bigdata.utils.NetworkUtil;
 import com.github.mikephil.charting.data.Entry;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
@@ -104,7 +105,6 @@ public class ShouyeFragment extends Fragment {
     private String dizhi;
     private Timer timer;
     private CheckBox heat_choose;
-    private Marker marker;
     private TextView true_false;
     private List<Marker> mm;
     @Nullable
@@ -226,18 +226,8 @@ public class ShouyeFragment extends Fragment {
         }
     };
     private void initrenshu() {
-        //setup cache
-        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
-        int cacheSize = 10 * 1024 * 1024; // 10 MiB
-        Cache cache = new Cache(httpCacheDirectory, cacheSize);
-        OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
-        client=mBuilder
-                .addNetworkInterceptor(NetCacheInterceptor)
-                .addInterceptor(OfflineCacheInterceptor)
-                .cache(cache)
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .build();
+        final OkHttpClient client1=new OkHttpClient();
+
         String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city=all";
         final Request request = new Request.Builder()
                 .url(url)
@@ -247,7 +237,7 @@ public class ShouyeFragment extends Fragment {
 
             @Override
             public void run() {
-                client.newCall(request).enqueue(new Callback() {
+                client1.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.d("数据请求", "失败");
@@ -340,12 +330,13 @@ public class ShouyeFragment extends Fragment {
                     }
                 });
             }
-        },0,60000*2);
+        },0,20000);
 
     }
     private void initrenshu1(final String city) {
+        final OkHttpClient client1=new OkHttpClient();
         //setup cache
-        File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
+        /*File httpCacheDirectory = new File(getActivity().getExternalCacheDir(), "okhttpCache");
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
         OkHttpClient.Builder mBuilder = new OkHttpClient.Builder();
@@ -355,7 +346,7 @@ public class ShouyeFragment extends Fragment {
                 .cache(cache)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
-                .build();
+                .build();*/
         String url="http://home.comedali.com:8088/bigdataservice/flowmeter/scale";
         final Request request = new Request.Builder()
                 .url(url)
@@ -363,7 +354,7 @@ public class ShouyeFragment extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                client.newCall(request).enqueue(new Callback() {
+                client1.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.d("数据请求", "失败");
@@ -480,8 +471,8 @@ public class ShouyeFragment extends Fragment {
                 .addNetworkInterceptor(NetCacheInterceptor)
                 .addInterceptor(OfflineCacheInterceptor)
                 .cache(cache)
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
                 .build();
         String url="http://home.comedali.com:8088/bigdataservice/flowmeter/spotnum?city="+dizhi_m;
         final Request request = new Request.Builder()
@@ -514,18 +505,38 @@ public class ShouyeFragment extends Fragment {
                         final List<LatLng> jingwei=new ArrayList<>();
                         final String[] renshu=new String[num.length()];
                         final String[] dizhi_name=new String[num.length()];
+                        final String[] place_id1=new String[num.length()];
+                        final String[] place_type1=new String[num.length()];
                         for (int i=0;i<num.length();i++){
                             JSONObject jsonObject=num.getJSONObject(i);
                             String place_name=jsonObject.getString("place_name");
                             String latitude=jsonObject.getString("latitude");
                             String longitude=jsonObject.getString("longitude");
+                            String place_type=jsonObject.getString("place_type");
+                            String place_id=jsonObject.getString("place_id");
                             int nums=jsonObject.getInt("nums");
                             double lat= Double.parseDouble(latitude);
                             double long1= Double.parseDouble(longitude);
-                            jingwei.add(new LatLng(lat,long1));
+
+
+                            //**
+
+                            double x_pi=3.14159265358979324;
+                            double x = long1 - 0.0065, y = lat - 0.006;
+                            double z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_pi);
+                            double theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
+                            double tx_lon = z * Math.cos(theta);
+                            double tx_lat = z * Math.sin(theta);
+
+
+                            //**
+
+                            jingwei.add(new LatLng(tx_lat,tx_lon));
                             String renshu_nums= String.valueOf(nums);
                             renshu[i]=renshu_nums;
                             dizhi_name[i]=place_name;
+                            place_type1[i]=place_type;
+                            place_id1[i]=place_id;
 
                             List<Entry> entries = new ArrayList<Entry>();
                             String hourtouristlist=jsonObject.getString("hourtouristlist");
@@ -566,14 +577,20 @@ public class ShouyeFragment extends Fragment {
                                    public boolean onMarkerClick(Marker marker) {
                                        String ren_nums = null;
                                        List<Entry> wodetian=new ArrayList<>();
+                                       String dizhi_id=null;
+                                       String dizhi_type=null;
                                        for (int i=0;i<jingwei.size();i++){
                                            if (marker.getTitle().equals(dizhi_name[i])){
                                                if (renshu[i].equals("0")){
                                                    ren_nums=renshu[i]+"";
                                                    wodetian.addAll(entrie.get(i));//设备离线
+                                                   dizhi_id=place_id1[i];
+                                                   dizhi_type=place_type1[i];
                                                }else {
                                                    ren_nums=renshu[i]+"";
                                                    wodetian.addAll(entrie.get(i));//当前点的人数统计图数据
+                                                   dizhi_id=place_id1[i];
+                                                   dizhi_type=place_type1[i];
                                                }
                                            }
                                        }
@@ -588,14 +605,14 @@ public class ShouyeFragment extends Fragment {
                                                    }
                                                })
                                                .create(com.qmuiteam.qmui.R.style.QMUI_Dialog).show();*/
-
-                                       String html;
+                                       inityouke(dizhi_id,dizhi_type,wodetian,marker);
+                                       /*String html;
                                        if (ren_nums.equals("0")){
-                                            html="今日累积：<font color='#ff0000'>"+ren_nums+"</font>人   (设备离线)";
+                                            html="游客累积：<font color='#ff0000'>"+ren_nums+"</font>人   (设备离线)";
                                        }else {
-                                            html="今日累积：<font color='#ff0000'>"+ren_nums+"</font>人";
-                                       }
-                                       final Dialog_Util dialog=new Dialog_Util(getActivity());
+                                            html="游客累积：<font color='#ff0000'>"+ren_nums+"</font>人";
+                                       }*/
+                                       /*final Dialog_Util dialog=new Dialog_Util(getActivity());
                                        dialog.setEntries(wodetian);
                                                 dialog.setTitle(marker.getTitle())
                                                 .setMessage(Html.fromHtml(html))
@@ -605,7 +622,7 @@ public class ShouyeFragment extends Fragment {
                                                         dialog.dismiss();
                                                     }
                                                 })
-                                                .show();
+                                                .show();*/
 
 
                                        return true;
@@ -626,6 +643,73 @@ public class ShouyeFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void inityouke(final String dizhi_id, final String dizhi_type, final List<Entry> wodetian, final Marker marker) {
+        final OkHttpClient client1=new OkHttpClient();
+        final QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("获取数据中")
+                .create();
+        tipDialog.show();
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/ecdemicnum?place_id="+dizhi_id+"&place_type="+dizhi_type;
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                client1.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(),"请检查您的网络是否开启",Toast.LENGTH_LONG).show();
+                                tipDialog.dismiss();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                        String str = response.body().string();
+                        final JSONObject jsonData = new JSONObject(str);
+                        final String result = jsonData.getString("result");
+                        final String html;
+                        if (result.equals("0")) {
+                            html ="游客累计：<font color='#ff0000'>"+result+"</font>人   (设备离线)";
+                        }else {
+                            html ="游客累计：<font color='#ff0000'>"+result+"</font>人";
+                        }
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                final Dialog_Util dialog=new Dialog_Util(getActivity());
+                                dialog.setEntries(wodetian);
+                                dialog.setTitle(marker.getTitle())
+                                        .setMessage(Html.fromHtml(html))
+                                        .setOnClickBottomListener(new Dialog_Util.OnClickBottomListener() {
+                                            @Override
+                                            public void onNegtiveClick() {
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                        .show();
+                                tipDialog.dismiss();
+                            }
+                        });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            response.body().close();
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 
     private void initoneListPopupIfNeed() {
@@ -958,8 +1042,8 @@ public class ShouyeFragment extends Fragment {
                 .addNetworkInterceptor(NetCacheInterceptor)
                 .addInterceptor(OfflineCacheInterceptor)
                 .cache(cache)
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
                 .build();
         String url="https://api.seniverse.com/v3/weather/now.json?key=q00e27l9lrdc59mq&location=ip&language=zh-Hans&unit=c";
         final Request request = new Request.Builder()
@@ -1073,10 +1157,10 @@ public class ShouyeFragment extends Fragment {
                 .addNetworkInterceptor(NetCacheInterceptor)
                 .addInterceptor(OfflineCacheInterceptor)
                 .cache(cache)
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
                 .build();
-        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/num?city="+city;
+        String url="http://home.comedali.com:8088/bigdataservice/flowmeter/spotnum?city="+city;
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -1114,7 +1198,20 @@ public class ShouyeFragment extends Fragment {
                                     String longitude=jsonObject.getString("longitude");
                                     double lat= Double.parseDouble(latitude);
                                     double longi= Double.parseDouble(longitude);
-                                    nodes.add(new HeatDataNode(new LatLng(lat,longi), redu));
+
+                                    //**
+
+                                    double x_pi=3.14159265358979324;
+                                    double x = longi - 0.0065, y = lat - 0.006;
+                                    double z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_pi);
+                                    double theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
+                                    double tx_lon = z * Math.cos(theta);
+                                    double tx_lat = z * Math.sin(theta);
+
+
+                                    //**
+
+                                    nodes.add(new HeatDataNode(new LatLng(tx_lat,tx_lon), redu));
                                 }
 
                                 MainActivity.getInstance().runOnUiThread(new Runnable() {

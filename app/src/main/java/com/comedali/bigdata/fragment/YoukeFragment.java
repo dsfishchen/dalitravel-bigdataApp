@@ -501,7 +501,7 @@ public class YoukeFragment extends Fragment {
                                 for (int i=0;i<num.length();i++){
                                     JSONObject jsonObject=num.getJSONObject(i);
                                     String percent=jsonObject.getString("percent");
-                                    m[i]=percent+"%";
+                                    m[i]=percent+"";
                                 }
 
                                 MainActivity.getInstance().runOnUiThread(new Runnable() {

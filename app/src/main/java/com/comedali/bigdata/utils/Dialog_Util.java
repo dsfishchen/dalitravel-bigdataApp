@@ -209,13 +209,13 @@ public class Dialog_Util extends Dialog {
         mChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);//颜色数值
 
         //自定义markView,点击显示更多信息
-        RiMarkView markerView = new RiMarkView(mContext,R.layout.custom_marker_view);
+        ShiMarkView markerView = new ShiMarkView(mContext,R.layout.custom_marker_view);
         markerView.setChartView(mChart);
         mChart.setMarker(markerView);
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setAvoidFirstLastClipping(true);
-        xAxis.setAxisMinimum(2f);
+        xAxis.setAxisMinimum(0f);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f);//设置最小间隔，防止当放大时，出现重复标签。

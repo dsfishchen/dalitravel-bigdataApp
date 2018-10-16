@@ -213,7 +213,7 @@ public class AnniantoujiFragment extends Fragment {
         if (dizhi.equals("大理市")){
             dizhi_m="dali','eryuan','bingchuan','weishan','yongping','nanjian','heqing','yunlong','jianchuan','xiangyun','yangbi','midu";
             id="3";
-            name="大理古城";
+            name="大理州";
             initDizhiChoose(dizhi_m);
         }
         if (dizhi.equals("洱源县")){
@@ -756,7 +756,7 @@ public class AnniantoujiFragment extends Fragment {
         // set data
         mChart.setData(data2);
         mChart.invalidate();//重绘图表
-        String html="人数最多年份"+year+"年"+quyu+"客流量约<font color='#ff0000'><big>"+sums+"</big></font>人";
+        String html="截止目前，"+year+"年是"+quyu+"客流量最多的一年，约<font color='#ff0000'><big>"+sums+"</big></font>人";
         zhushi_nian.setText(Html.fromHtml(html));
     }
 }
